@@ -1,1 +1,1 @@
-export { useReserveWish, useCancelReservation } from './api/hooks';
+export { useReserveWish, useCancelReservation, useReleaseReservation } from './api/hooks';

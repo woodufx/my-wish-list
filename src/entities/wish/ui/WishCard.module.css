@@ -1,0 +1,265 @@
+.card {
+  position: relative;
+  box-sizing: border-box;
+  border-radius: 26px;
+  background: linear-gradient(
+    155deg,
+    rgba(158, 196, 255, 0.24),
+    rgba(15, 25, 54, 0.56) 48%,
+    rgba(84, 126, 240, 0.17)
+  );
+  backdrop-filter: blur(18px) saturate(1.38);
+  border: 1px solid rgba(180, 212, 255, 0.34);
+  box-shadow:
+    0 34px 70px -26px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 -20px 40px -22px rgba(90, 150, 255, 0.5);
+  color: #fff;
+}
+
+/* The whole card is an open affordance; the reserve button floats above it. */
+.openHit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  border-radius: 26px;
+  cursor: pointer;
+}
+.openHit:focus-visible {
+  outline: 2px solid var(--color-azure-soft);
+  outline-offset: 3px;
+}
+
+.inner {
+  position: relative;
+  z-index: 0;
+  pointer-events: none;
+  display: flex;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.shot {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  background: repeating-linear-gradient(
+    52deg,
+    rgba(120, 160, 255, 0.16) 0 7px,
+    rgba(8, 14, 32, 0.5) 7px 14px
+  );
+  box-shadow: inset 0 0 0 1px rgba(150, 190, 255, 0.18);
+}
+.shot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
+}
+.shotScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 8, 18, 0) 40%, rgba(4, 8, 18, 0.7));
+}
+.shotLabel {
+  position: relative;
+  color: rgba(214, 230, 255, 0.8);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.eyebrowAmber {
+  color: rgba(255, 186, 120, 0.8);
+}
+.name {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+  margin: 0;
+}
+.note {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: rgba(198, 214, 245, 0.52);
+  text-wrap: pretty;
+}
+.footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.price {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: #eaf1ff;
+  letter-spacing: -0.01em;
+}
+.action {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+/* ---- Portrait (orbit/grid) variant ---- */
+.card.portrait {
+  width: 236px;
+  height: 340px;
+}
+.portrait .inner {
+  flex-direction: column;
+  gap: 11px;
+  padding: 13px;
+}
+.portrait .shot {
+  height: 150px;
+  border-radius: 15px;
+  padding: 9px;
+}
+.portrait .shotLabel {
+  font: 500 8.5px/1.3 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.portrait .body {
+  gap: 6px;
+}
+.portrait .eyebrowAmber {
+  font: 500 8px/1 var(--font-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.portrait .name {
+  font-size: 16px;
+  line-height: 1.15;
+}
+.portrait .note {
+  font-size: 11px;
+  line-height: 1.35;
+}
+.portrait .price {
+  font-size: 15px;
+}
+
+/* ---- Panel (wide ~21:8) variant ---- */
+.card.panel {
+  width: 100%;
+  min-height: 300px;
+}
+.panel .inner {
+  flex-direction: row;
+  gap: 34px;
+  padding: 26px;
+  align-items: stretch;
+}
+.panel .shot {
+  width: 38%;
+  border-radius: 20px;
+  padding: 14px;
+}
+.panel .shotLabel {
+  font: 500 10px/1.3 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.panel .body {
+  gap: 14px;
+  padding: 6px 0;
+}
+.panel .eyebrowRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.panel .eyebrowAmber {
+  font: 500 10px/1 var(--font-mono);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.panel .rule {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, rgba(255, 186, 120, 0.35), transparent);
+}
+.panel .name {
+  font-size: 40px;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+.panel .note {
+  max-width: 520px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.panel .footer {
+  justify-content: flex-start;
+  gap: 26px;
+}
+.panel .price {
+  font-size: 34px;
+  letter-spacing: -0.02em;
+}
+
+/* ---- Status: taken by someone else (never color-only) ---- */
+.otherOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    repeating-linear-gradient(135deg, rgba(160, 200, 255, 0.08) 0 2px, transparent 2px 13px),
+    rgba(8, 12, 26, 0.52);
+  backdrop-filter: blur(7px) saturate(0.55);
+  pointer-events: none;
+}
+.otherTag {
+  font: 500 9.5px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(206, 220, 248, 0.82);
+  border: 1px solid rgba(180, 205, 255, 0.22);
+  padding: 9px 13px;
+  border-radius: 999px;
+  background: rgba(10, 16, 34, 0.5);
+}
+
+/* ---- Status: taken by me ---- */
+.card.mine {
+  border-color: rgba(255, 176, 96, 0.75);
+  box-shadow:
+    0 34px 70px -26px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(255, 150, 60, 0.28),
+    inset 0 0 30px rgba(255, 160, 70, 0.12);
+}
+.mineTag {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  z-index: 2;
+  font: 500 8.5px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #0a0704;
+  background: linear-gradient(120deg, #ffd6a1, #ff9c46);
+  padding: 7px 10px;
+  border-radius: 999px;
+}
+.panel .mineTag {
+  font-size: 10px;
+  padding: 8px 12px;
+}

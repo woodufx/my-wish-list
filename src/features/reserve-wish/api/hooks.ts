@@ -1,6 +1,11 @@
 import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { wishKeys, type ReservationStatus, type WishPublic } from '@/entities/wish';
-import { cancelReservation, reservationKeys, reserveWish } from '@/entities/reservation';
+import {
+  cancelReservation,
+  reservationKeys,
+  reserveWish,
+  type MyReservation,
+} from '@/entities/reservation';
 import { useGuest } from '@/entities/guest';
 import { isReservationConflict } from '@/shared/api';
 import { toast } from '@/shared/lib/toast';
@@ -101,6 +106,36 @@ export function useCancelReservation(slug: string) {
     },
     onSettled: (_data, _error, wishId) => {
       invalidate(queryClient, slug, wishId);
+    },
+  });
+}
+
+/**
+ * Cancels a reservation from the "my bookings" screen, where the wishlist slug is
+ * unknown. Optimistically drops the row and refetches any affected wish list.
+ */
+export function useReleaseReservation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (wishId: string) => cancelReservation(wishId),
+    onMutate: async (wishId): Promise<{ previous: MyReservation[] | undefined }> => {
+      await queryClient.cancelQueries({ queryKey: reservationKeys.mine() });
+      const previous = queryClient.getQueryData<MyReservation[]>(reservationKeys.mine());
+      queryClient.setQueryData<MyReservation[]>(reservationKeys.mine(), (list) =>
+        list?.filter((entry) => entry.wish.id !== wishId),
+      );
+      return { previous };
+    },
+    onError: (_error, _wishId, context) => {
+      if (context) {
+        queryClient.setQueryData(reservationKeys.mine(), context.previous);
+      }
+      toast.error('Не удалось снять бронь. Попробуйте ещё раз');
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: reservationKeys.mine() });
+      void queryClient.invalidateQueries({ queryKey: wishKeys.all });
     },
   });
 }

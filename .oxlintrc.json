@@ -17,7 +17,8 @@
     "eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     "react/react-in-jsx-scope": "off",
     "import/no-unassigned-import": "off",
-    "oxc/no-map-spread": "off"
+    "oxc/no-map-spread": "off",
+    "jsx-a11y/prefer-tag-over-role": "off"
   },
   "ignorePatterns": [
     "dist",

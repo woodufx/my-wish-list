@@ -1,0 +1,27 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 560px;
+  padding: 64px 0;
+}
+
+.tag {
+  color: rgba(255, 186, 120, 0.7);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.text {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--color-ink-soft);
+}

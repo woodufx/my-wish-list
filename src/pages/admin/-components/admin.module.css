@@ -1,0 +1,132 @@
+.screen {
+  position: relative;
+  min-height: 100vh;
+  color: #fff;
+}
+.content {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 20px 52px 120px;
+}
+.layout {
+  display: flex;
+  gap: 64px;
+  align-items: flex-start;
+}
+.left {
+  width: 520px;
+  flex: none;
+}
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 108px;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+.privacy {
+  margin-top: 34px;
+  padding: 30px;
+  border-radius: 24px;
+  border: 1px solid rgba(160, 200, 255, 0.2);
+  background: linear-gradient(150deg, rgba(140, 180, 255, 0.12), rgba(10, 17, 38, 0.5));
+  backdrop-filter: blur(18px);
+}
+.privacyTitle {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.privacyText {
+  margin: 14px 0 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-ink-soft);
+}
+.addBtn {
+  margin-top: 26px;
+}
+
+.right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 17px 20px;
+  border-radius: 18px;
+  background: linear-gradient(
+    150deg,
+    rgba(140, 180, 255, 0.13),
+    rgba(12, 20, 44, 0.4) 60%,
+    rgba(70, 110, 235, 0.08)
+  );
+  backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid rgba(160, 200, 255, 0.2);
+}
+.thumb {
+  width: 56px;
+  height: 44px;
+  flex: none;
+  border-radius: 11px;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    52deg,
+    rgba(120, 160, 255, 0.2) 0 7px,
+    rgba(8, 14, 32, 0.55) 7px 14px
+  );
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rowBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.rowName {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.rowEyebrow {
+  color: rgba(206, 222, 250, 0.42);
+}
+.rowPrice {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 17px;
+  color: rgba(234, 241, 255, 0.9);
+}
+.formHead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.formMode {
+  color: var(--color-ink-muted);
+}
+.formTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 64px;
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  margin: 0 0 20px;
+}

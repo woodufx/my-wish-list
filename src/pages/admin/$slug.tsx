@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { AdminScreen } from './-components/AdminScreen';
 
 export const Route = createFileRoute('/admin/$slug')({
   component: AdminPage,
@@ -6,10 +7,5 @@ export const Route = createFileRoute('/admin/$slug')({
 
 function AdminPage() {
   const { slug } = Route.useParams();
-  return (
-    <main className="p-8">
-      <h1 className="text-2xl font-semibold">Админка</h1>
-      <p className="text-ink-400">slug: {slug}</p>
-    </main>
-  );
+  return <AdminScreen slug={slug} />;
 }

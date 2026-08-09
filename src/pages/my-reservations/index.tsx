@@ -1,13 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { MyReservations } from './-components/MyReservations';
 
 export const Route = createFileRoute('/my-reservations/')({
-  component: MyReservationsPage,
+  component: MyReservations,
 });
-
-function MyReservationsPage() {
-  return (
-    <main className="p-8">
-      <h1 className="text-2xl font-semibold">Мои брони</h1>
-    </main>
-  );
-}

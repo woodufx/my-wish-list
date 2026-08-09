@@ -1,0 +1,109 @@
+/*
+ * Static, self-contained backdrop: drifting colored light bands behind a vignette.
+ * This is the CSS fallback that stands in for the 3D scene (mounted in stage 5)
+ * and is also what shows under prefers-reduced-motion.
+ */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--color-abyss);
+  pointer-events: none;
+}
+
+.bands {
+  position: absolute;
+  inset: -18%;
+  filter: blur(72px) saturate(1.4);
+}
+
+.band {
+  position: absolute;
+  left: -12%;
+  width: 130%;
+}
+
+.band1 {
+  top: 30%;
+  height: 150px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(20, 66, 225, 0.5) 30%,
+    rgba(190, 220, 255, 0.55) 52%,
+    transparent 78%
+  );
+  animation: drift1 33s ease-in-out infinite;
+}
+
+.band2 {
+  top: 72%;
+  height: 110px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 138, 48, 0.4) 42%,
+    rgba(255, 212, 160, 0.4) 58%,
+    transparent 80%
+  );
+  animation: drift2 41s ease-in-out infinite;
+}
+
+.band3 {
+  top: 8%;
+  height: 120px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(10, 32, 140, 0.55) 32%,
+    rgba(80, 140, 255, 0.45) 58%,
+    transparent
+  );
+  animation: drift3 45s ease-in-out infinite;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 66% 70% at 50% 48%,
+    transparent 34%,
+    rgba(2, 4, 9, 0.72) 74%,
+    var(--color-abyss-deep) 100%
+  );
+}
+
+@keyframes drift1 {
+  0%,
+  100% {
+    transform: translate3d(-4%, 0, 0) rotate(-18deg);
+  }
+  50% {
+    transform: translate3d(6%, 3%, 0) rotate(-14deg);
+  }
+}
+@keyframes drift2 {
+  0%,
+  100% {
+    transform: translate3d(5%, 2%, 0) rotate(-24deg);
+  }
+  50% {
+    transform: translate3d(-6%, -3%, 0) rotate(-20deg);
+  }
+}
+@keyframes drift3 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-9deg) scaleX(1);
+  }
+  50% {
+    transform: translate3d(-8%, 4%, 0) rotate(-13deg) scaleX(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .band {
+    animation: none;
+  }
+}

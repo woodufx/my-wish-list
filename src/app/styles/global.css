@@ -1,19 +1,33 @@
 @import 'tailwindcss';
 
 /*
- * Design tokens live here so Tailwind utilities and the hand-written CSS modules
- * (glass, glows, gradients) share the same palette. Complex graphics are NOT
- * expressed as utilities — only layout is.
+ * Design tokens shared by Tailwind utilities (layout) and the hand-written CSS
+ * modules that carry the complex graphics (glass, glows, gradients). Complex
+ * graphics are NOT expressed as utilities — only layout is.
  */
 @theme {
-  --color-abyss-950: #05070f;
-  --color-abyss-900: #0a0f1f;
-  --color-abyss-800: #111a33;
-  --color-ink-50: #f5f7ff;
-  --color-ink-200: #c7d0ea;
-  --color-ink-400: #8a97c2;
+  --color-abyss: #04060b;
+  --color-abyss-deep: #02040a;
+  --color-night: #0a0b0e;
 
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --color-ink: #eaf1ff;
+  --color-ink-soft: #c6d6f5;
+  --color-ink-muted: #8fa1c8;
+  --color-ink-faint: #5c6a8f;
+
+  --color-amber: #ffb268;
+  --color-amber-bright: #ff9c46;
+  --color-amber-pale: #ffd6a1;
+
+  --color-azure: #2f6cff;
+  --color-azure-soft: #9ec6ff;
+  --color-azure-pale: #cfe2ff;
+
+  --color-danger: #ff9c8a;
+
+  --font-display: 'Oswald', system-ui, sans-serif;
+  --font-sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 :root {
@@ -28,8 +42,8 @@ body,
 
 body {
   margin: 0;
-  background-color: var(--color-abyss-950);
-  color: var(--color-ink-50);
+  background-color: var(--color-abyss);
+  color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -37,6 +51,16 @@ body {
 
 /* Keyboard focus must always be visible (accessibility requirement). */
 :focus-visible {
-  outline: 2px solid var(--color-ink-200);
+  outline: 2px solid var(--color-azure-soft);
   outline-offset: 2px;
+}
+
+/* Uppercase mono label used across the UI for captions and tags. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
 }
