@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens live here so Tailwind utilities and the hand-written CSS modules
+ * (glass, glows, gradients) share the same palette. Complex graphics are NOT
+ * expressed as utilities — only layout is.
+ */
+@theme {
+  --color-abyss-950: #05070f;
+  --color-abyss-900: #0a0f1f;
+  --color-abyss-800: #111a33;
+  --color-ink-50: #f5f7ff;
+  --color-ink-200: #c7d0ea;
+  --color-ink-400: #8a97c2;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-abyss-950);
+  color: var(--color-ink-50);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Keyboard focus must always be visible (accessibility requirement). */
+:focus-visible {
+  outline: 2px solid var(--color-ink-200);
+  outline-offset: 2px;
+}
