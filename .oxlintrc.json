@@ -16,7 +16,8 @@
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     "react/react-in-jsx-scope": "off",
-    "import/no-unassigned-import": "off"
+    "import/no-unassigned-import": "off",
+    "oxc/no-map-spread": "off"
   },
   "ignorePatterns": [
     "dist",
@@ -24,6 +25,7 @@
     "playwright-report",
     "test-results",
     "src/routeTree.gen.ts",
+    "public/mockServiceWorker.js",
     "node_modules"
   ]
 }

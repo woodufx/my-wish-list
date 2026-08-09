@@ -47,6 +47,7 @@ export default [
       'test-results/**',
       'node_modules/**',
       'src/routeTree.gen.ts',
+      'public/mockServiceWorker.js',
     ],
   },
   {
