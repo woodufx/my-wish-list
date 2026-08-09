@@ -78,6 +78,17 @@ export default function Scene() {
         driftDir={[-0.6, 0.4]}
         phase={4.2}
       />
+      {/* the big heart, moved to the back plane so it no longer covers the rail */}
+      <GlbModel
+        url="/models/heart-silver.glb"
+        position={[4.9, 1.3, -3.6]}
+        scale={2.5}
+        color="#20345f"
+        roughness={0.4}
+        speed={0.48}
+        driftDir={[0.6, 0.5]}
+        phase={0.9}
+      />
     </Canvas>
   );
 }

@@ -36,20 +36,12 @@ export default function FrontScene() {
     >
       <FrameloopController />
       <Lighting />
-      <GlbModel
-        url="/models/heart-silver.glb"
-        position={[4.2, 1.6, -0.3]}
-        scale={3.6}
-        color="#3a5aa0"
-        roughness={0.28}
-        speed={1.1}
-        parallax={1.4}
-        driftDir={[0.6, 0.6]}
-      />
+      {/* Left stays larger (looks good there). Right side gets small objects so
+          they don't cover the scroll rail at the right edge. */}
       <GlbModel
         url="/models/tag-silver.glb"
         position={[-5.0, -1.4, -0.8]}
-        scale={3.2}
+        scale={3.0}
         color="#3a5aa0"
         roughness={0.26}
         speed={1.0}
@@ -59,13 +51,24 @@ export default function FrontScene() {
       />
       <GlbModel
         url="/models/blob-silver.glb"
-        position={[5.0, -2.4, -1.2]}
-        scale={2.8}
+        position={[3.6, 2.1, -0.5]}
+        scale={1.5}
         color="#33538f"
         roughness={0.3}
-        speed={1.18}
+        speed={1.12}
+        parallax={1.4}
+        driftDir={[0.5, 0.5]}
+        phase={0.4}
+      />
+      <GlbModel
+        url="/models/knot-silver.glb"
+        position={[3.3, -2.3, -0.7]}
+        scale={1.3}
+        color="#3a5aa0"
+        roughness={0.3}
+        speed={1.16}
         parallax={1.5}
-        driftDir={[0.6, -0.5]}
+        driftDir={[0.5, -0.5]}
         phase={2.6}
       />
     </Canvas>
