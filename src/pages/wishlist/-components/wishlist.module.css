@@ -106,8 +106,22 @@
 .orbitScene {
   position: relative;
   height: 100vh;
+  min-height: 760px;
+}
+
+.heroOverlay {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  z-index: 40;
+  pointer-events: none;
+  max-width: 520px;
+}
+
+.orbitHolder {
+  position: absolute;
+  inset: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }

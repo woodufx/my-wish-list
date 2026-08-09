@@ -5,6 +5,7 @@ import { useCancelReservation, useReserveWish } from '@/features/reserve-wish';
 import { useViewMode, ViewModeSwitch } from '@/features/view-mode-switch';
 import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
 import { Button, EmptyState, LiquidBackdrop, Skeleton, TopBar } from '@/shared/ui';
+import { Hero } from './Hero';
 import { ListView } from './ListView';
 import { PanelsView } from './PanelsView';
 import { OrbitFlight } from './OrbitFlight';
@@ -51,61 +52,57 @@ export function PublicWishlist({ slug }: { slug: string }) {
   const bookedCount = wishes.filter((wish) => wish.reservationStatus !== 'free').length;
   const openWish = wishes.find((wish) => wish.id === openId) ?? null;
 
+  const openDetail = (wish: WishPublic) => {
+    setOpenId(wish.id);
+  };
+
   return (
     <Shell mode={mode} onModeChange={setMode}>
-      <section className={styles.hero}>
-        <h1 className={styles.heroTitle}>
-          СПИСОК
-          <br />
-          ЖЕЛАНИЙ
-        </h1>
-        {wishlist && (
-          <>
-            <p className={styles.heroNote}>{wishlist.note ?? `Список ${wishlist.ownerName}.`}</p>
-            <p className={`eyebrow ${styles.heroMeta}`}>
-              {wishes.length} желаний · {bookedCount} забронированы
-            </p>
-          </>
-        )}
-      </section>
-
       {wishesQuery.isPending ? (
-        <div className={styles.grid}>
-          {Array.from({ length: 8 }, (_, index) => (
-            <Skeleton key={index} style={{ width: 236, height: 340, borderRadius: 26 }} />
-          ))}
-        </div>
+        <>
+          <Hero wishlist={wishlist} total={0} booked={0} />
+          <div className={styles.grid}>
+            {Array.from({ length: 8 }, (_, index) => (
+              <Skeleton key={index} style={{ width: 236, height: 340, borderRadius: 26 }} />
+            ))}
+          </div>
+        </>
       ) : wishes.length === 0 ? (
-        <EmptyState
-          tag="список гостя"
-          title="ПОКА ПУСТО"
-          text="Владелец ещё не добавил ни одного желания. Загляните чуть позже."
-        />
+        <>
+          <Hero wishlist={wishlist} total={0} booked={0} />
+          <EmptyState
+            tag="список гостя"
+            title="ПОКА ПУСТО"
+            text="Владелец ещё не добавил ни одного желания. Загляните чуть позже."
+          />
+        </>
       ) : mode === 'list' ? (
-        <ListView
-          wishes={wishes}
-          pendingId={pendingId}
-          onOpen={(wish) => {
-            setOpenId(wish.id);
-          }}
-          onToggleReservation={toggleReservation}
-        />
+        <>
+          <Hero wishlist={wishlist} total={wishes.length} booked={bookedCount} />
+          <ListView
+            wishes={wishes}
+            pendingId={pendingId}
+            onOpen={openDetail}
+            onToggleReservation={toggleReservation}
+          />
+        </>
       ) : reducedMotion ? (
-        <PanelsView
-          wishes={wishes}
-          pendingId={pendingId}
-          onOpen={(wish) => {
-            setOpenId(wish.id);
-          }}
-          onToggleReservation={toggleReservation}
-        />
+        <>
+          <Hero wishlist={wishlist} total={wishes.length} booked={bookedCount} />
+          <PanelsView
+            wishes={wishes}
+            pendingId={pendingId}
+            onOpen={openDetail}
+            onToggleReservation={toggleReservation}
+          />
+        </>
       ) : (
         <OrbitFlight
           wishes={wishes}
+          wishlist={wishlist}
+          booked={bookedCount}
           pendingId={pendingId}
-          onOpen={(wish) => {
-            setOpenId(wish.id);
-          }}
+          onOpen={openDetail}
           onToggleReservation={toggleReservation}
         />
       )}

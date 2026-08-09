@@ -27,6 +27,7 @@
     "test-results",
     "src/routeTree.gen.ts",
     "public/mockServiceWorker.js",
+    "scripts",
     "node_modules"
   ]
 }

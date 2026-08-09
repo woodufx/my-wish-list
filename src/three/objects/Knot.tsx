@@ -3,31 +3,32 @@ import { useFrame } from '@react-three/fiber';
 import type { Mesh } from 'three';
 import { METAL } from './material';
 
-interface SphereProps {
+interface KnotProps {
   position: [number, number, number];
   scale?: number;
   color?: string;
-  roughness?: number;
 }
 
-/** A polished tinted-chrome sphere, slowly turning. */
-export function Sphere({ position, scale = 1, color = '#1a2c52', roughness = 0.24 }: SphereProps) {
+/** A chrome torus-knot (stand-in for knot-silver.glb). */
+export function Knot({ position, scale = 1, color = '#18294f' }: KnotProps) {
   const ref = useRef<Mesh>(null);
+  const baseY = position[1];
 
-  useFrame((_, delta) => {
+  useFrame((state) => {
     const mesh = ref.current;
     if (mesh) {
-      mesh.rotation.y += delta * 0.1;
-      mesh.rotation.x += delta * 0.04;
+      mesh.rotation.y += 0.005;
+      mesh.rotation.z += 0.002;
+      mesh.position.y = baseY + Math.sin(state.clock.elapsedTime * 0.5 + 2.1) * 0.15;
     }
   });
 
   return (
     <mesh ref={ref} position={position} scale={scale}>
-      <sphereGeometry args={[1, 64, 64]} />
+      <torusKnotGeometry args={[0.6, 0.2, 160, 32]} />
       <meshStandardMaterial
         color={color}
-        roughness={roughness}
+        roughness={0.28}
         metalness={METAL.metalness}
         envMapIntensity={METAL.envMapIntensity}
       />

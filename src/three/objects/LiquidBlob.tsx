@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { MeshDistortMaterial } from '@react-three/drei';
 import type { Mesh } from 'three';
+import { METAL } from './material';
 
 interface LiquidBlobProps {
   position: [number, number, number];
@@ -12,8 +13,8 @@ interface LiquidBlobProps {
 }
 
 /**
- * A fluid form: a high-detail sphere warped by MeshDistortMaterial. Never uses
- * MeshTransmissionMaterial — too expensive for a background object.
+ * A fluid metallic form: a high-detail sphere warped by MeshDistortMaterial.
+ * Never MeshTransmissionMaterial — too costly for a background object.
  */
 export function LiquidBlob({
   position,
@@ -35,13 +36,12 @@ export function LiquidBlob({
 
   return (
     <mesh ref={ref} position={position} scale={scale}>
-      <icosahedronGeometry args={[1, 16]} />
+      <icosahedronGeometry args={[1, 20]} />
       <MeshDistortMaterial
         color={color}
-        roughness={0.16}
-        metalness={0.2}
-        clearcoat={0.8}
-        clearcoatRoughness={0.25}
+        roughness={0.2}
+        metalness={METAL.metalness}
+        envMapIntensity={METAL.envMapIntensity}
         distort={distort}
         speed={speed}
       />
