@@ -11,7 +11,7 @@
   isolation: isolate;
 }
 
-/* logical 1440x880 stage, centred and scaled to fit */
+/* logical 1440x880 stage, centred and scaled to cover the viewport */
 .stage {
   position: absolute;
   left: 50%;
@@ -20,6 +20,8 @@
   height: 880px;
   transform: translate(-50%, -50%);
   transform-origin: center center;
+  /* perspective so the card rotateX/rotateY tilt reads as a vertical orbit */
+  perspective: 1600px;
   color: #fff;
   user-select: none;
 }
@@ -156,12 +158,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse 62% 66% at 60% 52%,
-    transparent 32%,
-    rgba(2, 4, 9, 0.72) 74%,
-    #02040a 100%
-  );
+  /* gentle — the cards/orbit fill the screen rather than sitting in a dark box */
+  background: radial-gradient(ellipse 96% 96% at 55% 50%, transparent 62%, rgba(2, 4, 9, 0.3) 92%);
 }
 .glowA {
   position: absolute;
@@ -198,7 +196,7 @@
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 150px;
+  font-size: 124px;
   line-height: 0.86;
   letter-spacing: -0.03em;
   color: #fff;

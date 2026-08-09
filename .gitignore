@@ -40,3 +40,6 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+
+# Playwright debug video
+debug-video/

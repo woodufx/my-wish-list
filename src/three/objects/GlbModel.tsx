@@ -69,15 +69,20 @@ export function GlbModel({
     const t = state.clock.elapsedTime;
     const flight = stageSync.flight;
 
-    group.position.x = position[0] + stageSync.px * parallax * 2.4 + driftDir[0] * flight * 3.4;
+    // continuous vertical drift that wraps, so objects keep populating the whole
+    // scroll (orbit and the list stage) instead of vanishing.
+    const span = 16;
+    const raw = position[1] - stageSync.scroll * 0.0011 + span / 2;
+    const driftY = (((raw % span) + span) % span) - span / 2;
+
+    group.position.x = position[0] + stageSync.px * parallax * 1.4 + driftDir[0] * flight * 2.4;
     group.position.y =
-      position[1] +
-      Math.sin(t * 0.4 + phase) * 0.22 -
-      stageSync.py * parallax * 2 +
-      driftDir[1] * flight * 3;
-    group.rotation.x = spinRef.current * 0.16 + stageSync.py * 0.4;
-    group.rotation.y = spinRef.current + stageSync.px * 0.6;
-    group.visible = flight < 0.97;
+      driftY +
+      Math.sin(t * 0.4 + phase) * 0.2 -
+      stageSync.py * parallax * 1.2 +
+      driftDir[1] * flight * 2;
+    group.rotation.x = spinRef.current * 0.16 + stageSync.py * 0.24;
+    group.rotation.y = spinRef.current + stageSync.px * 0.3;
   });
 
   return (

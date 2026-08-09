@@ -42,7 +42,8 @@ export function OrbitFlightScene({
 
   useLayoutEffect(() => {
     const fit = () => {
-      setScale(Math.min(window.innerWidth / SCENE.width, window.innerHeight / SCENE.height, 1.05));
+      // cover the viewport so the cards/orbit fill the screen (no dark frame)
+      setScale(Math.max(window.innerWidth / SCENE.width, window.innerHeight / SCENE.height));
     };
     fit();
     window.addEventListener('resize', fit);
