@@ -1,0 +1,32 @@
+.blob {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 480px;
+  height: 480px;
+  pointer-events: none;
+  z-index: 9998;
+  mix-blend-mode: plus-lighter;
+  filter: blur(46px);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 168, 88, 0.5),
+    rgba(70, 130, 255, 0.34) 46%,
+    transparent 72%
+  );
+  will-change: transform;
+}
+
+.dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  will-change: transform;
+}

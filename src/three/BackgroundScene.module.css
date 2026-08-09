@@ -1,0 +1,8 @@
+.host {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* A touch of blur keeps the objects reading as a background, not foreground. */
+  filter: blur(1px);
+}

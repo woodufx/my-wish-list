@@ -6,7 +6,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -2;
   overflow: hidden;
   background: var(--color-abyss);
   pointer-events: none;
