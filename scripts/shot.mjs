@@ -12,7 +12,7 @@ page.on('console', (m) => {
 page.on('pageerror', (e) => errors.push('PAGEERROR: ' + e.message));
 
 await page.goto(url, { waitUntil: 'domcontentloaded' }).catch((e) => errors.push('GOTO: ' + e.message));
-await page.waitForTimeout(4000);
+await page.waitForTimeout(7000);
 await page.screenshot({ path: out });
 await page.waitForTimeout(200);
 

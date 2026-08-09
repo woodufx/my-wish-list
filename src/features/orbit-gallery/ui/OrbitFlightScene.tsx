@@ -3,6 +3,7 @@ import type { WishPublic } from '@/entities/wish';
 import type { Wishlist } from '@/entities/wishlist';
 import { useLenis } from '@/shared/hooks/useLenis';
 import { ORBIT, SCENE } from '@/shared/config/motion';
+import { resetStageSync, stageSync } from '@/shared/lib/stage-sync';
 import { MorphCard } from './MorphCard';
 import styles from './OrbitFlightScene.module.css';
 
@@ -124,6 +125,13 @@ export function OrbitFlightScene({
       // pointer parallax
       pxs += (mx / SCENE.width - 0.5 - pxs) * 0.05 * dt;
       pys += (my / SCENE.height - 0.5 - pys) * 0.05 * dt;
+
+      // feed the 3D background layer
+      stageSync.scroll = S;
+      stageSync.px = pxs;
+      stageSync.py = pys;
+      stageSync.flight = gp;
+
       for (const node of parNodes) {
         const f = Number.parseFloat(node.dataset.par ?? '0.2');
         const sf = Number.parseFloat(node.dataset.sf ?? '0');
@@ -235,6 +243,7 @@ export function OrbitFlightScene({
       stage.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointerup', endDrag);
       stage.removeEventListener('click', onClickCapture, true);
+      resetStageSync();
     };
   }, [wishes, count]);
 
@@ -328,6 +337,7 @@ export function OrbitFlightScene({
               }}
               className={styles.slot}
             >
+              <span className={styles.cardGlow} aria-hidden="true" />
               <MorphCard
                 wish={wish}
                 onOpen={() => {

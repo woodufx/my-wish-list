@@ -361,6 +361,24 @@
   z-index: 40;
 }
 
+/* soft pseudo-3D halo bleeding out from behind each card */
+.cardGlow {
+  position: absolute;
+  inset: -26px;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 40px;
+  background: radial-gradient(
+    60% 60% at 50% 45%,
+    rgba(120, 170, 255, 0.4),
+    rgba(90, 140, 255, 0.16) 45%,
+    rgba(255, 168, 88, 0.08) 70%,
+    transparent 82%
+  );
+  filter: blur(22px);
+  opacity: 0.7;
+}
+
 @keyframes drift1 {
   0%,
   100% {
