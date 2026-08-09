@@ -5,10 +5,10 @@ import { useCancelReservation, useReserveWish } from '@/features/reserve-wish';
 import { useViewMode, ViewModeSwitch } from '@/features/view-mode-switch';
 import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
 import { Button, EmptyState, LiquidBackdrop, Skeleton, TopBar } from '@/shared/ui';
+import { OrbitFlightScene } from '@/features/orbit-gallery';
 import { Hero } from './Hero';
 import { ListView } from './ListView';
 import { PanelsView } from './PanelsView';
-import { OrbitFlight } from './OrbitFlight';
 import { WishDetailOverlay } from './WishDetailOverlay';
 import styles from './wishlist.module.css';
 
@@ -59,25 +59,25 @@ export function PublicWishlist({ slug }: { slug: string }) {
   return (
     <Shell mode={mode} onModeChange={setMode}>
       {wishesQuery.isPending ? (
-        <>
+        <div className={styles.content}>
           <Hero wishlist={wishlist} total={0} booked={0} />
           <div className={styles.grid}>
             {Array.from({ length: 8 }, (_, index) => (
               <Skeleton key={index} style={{ width: 236, height: 340, borderRadius: 26 }} />
             ))}
           </div>
-        </>
+        </div>
       ) : wishes.length === 0 ? (
-        <>
+        <div className={styles.content}>
           <Hero wishlist={wishlist} total={0} booked={0} />
           <EmptyState
             tag="список гостя"
             title="ПОКА ПУСТО"
             text="Владелец ещё не добавил ни одного желания. Загляните чуть позже."
           />
-        </>
+        </div>
       ) : mode === 'list' ? (
-        <>
+        <div className={styles.content}>
           <Hero wishlist={wishlist} total={wishes.length} booked={bookedCount} />
           <ListView
             wishes={wishes}
@@ -85,9 +85,9 @@ export function PublicWishlist({ slug }: { slug: string }) {
             onOpen={openDetail}
             onToggleReservation={toggleReservation}
           />
-        </>
+        </div>
       ) : reducedMotion ? (
-        <>
+        <div className={styles.content}>
           <Hero wishlist={wishlist} total={wishes.length} booked={bookedCount} />
           <PanelsView
             wishes={wishes}
@@ -95,9 +95,9 @@ export function PublicWishlist({ slug }: { slug: string }) {
             onOpen={openDetail}
             onToggleReservation={toggleReservation}
           />
-        </>
+        </div>
       ) : (
-        <OrbitFlight
+        <OrbitFlightScene
           wishes={wishes}
           wishlist={wishlist}
           booked={bookedCount}
@@ -137,7 +137,7 @@ function Shell({ children, mode, onModeChange }: ShellProps) {
           Поделиться
         </Button>
       </TopBar>
-      <div className={styles.content}>{children}</div>
+      {children}
     </div>
   );
 }

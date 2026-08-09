@@ -33,18 +33,19 @@ export default function Scene() {
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       onCreated={({ gl }) => {
-        // ACES Filmic is R3F's default; match orb-stage's brighter exposure.
-        gl.toneMappingExposure = 1.6;
+        // ACES Filmic is R3F's default; match orb-stage's exposure (a touch calmer).
+        gl.toneMappingExposure = 1.4;
       }}
       style={{ position: 'absolute', inset: 0 }}
     >
       <FrameloopController />
       <Lighting />
-      <LiquidBlob position={[-3.6, 1.6, -1]} scale={1.35} distort={0.42} speed={1.2} />
-      <Torus position={[3.8, 1.2, -2]} scale={1.25} />
-      <Knot position={[3.2, -1.8, -1.5]} scale={1.0} />
-      <Sphere position={[-3.0, -2.0, -2.5]} scale={1.1} color="#16305f" />
-      <Droplet position={[0.6, 2.6, -3]} scale={0.9} />
+      {/* Kept clear of the top-left hero zone. */}
+      <LiquidBlob position={[5.0, 2.6, -3]} scale={1.15} distort={0.42} speed={1.2} />
+      <Torus position={[5.8, -0.6, -3.5]} scale={1.05} />
+      <Knot position={[4.4, -2.9, -2.5]} scale={0.9} />
+      <Sphere position={[-5.0, -2.8, -3.5]} scale={1.0} color="#16305f" />
+      <Droplet position={[-1.2, 3.6, -4]} scale={0.8} />
     </Canvas>
   );
 }

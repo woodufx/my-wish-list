@@ -30,6 +30,30 @@ export const FLIGHT = {
   zBurst: 620,
 } as const;
 
+/**
+ * Single-scene scroll choreography (ported from the design's first screen). All
+ * distances are in the logical 1440×880 stage's pixels.
+ */
+export const SCENE = {
+  width: 1440,
+  height: 880,
+  /** Scroll (px) the orbit holds before the flight starts. */
+  hold: 520,
+  /** Scroll (px) the orbit→panels flight spans. */
+  flight: 1000,
+  /** Vertical spacing between stacked panels. */
+  step: 420,
+  /** Y of the first panel in the stage. */
+  baseY: 560,
+  /** Orbit ellipse radii and centre. */
+  radiusX: 415,
+  radiusY: 52,
+  centerX: 864,
+  centerY: 458,
+  /** Per-card flight stagger (fraction of progress). */
+  cardStagger: 0.024,
+} as const;
+
 export const LENIS = {
   lerp: 0.1,
   wheelMultiplier: 1,

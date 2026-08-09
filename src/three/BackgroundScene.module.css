@@ -3,6 +3,7 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  /* A touch of blur keeps the objects reading as a background, not foreground. */
-  filter: blur(1px);
+  /* Blur + slight fade keep the objects reading as background, not foreground. */
+  filter: blur(3px);
+  opacity: 0.82;
 }

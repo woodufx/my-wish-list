@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<script type="module" src="orb-stage.js"></script>
+<style>
+body{margin:0;background:#0a0b0e;font-family:'Space Grotesk',system-ui,sans-serif}
+a{color:#ffb268;text-decoration:none}a:hover{color:#fff}
+[data-vp]::-webkit-scrollbar{width:0;height:0}
+@keyframes drift1{0%,100%{transform:translate3d(-4%,0,0) rotate(-18deg)}50%{transform:translate3d(6%,3%,0) rotate(-14deg)}}
+@keyframes drift2{0%,100%{transform:translate3d(5%,2%,0) rotate(-24deg)}50%{transform:translate3d(-6%,-3%,0) rotate(-20deg)}}
+@keyframes drift3{0%,100%{transform:translate3d(0,0,0) rotate(-9deg) scaleX(1)}50%{transform:translate3d(-8%,4%,0) rotate(-13deg) scaleX(1.2)}}
+@keyframes floaty{0%,100%{transform:translate3d(0,0,0) rotate(0deg)}50%{transform:translate3d(0,-26px,0) rotate(8deg)}}
+@keyframes floaty2{0%,100%{transform:translate3d(0,0,0) rotate(0deg) scale(1)}50%{transform:translate3d(14px,18px,0) rotate(-11deg) scale(1.06)}}
+@keyframes floaty3{0%,100%{transform:translate3d(0,0,0) rotate(6deg)}50%{transform:translate3d(-20px,-14px,0) rotate(-6deg)}}
+@keyframes chev{0%{transform:translateY(-6px);opacity:0}40%{opacity:1}100%{transform:translateY(9px);opacity:0}}
+@keyframes riseIn{from{opacity:0;transform:translateY(56px);filter:blur(14px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ringIn{from{opacity:0}to{opacity:1}}
+.dv-turn{padding:40px 44px 34px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}
+.dv-tid{font:600 10px ui-monospace,monospace;padding:3px 7px;background:#e8e9ec;color:#111;border-radius:4px}
+.dv-tname{font:600 13px/1.2 'Space Grotesk',sans-serif;color:rgba(255,255,255,.8)}
+.dv-opts{display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:rgba(255,255,255,.12);color:#fff;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:9px;font:400 11.5px/1.3 'Space Grotesk',sans-serif;color:rgba(255,255,255,.45)}
+.dv-next{margin:26px 0 0;font:12px/1.5 'Space Grotesk',sans-serif;color:rgba(255,255,255,.4)}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><span class="dv-tid">3</span><span class="dv-tname">Непрерывная сцена: орбита → перелёт → широкие панели</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="3a">
+<div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Скролльте внутри кадра. Кнопки под макетом останавливают перелёт на промежуточных фазах</div>
+
+<div data-vp style="position:relative;width:1440px;height:880px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;background:#04060b;border-radius:2px">
+<div style="position:relative;height:8700px">
+<div data-scene style="position:sticky;top:0;width:1440px;height:880px;overflow:hidden;background:#04060b;cursor:none;isolation:isolate;color:#fff;user-select:none">
+
+  <div data-par="0.06" data-sf="0.10" style="position:absolute;inset:-18%;filter:blur(72px) saturate(1.4);pointer-events:none">
+    <div style="position:absolute;left:-12%;top:38%;width:130%;height:150px;background:linear-gradient(90deg,transparent,rgba(20,66,225,.6) 28%,rgba(190,220,255,.7) 50%,transparent 76%);animation:drift1 31s ease-in-out infinite"></div>
+    <div style="position:absolute;left:-12%;top:66%;width:130%;height:110px;background:linear-gradient(90deg,transparent,rgba(255,138,48,.45) 40%,rgba(255,212,160,.45) 56%,transparent 78%);animation:drift2 38s ease-in-out infinite"></div>
+    <div style="position:absolute;left:-12%;top:10%;width:130%;height:120px;background:linear-gradient(90deg,transparent,rgba(10,32,140,.6) 32%,rgba(80,140,255,.45) 58%,transparent);animation:drift3 45s ease-in-out infinite"></div>
+  </div>
+  <div data-par="0.03" data-sf="0.22" style="position:absolute;inset:-25%;filter:blur(90px) saturate(1.3);pointer-events:none;opacity:.75">
+    <div style="position:absolute;left:-10%;top:52%;width:130%;height:200px;background:linear-gradient(90deg,transparent,rgba(14,44,170,.55) 26%,rgba(120,170,255,.5) 52%,transparent 80%);transform:rotate(-12deg)"></div>
+  </div>
+
+  <div data-pool style="position:absolute;left:60%;top:52%;width:1180px;height:1000px;transform:translate(-50%,-50%);background:radial-gradient(ellipse at center,rgba(74,126,255,.32),rgba(28,58,165,.13) 42%,transparent 68%);filter:blur(22px);pointer-events:none"></div>
+  <div data-vig style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 62% 66% at 60% 52%,transparent 32%,rgba(2,4,9,.72) 74%,#02040a 100%)"></div>
+
+  <div data-par="0.42" data-sf="0.5" style="position:absolute;right:120px;top:70px;width:200px;height:200px;pointer-events:none">
+    <div style="width:100%;height:100%;border-radius:52% 40% 60% 44%;background:conic-gradient(from 120deg,rgba(16,44,160,.9),rgba(160,200,255,.7),rgba(8,20,80,.95),rgba(48,96,230,.8));filter:blur(6px);opacity:.5;animation:floaty 21s ease-in-out infinite"></div>
+  </div>
+  <div data-par="0.24" data-sf="0.35" style="position:absolute;left:96px;bottom:150px;width:150px;height:150px;pointer-events:none">
+    <div style="width:100%;height:100%;border-radius:40% 60% 46% 54%;background:conic-gradient(from 300deg,rgba(14,34,120,.9),rgba(130,180,255,.6),rgba(24,58,180,.9));filter:blur(5px);opacity:.45;animation:floaty2 26s ease-in-out infinite"></div>
+  </div>
+  <div data-par="0.5" data-sf="0.62" style="position:absolute;left:60px;top:1180px;width:260px;height:260px;pointer-events:none">
+    <div style="width:100%;height:100%;border-radius:58% 42% 38% 62%;background:conic-gradient(from 20deg,rgba(10,26,100,.95),rgba(170,205,255,.6),rgba(18,48,170,.9),rgba(60,110,235,.7));filter:blur(7px);opacity:.5;animation:floaty3 33s ease-in-out infinite"></div>
+  </div>
+  <div data-par="0.3" data-sf="0.8" style="position:absolute;right:80px;top:1720px;width:210px;height:210px;pointer-events:none">
+    <div style="width:100%;height:100%;border-radius:44% 56% 62% 38%;background:conic-gradient(from 200deg,rgba(8,20,80,.95),rgba(150,190,255,.55),rgba(22,56,180,.9));filter:blur(6px);opacity:.45;animation:floaty2 29s ease-in-out infinite"></div>
+  </div>
+
+  <div data-s1 style="position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:34px 52px;z-index:60">
+    <div style="display:flex;align-items:center;gap:12px"><div style="width:16px;height:16px;border-radius:5px;background:linear-gradient(135deg,#cfe2ff,#2f6cff 60%,#ff9c46);box-shadow:0 0 22px rgba(90,140,255,.7)"></div><span style="font:700 15px/1 'Space Grotesk',sans-serif;letter-spacing:.18em;text-transform:uppercase">хочу</span></div>
+    <div style="display:flex;gap:30px;font:500 12px/1 'Space Grotesk',sans-serif;letter-spacing:.06em;color:rgba(214,226,250,.62)"><span>Все желания</span><span>Как это работает</span><span>Поделиться</span></div>
+  </div>
+
+  <div data-s1 style="position:absolute;left:52px;top:150px;z-index:50;pointer-events:none">
+    <div style="overflow:hidden"><div style="font:700 196px/0.86 Oswald,sans-serif;letter-spacing:-0.03em;color:#fff;text-shadow:0 0 90px rgba(60,120,255,.3);animation:riseIn 1.1s cubic-bezier(.2,.7,.2,1) both">СПИСОК<br>ЖЕЛАНИЙ</div></div>
+    <div style="animation:fadeIn .9s .45s cubic-bezier(.2,.7,.2,1) both;margin-top:26px;max-width:400px;font:400 15px/1.55 'Space Grotesk',sans-serif;color:rgba(200,216,244,.6)">Список Ани к 14 сентября. Выберите, что дарите, и забронируйте — остальные увидят, что подарок уже занят.</div>
+    <div style="animation:fadeIn .9s .6s cubic-bezier(.2,.7,.2,1) both;margin-top:18px;font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,186,120,.75)">12 желаний · 4 забронированы</div>
+  </div>
+
+  <div data-s2 style="position:absolute;left:0;top:0;width:1440px;z-index:30;pointer-events:none;will-change:transform;transform:translate3d(0,1020px,0);opacity:0">
+    <div data-s2t style="position:relative;height:230px;will-change:transform,clip-path">
+      <div style="position:absolute;left:82px;top:12px;font:700 196px/1 Oswald,sans-serif;letter-spacing:-0.04em;white-space:nowrap;color:rgba(120,170,255,.16);filter:blur(16px)">12 ЖЕЛАНИЙ</div>
+      <div style="position:absolute;left:88px;top:0;font:700 196px/1 Oswald,sans-serif;letter-spacing:-0.04em;white-space:nowrap;color:transparent;background:linear-gradient(172deg,#ffffff 0%,#f2f7ff 22%,#c9dcff 46%,#ffffff 62%,#9fc0f2 80%,#e8f1ff 100%);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 10px 34px rgba(90,150,255,.45)) drop-shadow(0 0 60px rgba(160,200,255,.3))">12 ЖЕЛАНИЙ</div>
+      <div style="position:absolute;left:88px;top:0;font:700 196px/1 Oswald,sans-serif;letter-spacing:-0.04em;white-space:nowrap;color:transparent;background:linear-gradient(96deg,rgba(255,255,255,0) 26%,rgba(255,255,255,.9) 42%,rgba(255,255,255,0) 56%);-webkit-background-clip:text;background-clip:text;mix-blend-mode:screen;opacity:.75">12 ЖЕЛАНИЙ</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:22px;padding:0 92px;margin-top:6px">
+      <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,186,120,.8)">Список целиком</div>
+      <div style="height:1px;flex:1;background:linear-gradient(90deg,rgba(255,186,120,.4),rgba(255,255,255,.06))"></div>
+      <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.26em;text-transform:uppercase;color:rgba(206,222,250,.5)">4 забронированы</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:0;top:0;width:1440px;height:880px;z-index:22;pointer-events:none;filter:blur(2.5px)">
+    <x-import component-from-global-scope="orb-stage" width="1440" height="880" loop="2600" models="uploads/blob-silver.glb|340|1250|1180|0.42|1a2c52|0.9|0.4, uploads/heart-silver.glb|260|150|2050|0.34|16274a|0.85|0.45, uploads/tag-silver.glb|190|880|2900|0.52|24386b|0.8|0.34, uploads/blob-silver.glb|220|420|3700|0.46|1b2f58|0.8|0.42, uploads/heart-silver.glb|170|1150|4600|0.38|1d3260|0.75|0.44, uploads/torus-silver.glb|200|300|5400|0.5|18294f|0.8|0.4" style="position:absolute;left:0;top:0;width:1440px;height:880px" hint-size="1440px,880px"></x-import>
+  </div>
+
+  <div style="position:absolute;left:0;top:0;width:1440px;height:880px;z-index:210;pointer-events:none">
+    <x-import component-from-global-scope="orb-stage" width="1440" height="880" loop="2200" models="uploads/heart-silver.glb|210|1310|1500|1.05|2b4a86|1|0.3, uploads/blob-silver.glb|180|80|2600|1.18|24406f|1|0.32, uploads/tag-silver.glb|150|1180|3700|0.95|2d4c88|1|0.28" style="position:absolute;left:0;top:0;width:1440px;height:880px" hint-size="1440px,880px"></x-import>
+  </div>
+
+  <div data-par="0.62" data-sf="1.15" style="position:absolute;left:1080px;top:1500px;width:150px;height:150px;pointer-events:none;z-index:52;border-radius:50%;background:radial-gradient(closest-side,rgba(190,220,255,.32),transparent 72%);filter:blur(10px)"></div>
+  <div data-par="0.18" data-sf="0.42" style="position:absolute;left:250px;top:2450px;width:420px;height:200px;pointer-events:none;z-index:20;border-radius:50%;background:radial-gradient(closest-side,rgba(255,168,88,.16),transparent 70%);filter:blur(30px)"></div>
+  <div data-par="0.3" data-sf="0.66" style="position:absolute;left:900px;top:3400px;width:520px;height:220px;pointer-events:none;z-index:20;background:linear-gradient(92deg,transparent,rgba(120,170,255,.3),transparent);filter:blur(26px);transform:rotate(-12deg)"></div>
+  <div data-par="0.8" data-sf="1.4" style="position:absolute;left:120px;top:4200px;width:70px;height:70px;pointer-events:none;z-index:56;border-radius:50%;background:radial-gradient(closest-side,rgba(255,210,160,.4),transparent 70%);filter:blur(6px)"></div>
+  <div data-par="0.24" data-sf="0.55" style="position:absolute;left:640px;top:4150px;width:620px;height:180px;pointer-events:none;z-index:20;background:linear-gradient(88deg,transparent,rgba(150,190,255,.22),transparent);filter:blur(34px);transform:rotate(8deg)"></div>
+
+  <div data-end style="position:absolute;left:212px;top:0;width:1016px;z-index:35;transform:translate3d(0,1400px,0);opacity:0;display:flex;align-items:center;justify-content:space-between;gap:40px;padding:34px 0;border-top:1px solid rgba(255,255,255,.1)">
+    <div style="font:400 15px/1.5 'Space Grotesk',sans-serif;color:rgba(200,216,244,.55);max-width:520px">Это весь список. Бронь можно снять в любой момент — Аня не видит, кто что забронировал.</div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,186,120,.8)">Поделиться списком</div>
+      <div style="width:44px;height:44px;border-radius:50%;border:1px solid rgba(170,205,255,.35);background:rgba(120,165,255,.14);display:flex;align-items:center;justify-content:center;font:500 15px/1 'Space Grotesk',sans-serif;color:#fff">↗</div>
+    </div>
+  </div>
+
+  <div data-stage style="position:absolute;left:0;top:0;width:1440px;height:880px;perspective:1600px;transform-style:preserve-3d;z-index:40">
+    <sc-for list="{{ cards }}" as="card" hint-placeholder-count="12">
+      <div data-slot style="position:absolute;left:0;top:0;width:236px;height:340px;opacity:0;will-change:transform,opacity,filter"><dc-import name="OrbitCard" card="{{ card }}" hint-size="236px,340px"></dc-import></div>
+    </sc-for>
+  </div>
+
+  <div data-s1 data-explore onClick="{{ toList }}" style="position:absolute;left:50%;bottom:38px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:60;cursor:pointer;animation:fadeIn .9s .75s cubic-bezier(.2,.7,.2,1) both">
+    <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.32em;text-transform:uppercase;color:rgba(206,222,250,.55)" style-hover="color:#fff">смотреть список</div>
+    <div style="width:1px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.5),transparent);position:relative"><div style="position:absolute;left:-2px;top:0;width:5px;height:5px;border-radius:50%;background:#ffb268;animation:chev 2.2s ease-in-out infinite"></div></div>
+  </div>
+
+  <div style="position:absolute;right:30px;top:120px;bottom:120px;width:2px;background:rgba(255,255,255,.08);z-index:70">
+    <div data-rail style="position:absolute;left:-2px;width:6px;height:64px;top:0;border-radius:3px;background:linear-gradient(180deg,#9ec6ff,#ff9c46);box-shadow:0 0 20px rgba(255,156,70,.55)"></div>
+    <div data-railnum style="position:absolute;right:16px;top:0;font:500 9px/1 'JetBrains Mono',monospace;letter-spacing:.18em;color:rgba(206,222,250,.55);white-space:nowrap">01</div>
+  </div>
+
+  <sc-if value="{{ grain }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;pointer-events:none;z-index:90;opacity:.12;mix-blend-mode:overlay;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E&quot;)"></div></sc-if>
+  <div data-loader style="position:absolute;inset:0;z-index:300;background:#04060b;display:flex;align-items:center;justify-content:center;transition:opacity .8s cubic-bezier(.2,.7,.2,1),filter .8s cubic-bezier(.2,.7,.2,1);will-change:opacity,filter">
+    <div style="position:absolute;inset:0;opacity:.5;mix-blend-mode:screen;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E&quot;)"></div>
+    <div style="position:absolute;left:50%;top:52%;width:900px;height:900px;margin:-450px 0 0 -450px;background:radial-gradient(closest-side,rgba(60,110,235,.32),transparent 70%);filter:blur(40px)"></div>
+    <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:22px">
+      <div style="display:flex;align-items:center;gap:12px;filter:blur(6px);opacity:.9"><div style="width:16px;height:16px;border-radius:5px;background:linear-gradient(135deg,#cfe2ff,#2f6cff 60%,#ff9c46);box-shadow:0 0 26px rgba(90,140,255,.7)"></div><span style="font:700 15px/1 'Space Grotesk',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#fff">хочу</span></div>
+      <div style="width:220px;height:1px;background:rgba(255,255,255,.12);overflow:hidden"><div data-loadbar style="width:12%;height:100%;background:linear-gradient(90deg,#9ec6ff,#ffb268);transition:width .5s cubic-bezier(.2,.7,.2,1)"></div></div>
+      <div style="font:500 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.28em;text-transform:uppercase;color:rgba(206,222,250,.45)">собираем список</div>
+    </div>
+  </div>
+
+  <div data-flash style="position:absolute;left:50%;top:50%;width:1500px;height:1500px;margin:-750px 0 0 -750px;pointer-events:none;z-index:44;opacity:0;mix-blend-mode:plus-lighter;background:radial-gradient(closest-side,rgba(255,196,120,.85),rgba(255,150,60,.35) 34%,rgba(70,130,255,.18) 58%,transparent 74%);filter:blur(30px)"></div>
+
+  <sc-if value="{{ opened }}">
+    <div data-scrim style="position:absolute;inset:0;z-index:240;background:rgba(4,7,15,.66);backdrop-filter:blur(16px);opacity:0;transition:opacity .5s cubic-bezier(.2,.7,.2,1)"></div>
+    <div data-openbox style="position:absolute;left:160px;top:500px;width:1120px;height:320px;z-index:250;border-radius:26px;overflow:hidden;display:flex;transition:left .9s cubic-bezier(.2,.7,.2,1),top .9s cubic-bezier(.2,.7,.2,1),width .9s cubic-bezier(.2,.7,.2,1),height .9s cubic-bezier(.2,.7,.2,1),border-radius .9s,opacity .4s;background:linear-gradient(155deg,rgba(140,180,255,.18),rgba(10,17,38,.72) 48%,rgba(70,110,235,.12));backdrop-filter:blur(30px) saturate(1.6);border:1px solid rgba(180,215,255,.4);box-shadow:0 60px 120px -40px rgba(0,0,0,.9)">
+      <div style="width:52%;position:relative;overflow:hidden;background:repeating-linear-gradient(52deg,rgba(120,160,255,.2) 0 12px,rgba(8,14,32,.62) 12px 24px)">
+        <div data-openimg style="position:absolute;inset:0;background-size:cover;background-position:center;opacity:.94"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,8,18,0) 55%,rgba(4,8,18,.7))"></div>
+        <div style="position:absolute;left:34px;bottom:30px;font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#c9d9f2">{{ opened.shot }}</div>
+      </div>
+      <div style="flex:1;padding:60px 56px;display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.26em;text-transform:uppercase;color:#ffc48c">приоритет · {{ opened.pri }}</div>
+          <div style="height:1px;flex:1;background:linear-gradient(90deg,rgba(255,186,120,.4),transparent)"></div>
+        </div>
+        <div style="font:600 54px/1.05 'Space Grotesk',sans-serif;letter-spacing:-.03em;text-wrap:pretty">{{ opened.name }}</div>
+        <div style="max-width:460px;font:400 16px/1.55 'Space Grotesk',sans-serif;color:#c3d2ea">{{ opened.note }}</div>
+        <div style="display:flex;align-items:baseline;gap:22px"><div style="font:600 46px/1 'Space Grotesk',sans-serif;letter-spacing:-.03em">{{ opened.price }}</div><a href="#3a" style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase">ссылка на магазин ↗</a></div>
+        <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#c3d2ea">{{ opened.status }}</div>
+        <div style="margin-top:auto;display:flex;gap:14px">
+          <sc-if value="{{ opened.canAct }}">
+            <button type="button" onClick="{{ opened.onToggle }}" style="border:1px solid rgba(255,186,110,.6);background:linear-gradient(120deg,rgba(255,214,161,.24),rgba(255,156,70,.2));color:#fff;font:500 15px/1 'Space Grotesk',sans-serif;padding:18px 30px;border-radius:999px;cursor:pointer">{{ opened.action }}</button>
+          </sc-if>
+          <button type="button" onClick="{{ closeCard }}" style="border:1px solid rgba(190,218,255,.35);background:rgba(120,165,255,.1);color:#e6eefc;font:500 15px/1 'Space Grotesk',sans-serif;padding:18px 26px;border-radius:999px;cursor:pointer">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div data-toast style="position:absolute;left:50%;bottom:46px;z-index:260;transform:translate(-50%,16px);opacity:0;transition:transform .25s cubic-bezier(.2,.9,.3,1.05),opacity .25s;pointer-events:none;display:flex;align-items:center;gap:12px;padding:15px 22px;border-radius:999px;background:linear-gradient(150deg,rgba(150,190,255,.2),rgba(10,17,38,.82));backdrop-filter:blur(20px) saturate(1.4);border:1px solid rgba(180,215,255,.3);box-shadow:0 24px 50px -20px rgba(0,0,0,.9)">
+    <span data-toast-dot style="width:7px;height:7px;border-radius:50%;background:#ffb268"></span>
+    <span data-toast-text style="font:500 13.5px/1 'Space Grotesk',sans-serif;color:#eaf1ff"></span>
+  </div>
+
+  <div data-cursorlabel style="position:absolute;left:0;top:0;z-index:264;pointer-events:none;opacity:0;transform:translate3d(0,0,0);transition:opacity .2s;font:500 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(226,238,255,.9);padding:7px 10px;border-radius:999px;background:rgba(10,16,34,.6);border:1px solid rgba(180,215,255,.28);white-space:nowrap">открыть</div>
+
+  <div data-blob style="position:absolute;left:0;top:0;width:480px;height:480px;pointer-events:none;z-index:80;mix-blend-mode:plus-lighter;filter:blur(46px);background:radial-gradient(closest-side,rgba(255,168,88,.5),rgba(70,130,255,.34) 46%,transparent 72%);will-change:transform"></div>
+  <div data-dot style="position:absolute;left:0;top:0;width:8px;height:8px;border-radius:50%;background:#fff;pointer-events:none;z-index:95;mix-blend-mode:difference;will-change:transform"></div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:4px">
+  <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-right:6px">фазы перелёта</span>
+  <sc-for list="{{ frames }}" as="fr" hint-placeholder-count="6">
+    <button type="button" onClick="{{ fr.go }}" style="border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:rgba(255,255,255,.75);font:500 11px/1 'Space Grotesk',sans-serif;padding:9px 13px;border-radius:999px;cursor:pointer" style-hover="background:rgba(255,255,255,.14);color:#fff">{{ fr.label }}</button>
+  </sc-for>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Дальше: «перелёт длиннее и медленнее» · «панели уже, с большими полями» · «дуги сильнее, разброс шире»</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;spinSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:60,&quot;min&quot;:20,&quot;max&quot;:120,&quot;step&quot;:5,&quot;unit&quot;:&quot;с&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Движение&quot;},&quot;grain&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Материал&quot;}}">
+class Component extends DCLogic {
+  state = { res: {} };
+
+  items() {
+    return [
+      { id: 1, name: 'Наушники Sony WH-1000XM5', price: '32 990 ₽', note: 'Для перелётов и опенспейса — шумодав важнее звука', pri: 'мечта', shot: 'фото товара', state: 'free' },
+      { id: 2, name: "Кофемашина De'Longhi Dedica", price: '24 500 ₽', note: 'Место на кухне уже расчищено, ширина до 15 см', pri: 'очень хочу', shot: 'фото товара', state: 'other' },
+      { id: 3, name: 'Клавиатура Keychron Q1', price: '18 700 ₽', note: 'Свитчи коричневые, не синие — соседи по опенспейсу просили', pri: 'очень хочу', shot: 'фото товара', state: 'free' },
+      { id: 4, name: 'Плёночный Olympus mju II', price: '27 000 ₽', note: 'Можно с рук, лишь бы затвор был живой', pri: 'мечта', shot: 'фото товара', state: 'mine' },
+      { id: 5, name: 'Проигрыватель Pro-Ject T1', price: '41 900 ₽', note: 'Пластинки лежат уже год и ждут', pri: 'мечта', shot: 'фото товара', state: 'free' },
+      { id: 6, name: 'Шерстяное одеяло Klippan', price: '9 800 ₽', note: 'Серое или охра, размер 130×180', pri: 'было бы славно', shot: 'фото товара', state: 'other' },
+      { id: 7, name: 'Кресло Herman Miller Sayl', price: '74 000 ₽', note: 'Можно вскладчину — я не обижусь', pri: 'мечта', shot: 'фото товара', state: 'free' },
+      { id: 8, name: 'Кастрюля Le Creuset 24 см', price: '21 400 ₽', note: 'Цвет — тёмно-синий, круглая', pri: 'очень хочу', shot: 'фото товара', state: 'free' },
+      { id: 9, name: 'Рюкзак Aer Travel Pack 3', price: '29 500 ₽', note: 'Чёрный, на 35 литров, с отделением для ноутбука', pri: 'очень хочу', shot: 'фото товара', state: 'other' },
+      { id: 10, name: 'Ридер Kobo Libra Colour', price: '22 900 ₽', note: 'Вместо старого Kindle, у него сел экран', pri: 'было бы славно', shot: 'фото товара', state: 'free' },
+      { id: 11, name: 'Гантели Nüobell 2×32 кг', price: '38 000 ₽', note: 'Обязательно пара, одной толку нет', pri: 'было бы славно', shot: 'фото товара', state: 'other' },
+      { id: 12, name: 'Годовая подписка Skillbox', price: '12 000 ₽', note: 'Курс по керамике, начинаю в октябре', pri: 'очень хочу', shot: 'фото товара', state: 'free' }
+    ];
+  }
+
+  photo(id) {
+    return 'https://picsum.photos/seed/wish' + id + '/900/700';
+  }
+
+  renderVals() {
+    const res = this.state.res;
+    const cards = this.items().map((d, idx) => {
+      const st = res[d.id] || d.state;
+      return Object.assign({}, d, {
+        img: this.photo(d.id),
+        isOther: st === 'other',
+        isMine: st === 'mine',
+        canAct: st !== 'other',
+        action: st === 'mine' ? 'Снять бронь' : 'Забронировать',
+        onToggle: () => this.fly(idx, d.id, st !== 'mine')
+      });
+    });
+    const stops = [['орбита', 0], ['25%', 0.25], ['50%', 0.5], ['75%', 0.75], ['панели', 1], ['список', 1.9]];
+    const frames = stops.map(f => ({ label: f[0], go: () => this.jump(f[1]) }));
+    let opened = null;
+    if (this.state.openId != null) {
+      const src = cards.find(c => c.id === this.state.openId);
+      if (src) opened = Object.assign({}, src, {
+        status: src.isMine ? 'забронировано вами' : (src.isOther ? 'кто-то уже дарит' : 'свободно'),
+        onToggle: () => { this.setState({ openId: null }); setTimeout(() => src.onToggle(), 60); }
+      });
+    }
+    return {
+      cards, frames, opened, grain: this.props.grain !== false,
+      toList: () => this.jump(1),
+      closeCard: () => this.shrinkCard()
+    };
+  }
+
+  // booking flight: card leaves the list, spins once, comes back booked
+  fly(idx, id, booking) {
+    if (this._anim) return;
+    const s = this._scenes && this._scenes[0];
+    this._anim = booking
+      ? { i: idx, id: id, booking: true, t: 0, out: 900, hold: 1700, back: 1300, flipped: false }
+      : { i: idx, id: id, booking: false, t: 0, out: 420, hold: 260, back: 760, flipped: false };
+    this._anim.dur = this._anim.out + this._anim.hold + this._anim.back;
+    this._anim.start = performance.now();
+    this._anim.curve = this.spinCurve();
+    if (s) { s.frozen = true; s.vp.style.overflowY = 'hidden'; }
+  }
+
+  toast(text, warm) {
+    const t = document.querySelector('[data-toast]');
+    if (!t) return;
+    t.querySelector('[data-toast-text]').textContent = text;
+    t.querySelector('[data-toast-dot]').style.background = warm ? '#ffb268' : 'rgba(190,215,255,.9)';
+    t.style.transform = 'translate(-50%,0)';
+    t.style.opacity = '1';
+    clearTimeout(this._toastT);
+    this._toastT = setTimeout(() => {
+      t.style.transform = 'translate(-50%,16px)';
+      t.style.opacity = '0';
+    }, 4000);
+  }
+
+  // damped spring: overshoots slightly, settles at 1
+  spring(p, k) {
+    if (p >= 1) return 1;
+    const w = k || 9;
+    return 1 - Math.exp(-5.2 * p) * Math.cos(w * p);
+  }
+  outCubic(p) { return 1 - Math.pow(1 - p, 3); }
+  inOut(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+  // the proportion swap happens only while the card is near edge-on, so it never pops
+  // asymmetric angular velocity: burst at the start, slow but non-zero mid-flight,
+  // eased to a standstill at landing. Integrated once into a lookup table.
+  spinCurve() {
+    const N = 240, v = [], cum = [0];
+    for (let i = 0; i < N; i++) {
+      const p = (i + 0.5) / N;
+      v.push((1 + 0.86 * Math.cos(2 * Math.PI * p)) * (1 - Math.pow(p, 3.2)) + 0.05);
+      cum.push(cum[i] + v[i]);
+    }
+    const tot = cum[N];
+    return cum.map(c => c / tot);
+  }
+  curveAt(c, p) {
+    const N = c.length - 1;
+    const x = Math.max(0, Math.min(1, p)) * N;
+    const i = Math.min(N - 1, Math.floor(x));
+    return c[i] + (c[i + 1] - c[i]) * (x - i);
+  }
+  smooth(x) { const c = Math.max(0, Math.min(1, x)); return c * c * (3 - 2 * c); }
+  // proportions are a single monotone function of the accumulated angle:
+  // they rise across the first edge-on pass (90°) and fall across the last one before landing
+  sizeFromSpin(ang, end) {
+    const up = this.smooth((ang - 62) / 56);
+    const down = end == null ? 0 : this.smooth((ang - (end - 118)) / 56);
+    return Math.max(0, up - down);
+  }
+
+  jump(f) {
+    const s = this._scenes && this._scenes[0];
+    if (!s) return;
+    const target = this.HOLD + f * this.FL;
+    s.vp.scrollTo({ top: target, behavior: 'smooth' });
+  }
+
+  componentDidMount() {
+    this.HOLD = 520;
+    this.FL = 1000;
+    this.STEP = 420;
+    this.BASE_Y = 560;
+    this._scenes = [];
+    setTimeout(() => this.boot(), 60);
+  }
+
+  componentWillUnmount() { cancelAnimationFrame(this._raf); }
+
+  // shared-element open: the box starts on the clicked panel and grows to full screen,
+  // the scene behind it drops back and blurs
+  componentDidUpdate() {
+    const box = document.querySelector('[data-openbox]');
+    if (!box) return;
+    const im = box.querySelector('[data-openimg]');
+    if (im && this.state.openId != null) im.style.backgroundImage = 'url(' + this.photo(this.state.openId) + ')';
+    if (box.__on) return;
+    box.__on = true;
+    const f = this._from || { left: 160, top: 500, w: 1120, h: 320 };
+    box.style.transition = 'none';
+    box.style.left = f.left + 'px'; box.style.top = f.top + 'px';
+    box.style.width = f.w + 'px'; box.style.height = f.h + 'px';
+    box.style.opacity = '0';
+    box.offsetWidth;
+    box.style.transition = 'left .9s cubic-bezier(.2,.7,.2,1),top .9s cubic-bezier(.2,.7,.2,1),width .9s cubic-bezier(.2,.7,.2,1),height .9s cubic-bezier(.2,.7,.2,1),border-radius .9s,opacity .4s';
+    requestAnimationFrame(() => {
+      box.style.left = '40px'; box.style.top = '40px';
+      box.style.width = '1360px'; box.style.height = '800px';
+      box.style.borderRadius = '32px'; box.style.opacity = '1';
+      const sc = document.querySelector('[data-scrim]');
+      if (sc) sc.style.opacity = '1';
+      this.depth(true);
+    });
+  }
+
+  depth(on) {
+    ['[data-stage]', '[data-s1]', '[data-s2]', '[data-pool]'].forEach(sel => {
+      [].slice.call(document.querySelectorAll(sel)).forEach(e => {
+        e.style.transition = 'transform .8s cubic-bezier(.2,.7,.2,1),filter .8s,opacity .8s';
+        e.style.filter = on ? 'blur(14px)' : '';
+        if (sel === '[data-stage]') e.style.transform = on ? 'scale(.92)' : '';
+        if (sel !== '[data-s1]') e.style.opacity = on ? '.4' : '';
+      });
+    });
+  }
+
+  shrinkCard() {
+    const box = document.querySelector('[data-openbox]');
+    const f = this._from || { left: 160, top: 500, w: 1120, h: 320 };
+    const sc = document.querySelector('[data-scrim]');
+    if (sc) sc.style.opacity = '0';
+    this.depth(false);
+    if (box) {
+      box.style.left = f.left + 'px'; box.style.top = f.top + 'px';
+      box.style.width = f.w + 'px'; box.style.height = f.h + 'px';
+      box.style.borderRadius = '26px'; box.style.opacity = '0';
+    }
+    setTimeout(() => this.setState({ openId: null }), 620);
+  }
+
+  // hold the intro until fonts and first layout are ready, then dissolve the loader from grain
+  holdIntro() {
+    this._intro = [].slice.call(document.querySelectorAll('[data-scene] [data-s1] *'))
+      .filter(e => getComputedStyle(e).animationName !== 'none');
+    this._intro.forEach(e => { e.style.animationPlayState = 'paused'; });
+    const bar = document.querySelector('[data-loadbar]');
+    if (bar) setTimeout(() => { bar.style.width = '64%'; }, 120);
+    const ready = (window.document.fonts && document.fonts.ready) || Promise.resolve();
+    Promise.resolve(ready).then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))
+      .then(() => new Promise(r => setTimeout(r, 260)))
+      .then(() => this.reveal());
+    setTimeout(() => this.reveal(), 4000);
+  }
+
+  reveal() {
+    if (this._revealed) return;
+    this._revealed = true;
+    const bar = document.querySelector('[data-loadbar]');
+    if (bar) bar.style.width = '100%';
+    const l = document.querySelector('[data-loader]');
+    (this._intro || []).forEach(e => { e.style.animationPlayState = 'running'; });
+    if (l) {
+      l.style.opacity = '0';
+      l.style.filter = 'blur(26px)';
+      l.style.pointerEvents = 'none';
+      setTimeout(() => { l.style.display = 'none'; }, 900);
+    }
+  }
+
+  boot() {
+    if (this._booted) return;
+    const els = [].slice.call(document.querySelectorAll('[data-scene]'));
+    if (!els.length) { setTimeout(() => this.boot(), 200); return; }
+    this._booted = true;
+    this._scenes = els.map(el => this.setup(el));
+    const ids = this.items().map(d => d.id);
+    this._scenes.forEach(s => s.slots.forEach((sl, i) => {
+      sl.addEventListener('click', e => {
+        if (e.target.closest('button') || s.moved > 6) return;
+        const r = sl.getBoundingClientRect(), sr = s.el.getBoundingClientRect();
+        const k = s.el.clientWidth / sr.width;
+        this._from = { left: (r.left - sr.left) * k, top: (r.top - sr.top) * k, w: r.width * k, h: r.height * k };
+        this.setState({ openId: ids[i] });
+      });
+    }));
+    this.holdIntro();
+    this._scenes.forEach(s => {
+      this.tick(s, 0);
+      s.vp.addEventListener('scroll', () => this.tick(s, 0), { passive: true });
+      window.addEventListener('resize', () => this.tick(s, 0));
+    });
+    if (window.__wishRaf) cancelAnimationFrame(window.__wishRaf);
+    let last = performance.now();
+    const loop = t => {
+      const dt = Math.min(3, (t - last) / 16.667);
+      last = t;
+      this._scenes.forEach(s => this.tick(s, dt));
+      this._raf = window.__wishRaf = requestAnimationFrame(loop);
+    };
+    this._raf = window.__wishRaf = requestAnimationFrame(loop);
+  }
+
+  setup(el) {
+    const s = {
+      el: el,
+      vp: el.closest('[data-vp]'),
+      r: 415, ry: 52,
+      angle: 1.1, vel: 0, drag: false,
+      slots: [].slice.call(el.querySelectorAll('[data-slot]')),
+      par: [].slice.call(el.querySelectorAll('[data-par]')),
+      s1: [].slice.call(el.querySelectorAll('[data-s1]')),
+      s2: el.querySelector('[data-s2]'),
+      s2t: el.querySelector('[data-s2t]'),
+      pool: el.querySelector('[data-pool]'),
+      vig: el.querySelector('[data-vig]'),
+      flash: el.querySelector('[data-flash]'),
+      clabel: el.querySelector('[data-cursorlabel]'),
+      blob: el.querySelector('[data-blob]'),
+      dot: el.querySelector('[data-dot]'),
+      end: el.querySelector('[data-end]'),
+      stage3d: el.querySelector('orb-stage'),
+      rail: el.querySelector('[data-rail]'),
+      railnum: el.querySelector('[data-railnum]'),
+      w: 1440, h: 880, pxs: 0, pys: 0, S: 0
+    };
+    s.mx = 720; s.my = 440; s.bx = 720; s.by = 440; s.gpS = 0; s.snapped = false;
+    s.base = (Math.PI * 2) / (((this.props.spinSeconds || 60)) * 60);
+    s.lon = s.slots.map((_, i) => i * (Math.PI * 2 / s.slots.length));
+    s.inner = s.slots.map(() => ({ root: null, c: null, w: null }));
+
+    el.addEventListener('pointermove', e => {
+      const r = el.getBoundingClientRect();
+      const nx = (e.clientX - r.left) * (s.w / r.width);
+      const ny = (e.clientY - r.top) * (s.h / r.height);
+      if (s.drag) { s.vel += (nx - s.lastX) * 0.0009; s.moved += Math.abs(nx - s.lastX); }
+      s.lastX = nx; s.mx = nx; s.my = ny;
+    });
+    el.addEventListener('pointerdown', e => {
+      s.drag = true; s.moved = 0;
+      const r = el.getBoundingClientRect();
+      s.lastX = (e.clientX - r.left) * (s.w / r.width);
+    });
+    el.addEventListener('pointerover', e => {
+      const t = e.target;
+      s.cur = t.closest('button') ? 'btn' : (t.closest('[data-slot]') ? 'card' : (t.closest('a') ? 'link' : 'text'));
+      if (s.clabel) {
+        s.clabel.style.opacity = s.cur === 'card' ? '1' : '0';
+        s.clabel.textContent = 'забронировать';
+      }
+    });
+    el.addEventListener('pointerup', () => { s.drag = false; });
+    el.addEventListener('pointerleave', () => { s.drag = false; });
+    el.addEventListener('click', e => { if (s.moved > 6) { e.stopPropagation(); e.preventDefault(); } }, true);
+    el.addEventListener('wheel', e => { if (s.S < this.HOLD) s.vel += e.deltaY * 0.00006; }, { passive: true });
+    return s;
+  }
+
+  ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+
+  tick(s, dt) {
+    const HOLD = this.HOLD, FL = this.FL, STEP = this.STEP;
+    const maxS = s.vp.scrollHeight - s.vp.clientHeight;
+    const S = s.vp.scrollTop;
+    s.S = S;
+    // the slightest scroll takes the viewport straight to the panel area;
+    // the cards follow on their own eased clock, with delay
+    if (!s.snapped && S > 10 && S < HOLD + FL) {
+      s.snapped = true;
+      s.vp.scrollTo({ top: HOLD + FL, behavior: 'smooth' });
+    }
+    if (S <= 8) s.snapped = false;
+
+    const gpRaw = Math.max(0, Math.min(1, (S - HOLD) / FL));
+    if (!s.frozen) s.gpS += (gpRaw - s.gpS) * 0.011 * (dt || 1);
+    const gp = s.gpS;
+    const listScroll = Math.max(0, S - (HOLD + FL));
+
+    // cursor
+    s.bx += (s.mx - s.bx) * 0.08 * dt;
+    s.by += (s.my - s.by) * 0.08 * dt;
+    const vx = s.mx - s.bx, vy = s.my - s.by;
+    const sp = Math.sqrt(vx * vx + vy * vy);
+    const k = 1 + Math.min(0.4, sp * 0.005);
+    // cursor reads the element under it: stretched on buttons, a dot on text, labelled on cards
+    const cm = s.cur === 'btn' ? 1.35 : (s.cur === 'text' ? 0.42 : (s.cur === 'card' ? 1.08 : 0.85));
+    s.cmS = s.cmS === undefined ? cm : s.cmS + (cm - s.cmS) * 0.14 * (dt || 1);
+    if (s.blob) s.blob.style.transform = 'translate3d(' + (s.bx - 240) + 'px,' + (s.by - 240) + 'px,0) rotate(' + (Math.atan2(vy, vx) * 180 / Math.PI) + 'deg) scale(' + (k * s.cmS).toFixed(3) + ',' + (s.cmS / k).toFixed(3) + ')';
+    if (s.dot) s.dot.style.transform = 'translate3d(' + (s.mx - 4) + 'px,' + (s.my - 4) + 'px,0)';
+    if (s.clabel) s.clabel.style.transform = 'translate3d(' + (s.mx + 16) + 'px,' + (s.my + 14) + 'px,0)';
+
+    const A = this._anim;
+    if (A) {
+      A.t = performance.now() - A.start;
+      const p = Math.min(1, A.t / A.dur);
+      A.p = p;
+      // ONE continuous angular curve over the whole flight: quick out, slow (never zero) in the
+      // hold, quick again on the way back — g'(p) = 1 + k·cos(2πp) > 0 everywhere
+      const TURNS = 1080;
+      A.end = TURNS;
+      A.spin = A.booking ? TURNS * this.curveAt(A.curve, p) : 0;
+      A.size = A.booking ? this.sizeFromSpin(A.spin, TURNS) : 0;
+      if (A.t < A.out) {
+        const q = A.t / A.out, e = this.outCubic(q);
+        A.pos = e; A.z = e; A.bob = 0;
+      } else if (A.t < A.out + A.hold) {
+        const hq = (A.t - A.out) / A.hold;
+        A.pos = 1; A.z = 1;
+        A.bob = Math.sin(hq * Math.PI) * 16;
+      } else {
+        const q = Math.min(1, (A.t - A.out - A.hold) / A.back), e = this.inOut(q);
+        A.pos = 1 - e; A.z = 1 - e; A.bob = (1 - e) * 4;
+      }
+      // short amber burst, not a standing glow
+      const burst = (A.t - A.out * 0.45) / 260;
+      A.env = Math.exp(-burst * burst);
+      if (!A.flipped && A.t > A.out * 0.75) {
+        A.flipped = true;
+        this.setState(st => {
+          const next = Object.assign({}, st.res);
+          next[A.id] = A.booking ? 'mine' : 'free';
+          return { res: next };
+        });
+        this.toast(A.booking ? 'Забронировано. Аня не увидит, кто это сделал' : 'Бронь снята', A.booking);
+      }
+      if (s.flash) s.flash.style.opacity = A.booking ? (A.env * 0.7).toFixed(3) : '0';
+      if (p >= 1) {
+        this._anim = null;
+        s.frozen = false;
+        s.vp.style.overflowY = 'auto';
+        if (s.flash) s.flash.style.opacity = '0';
+      }
+    } else if (s.flash) s.flash.style.opacity = '0';
+
+    const tx = s.mx / s.w - 0.5, ty = s.my / s.h - 0.5;
+    s.pxs += (tx - s.pxs) * 0.05 * dt;
+    s.pys += (ty - s.pys) * 0.05 * dt;
+    s.par.forEach(p => {
+      const f = parseFloat(p.dataset.par) || 0.2;
+      const sf = parseFloat(p.dataset.sf) || 0;
+      p.style.transform = 'translate3d(' + (-s.pxs * f * 140) + 'px,' + (-s.pys * f * 140 - S * sf) + 'px,0)';
+    });
+
+    // screen-1 chrome leaves, screen-2 type arrives
+    const out = Math.max(0, Math.min(1, S / 460));
+    s.s1.forEach(e => {
+      if (out > 0) e.style.animation = 'none';
+      e.style.opacity = (1 - out).toFixed(3);
+      e.style.pointerEvents = out > 0.3 ? 'none' : 'auto';
+      e.style.transform = (e.style.left === '50%' ? 'translateX(-50%) ' : '') + 'translateY(' + (-out * 120).toFixed(1) + 'px)';
+    });
+    if (s.s2) {
+      const y = 1020 - S * 0.58 - s.pys * 26;
+      s.s2.style.transform = 'translate3d(' + (-s.pxs * 34).toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
+      const rv = Math.max(0, Math.min(1, (S - 260) / 420));
+      s.s2.style.opacity = rv.toFixed(3);
+      if (s.s2t) {
+        s.s2t.style.clipPath = 'inset(0 0 ' + ((1 - rv) * 100).toFixed(1) + '% 0)';
+        s.s2t.style.transform = 'translateY(' + ((1 - rv) * 46).toFixed(1) + 'px)';
+      }
+    }
+    // light pool follows the cards down
+    if (s.pool) s.pool.style.transform = 'translate(-50%,-50%) translateY(' + (gp * 150).toFixed(0) + 'px)';
+    if (s.vig) s.vig.style.opacity = (1 - 0.45 * gp).toFixed(3);
+
+    if (!s.stages3d || !s.stages3d.length) s.stages3d = [].slice.call(s.el.querySelectorAll('orb-stage'));
+    // 3D drift runs the full length of the card flight: slow in, faster mid, slow out
+    const w3 = A ? (0.5 - 0.5 * Math.cos(2 * Math.PI * Math.min(1, A.p || 0))) * (A.booking ? 1 : 0.4) : 0;
+    s.stages3d.forEach(st3 => {
+      if (st3.update) st3.update({ scroll: listScroll, S: S, px: s.pxs, py: s.pys, wave: w3, gp: gp });
+    });
+    if (s.end) {
+      const ey = this.BASE_Y + (s.slots.length - 1) * STEP + 340 - listScroll;
+      s.end.style.transform = 'translate3d(0,' + ey.toFixed(1) + 'px,0)';
+      s.end.style.opacity = Math.max(0, Math.min(1, (900 - ey) / 300)).toFixed(3);
+    }
+    // rail = progress over the whole page
+    if (s.rail) {
+      const track = s.rail.parentElement.clientHeight;
+      const p = maxS > 0 ? S / maxS : 0;
+      s.rail.style.top = (p * (track - s.rail.offsetHeight)).toFixed(1) + 'px';
+      if (s.railnum) {
+        s.railnum.style.top = (p * (track - s.rail.offsetHeight) + 24).toFixed(1) + 'px';
+        s.railnum.textContent = S < HOLD + FL * 0.5 ? '01' : '02';
+      }
+    }
+
+    if (!s.drag) s.vel *= Math.pow(0.94, dt);
+    if (!s.frozen) s.angle += (s.base + s.vel) * (1 - gp) * dt;
+
+    const n = s.slots.length;
+    const stag = 0.024;
+    const span = 1 - stag * (n - 1);
+    for (let i = 0; i < n; i++) {
+      const th = s.lon[i] + s.angle;
+      const oz = Math.cos(th);
+      const d = (oz + 1) / 2;
+      const osc = 0.6 + 0.5 * d;
+      const ox = 864 + Math.sin(th) * s.r;
+      const oy = 458 + Math.cos(th) * s.ry;
+      const ow = 236 * osc, oh = 340 * osc;
+
+      // panel target
+      const py = this.BASE_Y + i * STEP - listScroll;
+      const pw = 1120, ph = 320;
+      const px = 720;
+
+      const raw = Math.max(0, Math.min(1, (gp - i * stag) / span));
+      const t = this.ease(raw);
+      const arc = Math.sin(Math.PI * t) * (i % 2 ? 1 : -1) * (110 + (i % 3) * 55);
+      const lift = Math.sin(Math.PI * t) * -70;
+
+      const cx = ox + (px - ox) * t + arc;
+      const cy = oy + (py - oy) * t + lift;
+      const w = ow + (pw - ow) * t;
+      const h = oh + (ph - oh) * t;
+
+      const yawDeg = -Math.sin(th) * 26 * (1 - t);
+      const roll = Math.sin(Math.PI * t) * (i % 2 ? 9 : -9);
+      // panels tilt on entry, level out in the middle of the frame
+      const tilt = t > 0.85 ? Math.max(-9, Math.min(9, (cy - 440) / 46)) * ((t - 0.85) / 0.15) : 0;
+
+      const el = s.slots[i];
+      let fw = w, fh = h, fx = cx, fy = cy, fyaw = yawDeg, fz = 0, fsc = 1;
+      if (A && A.i === i) {
+        const m = A.size;
+        fw = w + (236 - w) * m;
+        fh = h + (340 - h) * m;
+        fsc = 1 + (A.booking ? 0.5 : 0.12) * A.pos;
+        fz = A.z * (A.booking ? 380 : 130);
+        fx = cx + (720 - cx) * A.pos;
+        fy = cy + (440 - cy) * A.pos + (A.bob || 0);
+        fyaw = yawDeg * (1 - A.pos) + A.spin;
+      }
+      el.style.width = fw.toFixed(1) + 'px';
+      el.style.height = fh.toFixed(1) + 'px';
+      el.style.transformStyle = 'preserve-3d';
+      el.style.transform = 'translate3d(' + (fx - fw / 2).toFixed(1) + 'px,' + (fy - fh / 2).toFixed(1) + 'px,' + fz.toFixed(1) + 'px) rotateY(' + fyaw.toFixed(1) + 'deg) rotateX(' + (-tilt).toFixed(1) + 'deg) rotate(' + roll.toFixed(1) + 'deg) scale(' + fsc.toFixed(3) + ')';
+
+      const offscreen = cy < -420 || cy > 1320;
+      el.style.visibility = offscreen ? 'hidden' : 'visible';
+      const dim = t > 0.9 ? Math.max(0.35, 1 - Math.abs(cy - 440) / 900) : (0.1 + 0.9 * Math.pow(d, 1.15));
+      el.style.opacity = dim.toFixed(3);
+      el.style.filter = (t < 0.5 && d < 0.86) ? 'blur(' + ((0.86 - d) * 9 * (1 - t * 2)).toFixed(2) + 'px) brightness(' + (0.42 + 0.58 * d).toFixed(2) + ')' : 'none';
+      el.style.zIndex = t > 0.5 ? Math.round(200 - Math.abs(cy - 440) / 8) : Math.round(d * 100);
+      el.style.pointerEvents = offscreen ? 'none' : (t > 0.6 || d > 0.72 ? 'auto' : 'none');
+
+      const inn = s.inner[i];
+      if (!inn.c) {
+        inn.c = el.querySelector('[data-c]');
+        inn.w = el.querySelector('[data-w]');
+        inn.root = inn.c ? inn.c.parentElement : null;
+
+        let m = inn.root && inn.root.parentElement;
+        while (m && m !== el) { m.style.width = '100%'; m.style.height = '100%'; m = m.parentElement; }
+      }
+      if (inn.root) {
+        inn.root.style.width = '100%';
+        inn.root.style.height = '100%';
+      }
+      // booking-only nodes appear later via sc-if — resolve them every frame, not once
+      inn.tag = el.querySelector('[data-mine-tag]');
+      inn.ring = el.querySelector('[data-mine-ring]');
+      inn.back = el.querySelector('[data-back]');
+      // effective wideness: the booking morph collapses the panel layout back to the orbit card
+      const morph = (A && A.i === i && A.booking) ? A.size : 0;
+      const tw = t * (1 - morph);
+      const cOp = Math.max(0, Math.min(1, 1 - tw * 2.2));
+      if (inn.c) {
+        inn.c.style.opacity = cOp.toFixed(3);
+        inn.c.style.transform = 'scale(' + Math.min(1.6, fw / 236).toFixed(3) + ')';
+        inn.c.style.pointerEvents = tw < 0.3 ? 'auto' : 'none';
+      }
+      if (inn.back) {
+        const facing = Math.cos(fyaw * Math.PI / 180);
+        inn.back.style.opacity = facing < 0 ? '1' : '0';
+      }
+      if (inn.ring) inn.ring.style.opacity = '1';
+      if (inn.tag) inn.tag.style.opacity = cOp.toFixed(3);
+      if (inn.w) {
+        inn.w.style.opacity = Math.max(0, Math.min(1, (tw - 0.55) / 0.35)).toFixed(3);
+        inn.w.style.pointerEvents = tw > 0.8 ? 'auto' : 'none';
+      }
+      if (inn.root) {
+        inn.root.style.backdropFilter = 'blur(' + (18 + 16 * t).toFixed(1) + 'px) saturate(' + (1.35 + 0.4 * t).toFixed(2) + ')';
+        inn.root.style.borderColor = 'rgba(' + (180 + 12 * t).toFixed(0) + ',' + (212 + 6 * t).toFixed(0) + ',255,' + (0.34 + 0.12 * t).toFixed(2) + ')';
+      }
+    }
+  }
+}
+</script>
+</body>
+</html>
