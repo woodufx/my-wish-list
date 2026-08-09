@@ -4,6 +4,7 @@ import type { Wishlist } from '@/entities/wishlist';
 import { useLenis } from '@/shared/hooks/useLenis';
 import { ORBIT, SCENE } from '@/shared/config/motion';
 import { resetStageSync, stageSync } from '@/shared/lib/stage-sync';
+import { FrontModels3D } from '@/three/FrontModels3D';
 import { MorphCard } from './MorphCard';
 import styles from './OrbitFlightScene.module.css';
 
@@ -259,99 +260,102 @@ export function OrbitFlightScene({
   };
 
   return (
-    <div ref={containerRef} className={styles.scroll} style={{ height: totalHeight }}>
-      <div className={styles.sticky}>
-        <div
-          ref={stageRef}
-          className={styles.stage}
-          style={{ transform: `translate(-50%, -50%) scale(${scale})` }}
-        >
-          {/* 2D pseudo-3D backdrop */}
-          <div className={styles.bands} data-par="0.06" data-sf="0.1">
-            <div className={`${styles.band} ${styles.band1}`} />
-            <div className={`${styles.band} ${styles.band2}`} />
-            <div className={`${styles.band} ${styles.band3}`} />
-          </div>
-          <div className={styles.pool} data-par="0.12" data-sf="0.2" />
-          <div className={`${styles.blob} ${styles.blobA}`} data-par="0.42" data-sf="0.5">
-            <div />
-          </div>
-          <div className={`${styles.blob} ${styles.blobB}`} data-par="0.24" data-sf="0.35">
-            <div />
-          </div>
-          <div className={`${styles.blob} ${styles.blobC}`} data-par="0.5" data-sf="0.62">
-            <div />
-          </div>
-          <div className={styles.glowA} data-par="0.62" data-sf="1.15" />
-          <div className={styles.glowB} data-par="0.8" data-sf="1.4" />
-          <div className={styles.vig} />
-
-          {/* screen-1 chrome */}
-          <div className={styles.hero} data-s1="">
-            <h1 className={styles.heroTitle}>
-              СПИСОК
-              <br />
-              ЖЕЛАНИЙ
-            </h1>
-            {wishlist && (
-              <>
-                <p className={styles.heroNote}>
-                  {wishlist.note ?? `Список ${wishlist.ownerName}.`}
-                </p>
-                <p className={`eyebrow ${styles.heroMeta}`}>
-                  {count} желаний · {booked} забронированы
-                </p>
-              </>
-            )}
-          </div>
-
-          <button type="button" className={styles.scrollBtn} data-s1="" onClick={scrollToList}>
-            <span className={styles.scrollBtnLabel}>смотреть список</span>
-            <span className={styles.scrollBtnLine}>
-              <span className={styles.scrollBtnDot} />
-            </span>
-          </button>
-
-          {/* screen-2 heading */}
-          <div ref={s2Ref} className={styles.s2}>
-            <div ref={s2TypeRef} className={styles.s2Type}>
-              <span>{count} ЖЕЛАНИЙ</span>
+    <>
+      <FrontModels3D />
+      <div ref={containerRef} className={styles.scroll} style={{ height: totalHeight }}>
+        <div className={styles.sticky}>
+          <div
+            ref={stageRef}
+            className={styles.stage}
+            style={{ transform: `translate(-50%, -50%) scale(${scale})` }}
+          >
+            {/* 2D pseudo-3D backdrop */}
+            <div className={styles.bands} data-par="0.06" data-sf="0.1">
+              <div className={`${styles.band} ${styles.band1}`} />
+              <div className={`${styles.band} ${styles.band2}`} />
+              <div className={`${styles.band} ${styles.band3}`} />
             </div>
-            <div className={styles.s2Row}>
-              <span className={styles.s2Label}>Список целиком</span>
-              <span className={styles.s2Rule} />
-              <span className={styles.s2Right}>{booked} забронированы</span>
+            <div className={styles.pool} data-par="0.12" data-sf="0.2" />
+            <div className={`${styles.blob} ${styles.blobA}`} data-par="0.42" data-sf="0.5">
+              <div />
             </div>
-          </div>
+            <div className={`${styles.blob} ${styles.blobB}`} data-par="0.24" data-sf="0.35">
+              <div />
+            </div>
+            <div className={`${styles.blob} ${styles.blobC}`} data-par="0.5" data-sf="0.62">
+              <div />
+            </div>
+            <div className={styles.glowA} data-par="0.62" data-sf="1.15" />
+            <div className={styles.glowB} data-par="0.8" data-sf="1.4" />
+            <div className={styles.vig} />
 
-          {/* rail */}
-          <div className={styles.railTrack}>
-            <div ref={railRef} className={styles.rail} />
-          </div>
+            {/* screen-1 chrome */}
+            <div className={styles.hero} data-s1="">
+              <h1 className={styles.heroTitle}>
+                СПИСОК
+                <br />
+                ЖЕЛАНИЙ
+              </h1>
+              {wishlist && (
+                <>
+                  <p className={styles.heroNote}>
+                    {wishlist.note ?? `Список ${wishlist.ownerName}.`}
+                  </p>
+                  <p className={`eyebrow ${styles.heroMeta}`}>
+                    {count} желаний · {booked} забронированы
+                  </p>
+                </>
+              )}
+            </div>
 
-          {/* cards */}
-          {wishes.map((wish, index) => (
-            <div
-              key={wish.id}
-              ref={(element) => {
-                slotRefs.current[index] = element;
-              }}
-              className={styles.slot}
-            >
-              <span className={styles.cardGlow} aria-hidden="true" />
-              <MorphCard
-                wish={wish}
-                onOpen={() => {
-                  onOpen(wish);
+            <button type="button" className={styles.scrollBtn} data-s1="" onClick={scrollToList}>
+              <span className={styles.scrollBtnLabel}>смотреть список</span>
+              <span className={styles.scrollBtnLine}>
+                <span className={styles.scrollBtnDot} />
+              </span>
+            </button>
+
+            {/* screen-2 heading */}
+            <div ref={s2Ref} className={styles.s2}>
+              <div ref={s2TypeRef} className={styles.s2Type}>
+                <span>{count} ЖЕЛАНИЙ</span>
+              </div>
+              <div className={styles.s2Row}>
+                <span className={styles.s2Label}>Список целиком</span>
+                <span className={styles.s2Rule} />
+                <span className={styles.s2Right}>{booked} забронированы</span>
+              </div>
+            </div>
+
+            {/* rail */}
+            <div className={styles.railTrack}>
+              <div ref={railRef} className={styles.rail} />
+            </div>
+
+            {/* cards */}
+            {wishes.map((wish, index) => (
+              <div
+                key={wish.id}
+                ref={(element) => {
+                  slotRefs.current[index] = element;
                 }}
-                onToggleReservation={() => {
-                  onToggleReservation(wish);
-                }}
-              />
-            </div>
-          ))}
+                className={styles.slot}
+              >
+                <span className={styles.cardGlow} aria-hidden="true" />
+                <MorphCard
+                  wish={wish}
+                  onOpen={() => {
+                    onOpen(wish);
+                  }}
+                  onToggleReservation={() => {
+                    onToggleReservation(wish);
+                  }}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

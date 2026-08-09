@@ -1,17 +1,15 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
 import { canRender3D } from './can-render-3d';
-import styles from './BackgroundScene.module.css';
+import styles from './FrontModels3D.module.css';
 
-// three / R3F / drei land in a separate chunk, loaded only when the scene mounts.
-const Scene = lazy(() => import('./Scene'));
+const FrontScene = lazy(() => import('./FrontScene'));
 
 /**
- * The fixed, full-screen 3D backdrop sitting under all content. Not mounted at
- * all under reduced motion or on weak devices — the CSS `LiquidBackdrop`
- * gradients remain as the fallback.
+ * The front 3D depth plane, layered OVER the cards (only mounted on the orbit
+ * screen). Skipped under reduced motion or on weak devices.
  */
-export function BackgroundScene() {
+export function FrontModels3D() {
   const reducedMotion = usePrefersReducedMotion();
   const [enabled, setEnabled] = useState(false);
 
@@ -26,7 +24,7 @@ export function BackgroundScene() {
   return (
     <div className={styles.host} aria-hidden="true">
       <Suspense fallback={null}>
-        <Scene />
+        <FrontScene />
       </Suspense>
     </div>
   );

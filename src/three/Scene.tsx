@@ -21,12 +21,15 @@ function FrameloopController() {
   return null;
 }
 
-/** The single background Canvas. Lazily imported so three lands in its own chunk. */
+/**
+ * The BACK depth plane: slower-drifting, dimmer, further-back models. Sits behind
+ * all content (blurred by the host). Lazily imported so three lands in its own chunk.
+ */
 export default function Scene() {
   return (
     <Canvas
       camera={{ position: [0, 0, 7], fov: 42 }}
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       onCreated={({ gl }) => {
         gl.toneMappingExposure = 1.4;
@@ -35,58 +38,44 @@ export default function Scene() {
     >
       <FrameloopController />
       <Lighting />
-      {/* Real silver models from the design. Kept clear of the top-left hero. */}
-      <GlbModel
-        url="/models/heart-silver.glb"
-        position={[4.2, 1.7, -0.5]}
-        scale={3.4}
-        color="#3a5aa0"
-        roughness={0.28}
-        driftDir={[0.6, 0.6]}
-      />
-      <GlbModel
-        url="/models/tag-silver.glb"
-        position={[-5.0, -1.6, -1]}
-        scale={3}
-        color="#3a5aa0"
-        roughness={0.26}
-        driftDir={[-0.7, 0.5]}
-        phase={1.2}
-      />
       <GlbModel
         url="/models/blob-silver.glb"
-        position={[5.4, -1.4, -2.5]}
-        scale={3.6}
-        color="#22386a"
-        roughness={0.4}
+        position={[5.4, -1.4, -3]}
+        scale={3.2}
+        color="#1a2c52"
+        roughness={0.42}
+        speed={0.46}
         driftDir={[0.7, -0.5]}
         phase={2.1}
       />
       <GlbModel
         url="/models/torus-silver.glb"
-        position={[3.0, 2.9, -2]}
-        scale={2.6}
-        color="#20345f"
-        roughness={0.38}
+        position={[3.0, 2.9, -2.5]}
+        scale={2.4}
+        color="#18294f"
+        roughness={0.4}
+        speed={0.5}
         driftDir={[0.5, 0.6]}
         phase={0.6}
       />
       <GlbModel
         url="/models/knot-silver.glb"
-        position={[4.7, -2.9, -2]}
-        scale={2.3}
-        color="#33538f"
-        roughness={0.3}
+        position={[4.7, -2.9, -2.5]}
+        scale={2.1}
+        color="#20345f"
+        roughness={0.32}
+        speed={0.4}
         driftDir={[0.6, -0.6]}
         phase={3.4}
       />
       <GlbModel
         url="/models/heart-silver.glb"
-        position={[-5.4, -2.6, -3]}
-        scale={2.2}
-        color="#1d3060"
-        roughness={0.44}
-        driftDir={[-0.6, -0.5]}
+        position={[-5.4, -1.6, -3.5]}
+        scale={2.0}
+        color="#16274a"
+        roughness={0.45}
+        speed={0.44}
+        driftDir={[-0.6, 0.4]}
         phase={4.2}
       />
     </Canvas>

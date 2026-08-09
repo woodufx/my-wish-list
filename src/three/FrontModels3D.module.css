@@ -1,0 +1,7 @@
+.host {
+  position: fixed;
+  inset: 0;
+  /* above the cards/nav, below the detail overlay (240) and toaster (260) */
+  z-index: 5;
+  pointer-events: none;
+}

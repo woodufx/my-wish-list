@@ -13,6 +13,8 @@ interface GlbModelProps {
   roughness?: number;
   spin?: number;
   parallax?: number;
+  /** Scroll-drift rate — higher = the object travels faster (reads as closer). */
+  speed?: number;
   /** Direction the object drifts as the orbit→panels flight progresses. */
   driftDir?: [number, number];
   phase?: number;
@@ -33,6 +35,7 @@ export function GlbModel({
   roughness = 0.34,
   spin = 0.15,
   parallax = 1,
+  speed = 0.5,
   driftDir = DEFAULT_DRIFT,
   phase = 0,
 }: GlbModelProps) {
@@ -72,7 +75,7 @@ export function GlbModel({
     // continuous vertical drift that wraps, so objects keep populating the whole
     // scroll (orbit and the list stage) instead of vanishing.
     const span = 16;
-    const raw = position[1] - stageSync.scroll * 0.0011 + span / 2;
+    const raw = position[1] - stageSync.scroll * 0.0011 * speed + span / 2;
     const driftY = (((raw % span) + span) % span) - span / 2;
 
     group.position.x = position[0] + stageSync.px * parallax * 1.4 + driftDir[0] * flight * 2.4;
