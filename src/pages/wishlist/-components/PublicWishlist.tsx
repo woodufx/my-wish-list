@@ -3,9 +3,11 @@ import { usePublicWishes, type WishPublic } from '@/entities/wish';
 import { useWishlist } from '@/entities/wishlist';
 import { useCancelReservation, useReserveWish } from '@/features/reserve-wish';
 import { useViewMode, ViewModeSwitch } from '@/features/view-mode-switch';
+import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
 import { Button, EmptyState, LiquidBackdrop, Skeleton, TopBar } from '@/shared/ui';
 import { ListView } from './ListView';
 import { PanelsView } from './PanelsView';
+import { OrbitFlight } from './OrbitFlight';
 import { WishDetailOverlay } from './WishDetailOverlay';
 import styles from './wishlist.module.css';
 
@@ -14,6 +16,7 @@ export function PublicWishlist({ slug }: { slug: string }) {
   const wishesQuery = usePublicWishes(slug);
   const [mode, setMode] = useViewMode();
   const [openId, setOpenId] = useState<string | null>(null);
+  const reducedMotion = usePrefersReducedMotion();
 
   const reserve = useReserveWish(slug);
   const cancel = useCancelReservation(slug);
@@ -87,21 +90,24 @@ export function PublicWishlist({ slug }: { slug: string }) {
           }}
           onToggleReservation={toggleReservation}
         />
+      ) : reducedMotion ? (
+        <PanelsView
+          wishes={wishes}
+          pendingId={pendingId}
+          onOpen={(wish) => {
+            setOpenId(wish.id);
+          }}
+          onToggleReservation={toggleReservation}
+        />
       ) : (
-        <>
-          <div className={styles.orbitPlaceholder}>
-            <span className="eyebrow">орбита</span>
-            <p>Интерактивная 3D-орбита появится на следующем этапе. Ниже — широкие панели.</p>
-          </div>
-          <PanelsView
-            wishes={wishes}
-            pendingId={pendingId}
-            onOpen={(wish) => {
-              setOpenId(wish.id);
-            }}
-            onToggleReservation={toggleReservation}
-          />
-        </>
+        <OrbitFlight
+          wishes={wishes}
+          pendingId={pendingId}
+          onOpen={(wish) => {
+            setOpenId(wish.id);
+          }}
+          onToggleReservation={toggleReservation}
+        />
       )}
 
       {openWish && (
