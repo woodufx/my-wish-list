@@ -39,16 +39,19 @@ export function WishDetailOverlay({
     if (!overlay || !detail) {
       return;
     }
-    animate(overlay, { opacity: [0, 1] }, { duration: 0.34, ease: 'easeOut' });
+    animate(overlay, { opacity: [0, 1] }, { duration: 0.4, ease: 'easeOut' });
     const box = detail.getBoundingClientRect();
-    if (originRect && box.width > 0) {
-      const scale = Math.max(0.05, originRect.width / box.width);
+    if (originRect && box.width > 0 && box.height > 0) {
+      // start exactly on the card footprint (both axes), then stretch each axis
+      // independently to full size — as if the card itself unfolds.
+      const sx = Math.max(0.02, originRect.width / box.width);
+      const sy = Math.max(0.02, originRect.height / box.height);
       const dx = originRect.left + originRect.width / 2 - (box.left + box.width / 2);
       const dy = originRect.top + originRect.height / 2 - (box.top + box.height / 2);
       animate(
         detail,
-        { x: [dx, 0], y: [dy, 0], scale: [scale, 1], opacity: [0.35, 1] },
-        { duration: 0.52, ease: OPEN_EASE },
+        { x: [dx, 0], y: [dy, 0], scaleX: [sx, 1], scaleY: [sy, 1], opacity: [0.55, 1] },
+        { duration: 0.56, ease: OPEN_EASE },
       );
     } else {
       animate(detail, { scale: [0.92, 1], opacity: [0, 1] }, { duration: 0.42, ease: 'easeOut' });
