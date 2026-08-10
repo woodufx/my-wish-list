@@ -1,7 +1,9 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react';
 import { animate } from 'motion/react';
 import { formatPrice, priorityLabel, type WishPublic } from '@/entities/wish';
 import { Button } from '@/shared/ui';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { cn } from '@/shared/lib/cn';
 import styles from './wishlist.module.css';
 
 interface WishDetailOverlayProps {
@@ -78,9 +80,10 @@ export function WishDetailOverlay({
   const overlayRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
   const closingRef = useRef(false);
+  const isMobile = useMediaQuery('(max-width: 680px)');
 
-  // Open by growing the detail's real width/height from the card to full size, so
-  // the content genuinely reflows (image expands, text settles) — not a transform.
+  // Desktop: grow the detail's real box out of the card. Mobile: slide a
+  // full-screen sheet up from the bottom.
   useLayoutEffect(() => {
     const overlay = overlayRef.current;
     const detail = detailRef.current;
@@ -88,6 +91,10 @@ export function WishDetailOverlay({
       return;
     }
     animate(overlay, { opacity: [0, 1] }, { duration: 0.4, ease: 'easeOut' });
+    if (isMobile) {
+      animate(detail, { y: ['100%', '0%'] }, { duration: 0.42, ease: OPEN_EASE });
+      return;
+    }
     const box = detail.getBoundingClientRect();
     if (originRect && box.width > 0 && box.height > 0) {
       tweenBox(detail, originRect, box, 0.6, 1, OPEN_EASE, 0.5, () => {
@@ -96,7 +103,7 @@ export function WishDetailOverlay({
     } else {
       animate(detail, { opacity: [0, 1] }, { duration: 0.36, ease: 'easeOut' });
     }
-  }, [originRect]);
+  }, [originRect, isMobile]);
 
   const close = () => {
     if (closingRef.current) {
@@ -110,12 +117,51 @@ export function WishDetailOverlay({
       return;
     }
     animate(overlay, { opacity: 0 }, { duration: 0.34, ease: 'easeIn' });
+    if (isMobile) {
+      animate(detail, { y: '100%' }, { duration: 0.34, ease: CLOSE_EASE, onComplete: onClose });
+      return;
+    }
     const box = detail.getBoundingClientRect();
     if (originRect && box.width > 0 && box.height > 0) {
       // shrink the real box back into the card footprint — the reverse of open
       tweenBox(detail, box, originRect, 1, 0.35, CLOSE_EASE, 0.34, onClose);
     } else {
       animate(detail, { opacity: 0 }, { duration: 0.26, ease: 'easeIn', onComplete: onClose });
+    }
+  };
+
+  // Swipe the sheet down to dismiss (mobile).
+  const dragRef = useRef({ y0: 0, dy: 0, active: false });
+  const onSheetDown = (event: ReactPointerEvent) => {
+    if (!isMobile || closingRef.current) {
+      return;
+    }
+    if (event.target instanceof Element && event.target.closest('button, a')) {
+      return;
+    }
+    dragRef.current = { y0: event.clientY, dy: 0, active: true };
+  };
+  const onSheetMove = (event: ReactPointerEvent) => {
+    const drag = dragRef.current;
+    const detail = detailRef.current;
+    if (!drag.active || !detail) {
+      return;
+    }
+    const dy = event.clientY - drag.y0;
+    drag.dy = dy > 0 ? dy : dy * 0.2;
+    detail.style.transform = `translateY(${drag.dy}px)`;
+  };
+  const onSheetUp = () => {
+    const drag = dragRef.current;
+    const detail = detailRef.current;
+    if (!drag.active || !detail) {
+      return;
+    }
+    drag.active = false;
+    if (drag.dy > 120) {
+      close();
+    } else {
+      animate(detail, { transform: 'translateY(0px)' }, { duration: 0.3, ease: OPEN_EASE });
     }
   };
   const closeRef = useRef(close);
@@ -150,9 +196,18 @@ export function WishDetailOverlay({
         aria-label="Закрыть"
         onClick={close}
       />
-      <div ref={detailRef} className={styles.detail}>
+      <div
+        ref={detailRef}
+        className={cn(styles.detail, isMobile && styles.detailMobile)}
+        onPointerDown={onSheetDown}
+        onPointerMove={onSheetMove}
+        onPointerUp={onSheetUp}
+        onPointerCancel={onSheetUp}
+      >
+        {isMobile && <span className={styles.detailHandle} aria-hidden="true" />}
         <div className={styles.detailShot}>
           {wish.imageUrl && <img src={wish.imageUrl} alt="" />}
+          <span className={styles.detailShotLabel}>фото товара</span>
         </div>
         <div className={styles.detailBody}>
           <div className={`eyebrow ${styles.detailEyebrow}`}>
@@ -190,6 +245,7 @@ export function WishDetailOverlay({
               Закрыть
             </Button>
           </div>
+          {isMobile && <span className={styles.detailSwipeHint}>свайп вниз закрывает</span>}
         </div>
       </div>
     </div>

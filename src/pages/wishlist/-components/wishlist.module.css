@@ -337,3 +337,90 @@
   display: flex;
   gap: 14px;
 }
+
+.detailHandle {
+  align-self: center;
+  width: 44px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(200, 222, 255, 0.5);
+  margin: 12px 0 4px;
+}
+.detailShotLabel {
+  display: none;
+}
+.detailSwipeHint {
+  align-self: center;
+  margin-top: 14px;
+  font: 500 9.5px/1 var(--font-mono);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(206, 222, 250, 0.4);
+}
+
+/* ---- mobile: the detail is a full-screen slide-up sheet ---- */
+@media (max-width: 680px) {
+  .overlay {
+    padding: 0;
+  }
+  .detailMobile {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    border-radius: 34px;
+    flex-direction: column;
+    padding: 0 0 calc(22px + env(safe-area-inset-bottom, 0px));
+    will-change: transform;
+  }
+  .detailMobile .detailShot {
+    width: auto;
+    flex: none;
+    height: 42vh;
+    max-height: 320px;
+    margin: 8px 16px 0;
+    border-radius: 22px;
+  }
+  .detailMobile .detailShotLabel {
+    display: block;
+    position: absolute;
+    left: 16px;
+    bottom: 14px;
+    font: 500 9px/1 var(--font-mono);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(219, 230, 248, 0.85);
+  }
+  .detailMobile .detailBody {
+    flex: 1;
+    padding: 18px 20px 0;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  .detailMobile .detailName {
+    font-family: var(--font-display);
+    font-size: 46px;
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+  }
+  .detailMobile .detailPriceRow {
+    flex-wrap: wrap;
+    gap: 8px 18px;
+  }
+  .detailMobile .detailPrice {
+    white-space: nowrap;
+    font-size: 34px;
+  }
+  .detailMobile .detailActions {
+    gap: 12px;
+  }
+  .detailMobile .detailActions > button:first-child {
+    flex: 1;
+    min-height: 52px;
+  }
+  .detailMobile .detailActions > button {
+    min-height: 52px;
+  }
+}
