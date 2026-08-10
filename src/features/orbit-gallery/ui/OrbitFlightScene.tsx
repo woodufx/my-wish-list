@@ -109,7 +109,10 @@ export function OrbitFlightScene({
         event.preventDefault();
       }
     };
-    stage.addEventListener('pointermove', onPointerMove);
+    // pointermove on window so it fires for every real mouse move, regardless of
+    // which element is under the cursor (the front canvas etc. would otherwise
+    // swallow delivery to the stage).
+    window.addEventListener('pointermove', onPointerMove);
     stage.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointerup', endDrag);
     stage.addEventListener('click', onClickCapture, true);
@@ -241,7 +244,7 @@ export function OrbitFlightScene({
 
     return () => {
       cancelAnimationFrame(raf);
-      stage.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointermove', onPointerMove);
       stage.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointerup', endDrag);
       stage.removeEventListener('click', onClickCapture, true);
