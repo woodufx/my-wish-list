@@ -46,23 +46,31 @@ const TWO_PI = Math.PI * 2;
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
-/** How fast the card morph clock chases the scroll. Kept low (as in the design)
- * so the cards follow the snap on their own slow, delayed clock rather than
- * being dragged rigidly across with the scroll. */
-const MORPH_LERP = 0.009;
-
 /** Stage px the orbit rises across the pre-snap drift zone. */
 const DRIFT_LIFT = 150;
-/** Snap durations (seconds): the scroll jumps to the list quickly; the cards
- * catch up afterwards on the slow MORPH_LERP clock. */
+/** Scroll snap durations (seconds): the view jumps to the list / back quickly. */
 const SNAP_FWD_DUR = 0.6;
 const SNAP_BACK_DUR = 0.55;
+/** Card morph durations (seconds), run on a fixed timer that starts with the
+ * snap. Finite (unlike an exponential chase) so trailing cards actually arrive
+ * instead of crawling in with heavy lag; the scroll leads, the cards follow. */
+const MORPH_FWD_DUR = 1.2;
+const MORPH_BACK_DUR = 1;
 
 /** Shared snap state between the rAF loop and the "view list" button. */
 interface SnapState {
   snapping: boolean;
   atList: boolean;
   cooldown: number;
+}
+
+/** A running card-morph timer (orbit 0 <-> list 1). */
+interface MorphState {
+  active: boolean;
+  from: number;
+  to: number;
+  start: number;
+  dur: number;
 }
 
 export function OrbitFlightScene({
@@ -75,6 +83,7 @@ export function OrbitFlightScene({
 }: OrbitFlightSceneProps) {
   const lenisRef = useLenis(true);
   const snapRef = useRef<SnapState>({ snapping: false, atList: false, cooldown: 0 });
+  const morphRef = useRef<MorphState>({ active: false, from: 0, to: 0, start: 0, dur: 0 });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -208,7 +217,6 @@ export function OrbitFlightScene({
       const maxS = container.offsetHeight - window.innerHeight;
       const S = Math.max(0, Math.min(maxS, window.scrollY - container.offsetTop));
       const gpRaw = clamp01((S - SCENE.hold) / SCENE.flight);
-      gp += (gpRaw - gp) * MORPH_LERP * dt;
       const listScroll = Math.max(0, S - (SCENE.hold + SCENE.flight));
 
       // Two-screen snap: past the drift threshold the view jumps to the list;
@@ -216,9 +224,15 @@ export function OrbitFlightScene({
       const listTop = SCENE.hold + SCENE.flight;
       const lenis = lenisRef.current;
       const snap = snapRef.current;
+      const morphAnim = morphRef.current;
       if (lenis && !snap.snapping && now > snap.cooldown) {
         if (!snap.atList && S >= SCENE.hold) {
           snap.snapping = true;
+          morphAnim.active = true;
+          morphAnim.from = gp;
+          morphAnim.to = 1;
+          morphAnim.start = now;
+          morphAnim.dur = MORPH_FWD_DUR;
           lenis.scrollTo(container.offsetTop + listTop, {
             duration: SNAP_FWD_DUR,
             lock: true,
@@ -232,6 +246,11 @@ export function OrbitFlightScene({
           });
         } else if (snap.atList && S < listTop - 8) {
           snap.snapping = true;
+          morphAnim.active = true;
+          morphAnim.from = gp;
+          morphAnim.to = 0;
+          morphAnim.start = now;
+          morphAnim.dur = MORPH_BACK_DUR;
           lenis.scrollTo(container.offsetTop, {
             duration: SNAP_BACK_DUR,
             lock: true,
@@ -244,6 +263,18 @@ export function OrbitFlightScene({
             },
           });
         }
+      }
+
+      // Card morph on its own fixed timer once a snap kicks it off; otherwise it
+      // tracks the scroll directly (0 through the drift zone, 1 in the list).
+      if (morphAnim.active) {
+        const mp = clamp01((now - morphAnim.start) / morphAnim.dur);
+        gp = morphAnim.from + (morphAnim.to - morphAnim.from) * mp;
+        if (mp >= 1) {
+          morphAnim.active = false;
+        }
+      } else {
+        gp = gpRaw;
       }
 
       // the orbit lifts slightly as you scroll the drift zone, so when the morph
@@ -460,6 +491,14 @@ export function OrbitFlightScene({
     const target = container.offsetTop + SCENE.hold + SCENE.flight;
     const lenis = lenisRef.current;
     const snap = snapRef.current;
+    // the button is only reachable from the orbit, so morph from 0
+    morphRef.current = {
+      active: true,
+      from: 0,
+      to: 1,
+      start: performance.now(),
+      dur: MORPH_FWD_DUR,
+    };
     if (lenis) {
       snap.snapping = true;
       lenis.scrollTo(target, {
