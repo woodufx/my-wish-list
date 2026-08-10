@@ -166,24 +166,66 @@ export function OrbitFlightScene({
     let raf = 0;
     let last = performance.now();
 
+    // One pointer path for mouse and touch. A gesture only starts rotating the
+    // orbit once it's clearly horizontal (so vertical swipes still scroll to the
+    // list); then the pointer is captured so the drag survives leaving the stage.
+    let downId = -1;
+    let startX = 0;
+    let startY = 0;
+    let decided = false;
+
+    const onPointerDown = (event: PointerEvent) => {
+      downId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      lastX = event.clientX;
+      decided = false;
+      dragging = false;
+      moved = 0;
+    };
     const onPointerMove = (event: PointerEvent) => {
+      // pointer parallax always tracks the cursor
       const rect = stage.getBoundingClientRect();
       const s = rect.width / SCENE.width;
       mx = (event.clientX - rect.left) / s;
       my = (event.clientY - rect.top) / s;
+
+      if (event.pointerId !== downId) {
+        return;
+      }
+      if (!decided) {
+        const dx = event.clientX - startX;
+        const dy = event.clientY - startY;
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          decided = true;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            dragging = true;
+            try {
+              stage.setPointerCapture(event.pointerId);
+            } catch {
+              // capture unsupported — window listeners still deliver moves
+            }
+          } else {
+            downId = -1; // vertical gesture: let it scroll
+          }
+        }
+      }
       if (dragging) {
         vel += (event.clientX - lastX) * 0.00028;
         moved += Math.abs(event.clientX - lastX);
         lastX = event.clientX;
       }
     };
-    const onPointerDown = (event: PointerEvent) => {
-      dragging = true;
-      moved = 0;
-      lastX = event.clientX;
-    };
-    const endDrag = () => {
+    const endDrag = (event: PointerEvent) => {
+      if (dragging) {
+        try {
+          stage.releasePointerCapture(event.pointerId);
+        } catch {
+          // ignore
+        }
+      }
       dragging = false;
+      downId = -1;
     };
     const onClickCapture = (event: MouseEvent) => {
       if (moved > 6) {
@@ -191,12 +233,13 @@ export function OrbitFlightScene({
         event.preventDefault();
       }
     };
-    // pointermove on window so it fires for every real mouse move, regardless of
-    // which element is under the cursor (the front canvas etc. would otherwise
-    // swallow delivery to the stage).
-    window.addEventListener('pointermove', onPointerMove);
+    // pointermove on window so it fires for every real move (the front canvas
+    // etc. would otherwise swallow delivery to the stage); the capture keeps the
+    // drag alive once it has started.
     stage.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', endDrag);
     stage.addEventListener('click', onClickCapture, true);
 
     const frame = (now: number) => {
@@ -439,9 +482,10 @@ export function OrbitFlightScene({
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener('pointermove', onPointerMove);
       stage.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', endDrag);
+      window.removeEventListener('pointercancel', endDrag);
       stage.removeEventListener('click', onClickCapture, true);
       resetStageSync();
     };

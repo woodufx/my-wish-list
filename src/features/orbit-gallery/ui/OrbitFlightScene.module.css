@@ -24,6 +24,8 @@
   perspective: 1600px;
   color: #fff;
   user-select: none;
+  /* vertical swipes scroll to the list; horizontal drags rotate the orbit (JS) */
+  touch-action: pan-y;
 }
 
 /* ---- 2D pseudo-3D backdrop (drifting light + liquid blobs + glows) ---- */
