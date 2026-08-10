@@ -9,7 +9,8 @@ import {
   type WishDraft,
 } from '@/entities/wish';
 import { WishForm } from '@/features/wish-form';
-import { Button, EmptyState, LiquidBackdrop, Skeleton, TopBar } from '@/shared/ui';
+import { BottomSheet, Button, EmptyState, LiquidBackdrop, Skeleton, TopBar } from '@/shared/ui';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import styles from './admin.module.css';
 
 // NOTE: `WishAdmin` has no reservation fields at the type level, so nothing on
@@ -22,17 +23,41 @@ export function AdminScreen({ slug }: { slug: string }) {
   const save = useSaveWish(slug);
   const remove = useDeleteWish(slug);
   const [editing, setEditing] = useState<Editing>(null);
+  const isMobile = useMediaQuery('(max-width: 680px)');
 
   const wishes = query.data ?? [];
 
-  if (editing) {
-    const isEdit = editing.mode === 'edit';
+  const renderForm = (state: Exclude<Editing, null>) => {
+    const isEdit = state.mode === 'edit';
     const submit = (draft: WishDraft) => {
       save.mutate(
-        { id: isEdit ? editing.wish.id : undefined, draft },
+        { id: isEdit ? state.wish.id : undefined, draft },
         { onSuccess: () => setEditing(null) },
       );
     };
+    return (
+      <WishForm
+        mode={isEdit ? 'edit' : 'create'}
+        initialWish={isEdit ? state.wish : undefined}
+        saving={save.isPending}
+        onSubmit={submit}
+        onCancel={() => {
+          setEditing(null);
+        }}
+        onDelete={
+          isEdit
+            ? () => {
+                remove.mutate(state.wish.id, { onSuccess: () => setEditing(null) });
+              }
+            : undefined
+        }
+      />
+    );
+  };
+
+  // Desktop keeps the full-screen form; mobile drops it into a bottom sheet.
+  if (editing && !isMobile) {
+    const isEdit = editing.mode === 'edit';
     return (
       <Shell>
         <div className={styles.formHead}>
@@ -41,22 +66,7 @@ export function AdminScreen({ slug }: { slug: string }) {
           </span>
         </div>
         <h1 className={styles.formTitle}>{isEdit ? 'ПРАВИМ ЖЕЛАНИЕ' : 'НОВОЕ ЖЕЛАНИЕ'}</h1>
-        <WishForm
-          mode={isEdit ? 'edit' : 'create'}
-          initialWish={isEdit ? editing.wish : undefined}
-          saving={save.isPending}
-          onSubmit={submit}
-          onCancel={() => {
-            setEditing(null);
-          }}
-          onDelete={
-            isEdit
-              ? () => {
-                  remove.mutate(editing.wish.id, { onSuccess: () => setEditing(null) });
-                }
-              : undefined
-          }
-        />
+        {renderForm(editing)}
       </Shell>
     );
   }
@@ -122,6 +132,16 @@ export function AdminScreen({ slug }: { slug: string }) {
           )}
         </div>
       </div>
+
+      <BottomSheet
+        open={isMobile && editing !== null}
+        onClose={() => {
+          setEditing(null);
+        }}
+        title={editing?.mode === 'edit' ? 'Правим желание' : 'Новое желание'}
+      >
+        {editing && renderForm(editing)}
+      </BottomSheet>
     </Shell>
   );
 }
