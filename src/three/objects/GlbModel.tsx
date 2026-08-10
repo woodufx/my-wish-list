@@ -42,6 +42,10 @@ export function GlbModel({
   const { scene } = useGLTF(url);
   const groupRef = useRef<Group>(null);
   const spinRef = useRef(Math.random() * 6);
+  // each object answers the pointer differently — some with it, some against, at
+  // its own gain (mirrors the design's per-object parallax factors).
+  const pfx = useRef((Math.random() < 0.5 ? -1 : 1) * (0.6 + Math.random() * 0.8));
+  const pfy = useRef((Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 0.7));
 
   const { object, unit } = useMemo(() => {
     const clone = scene.clone(true);
@@ -78,14 +82,15 @@ export function GlbModel({
     const raw = position[1] - stageSync.scroll * 0.0011 * speed + span / 2;
     const driftY = (((raw % span) + span) % span) - span / 2;
 
-    group.position.x = position[0] + stageSync.px * parallax * 1.4 + driftDir[0] * flight * 2.4;
+    group.position.x =
+      position[0] + stageSync.px * parallax * 3.2 * pfx.current + driftDir[0] * flight * 2.4;
     group.position.y =
       driftY +
-      Math.sin(t * 0.4 + phase) * 0.2 -
-      stageSync.py * parallax * 1.2 +
+      Math.sin(t * 0.4 + phase) * 0.2 +
+      stageSync.py * parallax * 2.4 * pfy.current +
       driftDir[1] * flight * 2;
-    group.rotation.x = spinRef.current * 0.16 + stageSync.py * 0.24;
-    group.rotation.y = spinRef.current + stageSync.px * 0.3;
+    group.rotation.x = spinRef.current * 0.16 + stageSync.py * 0.5 * pfy.current;
+    group.rotation.y = spinRef.current + stageSync.px * 0.6 * pfx.current;
   });
 
   return (

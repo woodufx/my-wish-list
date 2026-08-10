@@ -36,12 +36,13 @@ export default function FrontScene() {
     >
       <FrameloopController />
       <Lighting />
-      {/* Front plane: the left tag (kept larger) + small hearts. Only a pair is in
-          view on the orbit scene; the rest drift in as you scroll (parallax). */}
+      {/* Front plane: mostly hearts + blobs, one tag. Varied size and depth (z),
+          scattered — only a pair is in view on the orbit scene; the rest drift in
+          as you scroll (parallax). */}
       <GlbModel
         url="/models/tag-silver.glb"
-        position={[-5.0, -1.4, -0.8]}
-        scale={3.0}
+        position={[-5.0, -1.4, -0.9]}
+        scale={2.7}
         color="#3a5aa0"
         roughness={0.26}
         speed={1.0}
@@ -51,36 +52,58 @@ export default function FrontScene() {
       />
       <GlbModel
         url="/models/heart-silver.glb"
-        position={[3.7, 1.1, -0.5]}
-        scale={1.85}
+        position={[3.7, 1.0, -0.4]}
+        scale={2.05}
         color="#3a5aa0"
         roughness={0.28}
-        speed={1.1}
+        speed={1.08}
         parallax={1.4}
         driftDir={[0.5, 0.5]}
         phase={0.4}
       />
       <GlbModel
-        url="/models/heart-silver.glb"
-        position={[3.4, 6.2, -0.6]}
-        scale={1.7}
+        url="/models/blob-silver.glb"
+        position={[4.4, 4.6, -1.2]}
+        scale={1.5}
         color="#33538f"
         roughness={0.3}
-        speed={1.15}
-        parallax={1.4}
+        speed={1.14}
+        parallax={1.5}
         driftDir={[0.5, -0.4]}
         phase={2.0}
       />
       <GlbModel
         url="/models/heart-silver.glb"
-        position={[-3.0, 7.6, -0.7]}
-        scale={1.6}
+        position={[2.6, 6.8, -0.5]}
+        scale={1.35}
+        color="#33538f"
+        roughness={0.3}
+        speed={1.18}
+        parallax={1.4}
+        driftDir={[0.4, -0.4]}
+        phase={3.1}
+      />
+      <GlbModel
+        url="/models/blob-silver.glb"
+        position={[-2.8, 8.0, -1.4]}
+        scale={1.75}
         color="#3a5aa0"
         roughness={0.3}
-        speed={1.12}
+        speed={1.1}
         parallax={1.3}
         driftDir={[-0.3, -0.4]}
-        phase={3.5}
+        phase={0.9}
+      />
+      <GlbModel
+        url="/models/heart-silver.glb"
+        position={[4.9, 9.8, -0.7]}
+        scale={1.55}
+        color="#3a5aa0"
+        roughness={0.3}
+        speed={1.22}
+        parallax={1.5}
+        driftDir={[0.5, -0.5]}
+        phase={4.0}
       />
     </Canvas>
   );
