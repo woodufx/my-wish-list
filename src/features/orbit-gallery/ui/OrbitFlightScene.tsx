@@ -154,6 +154,7 @@ export function OrbitFlightScene({
       c: slot?.querySelector<HTMLElement>('[data-c]') ?? null,
       w: slot?.querySelector<HTMLElement>('[data-w]') ?? null,
       back: slot?.querySelector<HTMLElement>('[data-back]') ?? null,
+      shell: slot?.lastElementChild instanceof HTMLElement ? slot.lastElementChild : null,
     }));
     const s1Nodes = [...stage.querySelectorAll<HTMLElement>('[data-s1]')];
     const parNodes = [...stage.querySelectorAll<HTMLElement>('[data-par]')];
@@ -429,8 +430,8 @@ export function OrbitFlightScene({
           const m = flight.size;
           fw = w + (scene.bookW - w) * m;
           fh = h + (scene.bookH - h) * m;
-          fsc = 1 + (flight.booking ? 0.5 : 0.12) * flight.pos;
-          fz = flight.z * (flight.booking ? 380 : 130);
+          fsc = 1 + (flight.booking ? scene.bookScale : scene.cancelScale) * flight.pos;
+          fz = flight.z * (flight.booking ? scene.bookZ : scene.cancelZ);
           fx = cx + (scene.morphX - cx) * flight.pos;
           fy = cy + (scene.morphY - cy) * flight.pos + flight.bob;
           fyaw = yaw * (1 - flight.pos) + flight.spin;
@@ -486,6 +487,11 @@ export function OrbitFlightScene({
         // faces and reveal the "хочу" branded back, as in the design.
         const spinMod = (((fyaw % 360) + 360) % 360) - 180;
         const isBack = Math.abs(spinMod) < 90;
+        // the backdrop-filter glass rasterizes badly when the card scales/spins
+        // during the fly-out (very blurry on high-DPI phones) — drop it while flying
+        if (face.shell) {
+          face.shell.style.backdropFilter = flight && flight.i === i ? 'none' : '';
+        }
         if (face.back) {
           face.back.style.opacity = isBack ? '1' : '0';
         }

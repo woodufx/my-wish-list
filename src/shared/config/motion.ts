@@ -75,6 +75,11 @@ export interface SceneGeom {
   /** Card size the booking spin shrinks to. */
   bookW: number;
   bookH: number;
+  /** Reservation fly-out depth (z px) and extra scale, per booking vs cancel. */
+  bookZ: number;
+  cancelZ: number;
+  bookScale: number;
+  cancelScale: number;
   /** Panel inner layout: false = image left/text right, true = image top (mobile). */
   vertical: boolean;
 }
@@ -108,6 +113,10 @@ export const SCENE: SceneGeom = {
   driftLift: 150,
   bookW: 236,
   bookH: 340,
+  bookZ: 380,
+  cancelZ: 130,
+  bookScale: 0.5,
+  cancelScale: 0.12,
   vertical: false,
 };
 
@@ -140,6 +149,10 @@ export const SCENE_MOBILE: SceneGeom = {
   driftLift: 90,
   bookW: 186,
   bookH: 264,
+  bookZ: 150,
+  cancelZ: 24,
+  bookScale: 0.18,
+  cancelScale: 0.015,
   vertical: true,
 };
 
