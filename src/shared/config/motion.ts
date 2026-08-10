@@ -45,11 +45,12 @@ export const SCENE = {
   step: 420,
   /** Y of the first panel in the stage. */
   baseY: 560,
-  /** Orbit ellipse radii and centre. */
-  radiusX: 415,
-  radiusY: 52,
-  centerX: 864,
-  centerY: 458,
+  /** Orbit ellipse radii and centre. Wider than the cards are broad so adjacent
+   * cards barely overlap and stop clipping into each other as they rotate. */
+  radiusX: 460,
+  radiusY: 76,
+  centerX: 794,
+  centerY: 428,
   /** Per-card flight stagger (fraction of progress). */
   cardStagger: 0.016,
 } as const;
