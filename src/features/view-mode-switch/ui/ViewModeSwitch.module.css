@@ -32,3 +32,9 @@
   background: rgba(150, 190, 255, 0.28);
   color: #fff;
 }
+
+@media (max-width: 680px) {
+  .option {
+    padding: 9px 13px;
+  }
+}

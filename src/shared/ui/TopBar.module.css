@@ -12,3 +12,12 @@
   align-items: center;
   gap: 30px;
 }
+
+@media (max-width: 680px) {
+  .bar {
+    padding: 16px;
+  }
+  .right {
+    gap: 10px;
+  }
+}
