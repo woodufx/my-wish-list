@@ -22,6 +22,13 @@ const STATUS_TEXT: Record<WishPublic['reservationStatus'], string> = {
 const OPEN_EASE = [0.22, 1, 0.36, 1] as const;
 const CLOSE_EASE = [0.64, 0, 0.78, 0] as const;
 
+interface Rect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
 export function WishDetailOverlay({
   wish,
   pending,
@@ -33,7 +40,46 @@ export function WishDetailOverlay({
   const detailRef = useRef<HTMLDivElement>(null);
   const closingRef = useRef(false);
 
-  // grow the panel out of the clicked card (a manual FLIP), fading the backdrop in
+  // Tween the detail's REAL box (left/top/width/height) between two viewport rects
+  // by interpolating a 0..1 progress and writing the fixed-position styles each
+  // frame, so the container genuinely resizes and its content reflows.
+  const tweenBox = (
+    detail: HTMLElement,
+    from: Rect,
+    to: Rect,
+    fromOpacity: number,
+    toOpacity: number,
+    ease: readonly [number, number, number, number],
+    duration: number,
+    onDone?: () => void,
+  ) => {
+    detail.style.position = 'fixed';
+    detail.style.margin = '0';
+    return animate(0, 1, {
+      duration,
+      ease: [...ease],
+      onUpdate: (p) => {
+        detail.style.left = `${from.left + (to.left - from.left) * p}px`;
+        detail.style.top = `${from.top + (to.top - from.top) * p}px`;
+        detail.style.width = `${from.width + (to.width - from.width) * p}px`;
+        detail.style.height = `${from.height + (to.height - from.height) * p}px`;
+        detail.style.opacity = `${fromOpacity + (toOpacity - fromOpacity) * p}`;
+      },
+      onComplete: onDone,
+    });
+  };
+  const clearBox = (detail: HTMLElement) => {
+    detail.style.position = '';
+    detail.style.margin = '';
+    detail.style.left = '';
+    detail.style.top = '';
+    detail.style.width = '';
+    detail.style.height = '';
+    detail.style.opacity = '';
+  };
+
+  // Open by growing the detail's real width/height from the card to full size, so
+  // the content genuinely reflows (image expands, text settles) — not a transform.
   useLayoutEffect(() => {
     const overlay = overlayRef.current;
     const detail = detailRef.current;
@@ -43,19 +89,11 @@ export function WishDetailOverlay({
     animate(overlay, { opacity: [0, 1] }, { duration: 0.4, ease: 'easeOut' });
     const box = detail.getBoundingClientRect();
     if (originRect && box.width > 0 && box.height > 0) {
-      // start exactly on the card footprint (both axes), then stretch each axis
-      // independently to full size — as if the card itself unfolds.
-      const sx = Math.max(0.02, originRect.width / box.width);
-      const sy = Math.max(0.02, originRect.height / box.height);
-      const dx = originRect.left + originRect.width / 2 - (box.left + box.width / 2);
-      const dy = originRect.top + originRect.height / 2 - (box.top + box.height / 2);
-      animate(
-        detail,
-        { x: [dx, 0], y: [dy, 0], scaleX: [sx, 1], scaleY: [sy, 1], opacity: [0.55, 1] },
-        { duration: 0.56, ease: OPEN_EASE },
-      );
+      tweenBox(detail, originRect, box, 0.6, 1, OPEN_EASE, 0.5, () => {
+        clearBox(detail);
+      });
     } else {
-      animate(detail, { scale: [0.92, 1], opacity: [0, 1] }, { duration: 0.42, ease: 'easeOut' });
+      animate(detail, { opacity: [0, 1] }, { duration: 0.36, ease: 'easeOut' });
     }
   }, [originRect]);
 
@@ -73,22 +111,10 @@ export function WishDetailOverlay({
     animate(overlay, { opacity: 0 }, { duration: 0.34, ease: 'easeIn' });
     const box = detail.getBoundingClientRect();
     if (originRect && box.width > 0 && box.height > 0) {
-      // fold back into the card footprint — the reverse of the open unfold
-      const sx = Math.max(0.02, originRect.width / box.width);
-      const sy = Math.max(0.02, originRect.height / box.height);
-      const dx = originRect.left + originRect.width / 2 - (box.left + box.width / 2);
-      const dy = originRect.top + originRect.height / 2 - (box.top + box.height / 2);
-      animate(
-        detail,
-        { x: dx, y: dy, scaleX: sx, scaleY: sy, opacity: 0.4 },
-        { duration: 0.34, ease: CLOSE_EASE, onComplete: onClose },
-      );
+      // shrink the real box back into the card footprint — the reverse of open
+      tweenBox(detail, box, originRect, 1, 0.35, CLOSE_EASE, 0.34, onClose);
     } else {
-      animate(
-        detail,
-        { scale: 0.94, opacity: 0 },
-        { duration: 0.26, ease: 'easeIn', onComplete: onClose },
-      );
+      animate(detail, { opacity: 0 }, { duration: 0.26, ease: 'easeIn', onComplete: onClose });
     }
   };
   const closeRef = useRef(close);
