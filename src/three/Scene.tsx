@@ -89,6 +89,27 @@ export default function Scene() {
         driftDir={[0.6, 0.5]}
         phase={0.9}
       />
+      {/* moved off the front plane to declutter the right side; drift in later */}
+      <GlbModel
+        url="/models/tag-silver.glb"
+        position={[4.6, 5.2, -3.2]}
+        scale={2.0}
+        color="#1d3060"
+        roughness={0.4}
+        speed={0.5}
+        driftDir={[0.5, -0.4]}
+        phase={2.4}
+      />
+      <GlbModel
+        url="/models/blob-silver.glb"
+        position={[5.2, 8.4, -3.4]}
+        scale={2.3}
+        color="#1a2c52"
+        roughness={0.42}
+        speed={0.46}
+        driftDir={[0.5, -0.5]}
+        phase={3.6}
+      />
     </Canvas>
   );
 }

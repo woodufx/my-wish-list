@@ -36,9 +36,9 @@ export default function FrontScene() {
     >
       <FrameloopController />
       <Lighting />
-      {/* Front plane: equal-ish hearts / blobs / tags, small and kept to the edges
-          so they don't cover the card content. Only a pair is in view on the orbit
-          scene; the rest drift in as you scroll (parallax). */}
+      {/* Front plane: kept sparse so the right side isn't crowded — a pair on the
+          orbit (left tag + right heart), then one object per side drifting in far
+          apart. The rest of the objects live on the back plane. */}
       <GlbModel
         url="/models/tag-silver.glb"
         position={[-5.2, -1.4, -0.9]}
@@ -63,7 +63,7 @@ export default function FrontScene() {
       />
       <GlbModel
         url="/models/blob-silver.glb"
-        position={[-5.2, 5.4, -1.2]}
+        position={[-5.0, 6.5, -1.2]}
         scale={1.5}
         color="#33538f"
         roughness={0.3}
@@ -73,19 +73,8 @@ export default function FrontScene() {
         phase={0.9}
       />
       <GlbModel
-        url="/models/tag-silver.glb"
-        position={[4.8, 4.8, -1.0]}
-        scale={1.5}
-        color="#33538f"
-        roughness={0.3}
-        speed={1.14}
-        parallax={1.5}
-        driftDir={[0.5, -0.4]}
-        phase={2.5}
-      />
-      <GlbModel
         url="/models/heart-silver.glb"
-        position={[4.3, 7.6, -0.9]}
+        position={[4.4, 11.5, -0.9]}
         scale={1.3}
         color="#3a5aa0"
         roughness={0.3}
@@ -93,17 +82,6 @@ export default function FrontScene() {
         parallax={1.4}
         driftDir={[0.4, -0.4]}
         phase={3.1}
-      />
-      <GlbModel
-        url="/models/blob-silver.glb"
-        position={[5.2, 9.6, -1.1]}
-        scale={1.5}
-        color="#3a5aa0"
-        roughness={0.3}
-        speed={1.2}
-        parallax={1.5}
-        driftDir={[0.5, -0.5]}
-        phase={4.0}
       />
     </Canvas>
   );
