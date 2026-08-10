@@ -20,6 +20,7 @@ const STATUS_TEXT: Record<WishPublic['reservationStatus'], string> = {
 };
 
 const OPEN_EASE = [0.22, 1, 0.36, 1] as const;
+const CLOSE_EASE = [0.64, 0, 0.78, 0] as const;
 
 export function WishDetailOverlay({
   wish,
@@ -69,12 +70,26 @@ export function WishDetailOverlay({
       onClose();
       return;
     }
-    animate(overlay, { opacity: 0 }, { duration: 0.26, ease: 'easeIn' });
-    animate(
-      detail,
-      { scale: 0.94, opacity: 0 },
-      { duration: 0.26, ease: 'easeIn', onComplete: onClose },
-    );
+    animate(overlay, { opacity: 0 }, { duration: 0.34, ease: 'easeIn' });
+    const box = detail.getBoundingClientRect();
+    if (originRect && box.width > 0 && box.height > 0) {
+      // fold back into the card footprint — the reverse of the open unfold
+      const sx = Math.max(0.02, originRect.width / box.width);
+      const sy = Math.max(0.02, originRect.height / box.height);
+      const dx = originRect.left + originRect.width / 2 - (box.left + box.width / 2);
+      const dy = originRect.top + originRect.height / 2 - (box.top + box.height / 2);
+      animate(
+        detail,
+        { x: dx, y: dy, scaleX: sx, scaleY: sy, opacity: 0.4 },
+        { duration: 0.34, ease: CLOSE_EASE, onComplete: onClose },
+      );
+    } else {
+      animate(
+        detail,
+        { scale: 0.94, opacity: 0 },
+        { duration: 0.26, ease: 'easeIn', onComplete: onClose },
+      );
+    }
   };
   const closeRef = useRef(close);
   closeRef.current = close;
