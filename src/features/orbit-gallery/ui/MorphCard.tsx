@@ -108,6 +108,7 @@ export function MorphCard({ wish, onOpen, onToggleReservation }: MorphCardProps)
         type="button"
         onClick={onOpen}
         aria-label={`Открыть «${wish.title}»`}
+        data-cursor-label="Открыть"
         style={{
           position: 'absolute',
           inset: 0,

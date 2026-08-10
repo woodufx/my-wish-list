@@ -44,6 +44,7 @@ export function WishCard({
           className={styles.openHit}
           onClick={onOpen}
           aria-label={`Открыть «${wish.title}»`}
+          data-cursor-label="Открыть"
         />
       )}
 

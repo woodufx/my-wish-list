@@ -13,6 +13,7 @@ export function CursorBlob() {
   const reducedMotion = usePrefersReducedMotion();
   const blobRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (reducedMotion) {
@@ -30,7 +31,25 @@ export function CursorBlob() {
       targetX = event.clientX;
       targetY = event.clientY;
     };
+    // reveal a contextual label when hovering an element that declares one
+    const onOver = (event: PointerEvent) => {
+      const { target } = event;
+      const labelled =
+        target instanceof Element ? target.closest<HTMLElement>('[data-cursor-label]') : null;
+      const label = labelRef.current;
+      if (!label) {
+        return;
+      }
+      const text = labelled?.dataset.cursorLabel ?? '';
+      if (text) {
+        label.textContent = text;
+        label.dataset.on = 'true';
+      } else {
+        label.dataset.on = 'false';
+      }
+    };
     window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerover', onOver);
 
     const loop = (now: number) => {
       const dt = Math.min(3, (now - last) / 16.667);
@@ -50,12 +69,16 @@ export function CursorBlob() {
       if (dotRef.current) {
         dotRef.current.style.transform = `translate3d(${targetX - 4}px, ${targetY - 4}px, 0)`;
       }
+      if (labelRef.current) {
+        labelRef.current.style.transform = `translate3d(${targetX + 18}px, ${targetY + 14}px, 0)`;
+      }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
 
     return () => {
       window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerover', onOver);
       cancelAnimationFrame(raf);
     };
   }, [reducedMotion]);
@@ -68,6 +91,7 @@ export function CursorBlob() {
     <>
       <div ref={blobRef} className={styles.blob} aria-hidden="true" />
       <div ref={dotRef} className={styles.dot} aria-hidden="true" />
+      <div ref={labelRef} className={styles.label} data-on="false" aria-hidden="true" />
     </>
   );
 }

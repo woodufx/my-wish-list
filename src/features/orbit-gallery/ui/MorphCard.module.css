@@ -116,10 +116,17 @@
   font-weight: 500;
   border-radius: 999px;
   cursor: pointer;
+  transition:
+    background 0.18s ease-out,
+    border-color 0.18s ease-out,
+    transform 0.12s ease-out;
 }
 .action:hover {
   background: rgba(150, 190, 255, 0.3);
   border-color: rgba(210, 230, 255, 0.7);
+}
+.action:active {
+  transform: scale(0.94);
 }
 
 /* ---- portrait face (orbit) ---- */

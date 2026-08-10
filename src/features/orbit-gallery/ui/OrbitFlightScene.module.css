@@ -468,6 +468,24 @@
   );
   filter: blur(22px);
   opacity: 0.7;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+/* hover lift: the card halo brightens and swells (transform on the slot itself
+ * is driven by the rAF, so the hover cue lives on the glow) */
+.slot:hover .cardGlow {
+  opacity: 1;
+  transform: scale(1.09);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardGlow {
+    transition: opacity 0.3s ease;
+  }
+  .slot:hover .cardGlow {
+    transform: none;
+  }
 }
 
 @keyframes drift1 {

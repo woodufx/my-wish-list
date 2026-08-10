@@ -13,13 +13,28 @@
   transition:
     background 0.18s ease-out,
     border-color 0.18s ease-out,
-    color 0.18s ease-out;
+    color 0.18s ease-out,
+    transform 0.12s ease-out;
   white-space: nowrap;
+}
+
+/* tactile press */
+.button:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition-property: background, border-color, color;
+  }
+  .button:active:not(:disabled) {
+    transform: none;
+  }
 }
 
 .md {
