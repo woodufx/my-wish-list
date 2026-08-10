@@ -34,26 +34,122 @@ export const FLIGHT = {
  * Single-scene scroll choreography (ported from the design's first screen). All
  * distances are in the logical 1440×880 stage's pixels.
  */
-export const SCENE = {
+/** All orbit/flight geometry for one breakpoint (logical stage px). */
+export interface SceneGeom {
+  width: number;
+  height: number;
+  perspective: number;
+  /** Scroll (px) the orbit holds before the flight starts. */
+  hold: number;
+  /** Scroll (px) the orbit→panels flight spans. */
+  flight: number;
+  /** Vertical spacing between stacked panels. */
+  step: number;
+  /** Y of the first panel in the stage. */
+  baseY: number;
+  /** Orbit ellipse radii and centre. */
+  radiusX: number;
+  radiusY: number;
+  centerX: number;
+  centerY: number;
+  /** Per-card flight stagger (fraction of progress). */
+  cardStagger: number;
+  /** Orbit card base size and its depth-scale (osc = oscBase + oscRange * depth). */
+  cardW: number;
+  cardH: number;
+  oscBase: number;
+  oscRange: number;
+  /** Wide panel target size and centre X. */
+  panelW: number;
+  panelH: number;
+  panelX: number;
+  /** Centre the reservation fly-out settles on. */
+  morphX: number;
+  morphY: number;
+  /** Orbit yaw amplitude (deg) and the panel arc swing. */
+  yaw: number;
+  arcBase: number;
+  arcStep: number;
+  /** Stage px the orbit rises across the drift zone. */
+  driftLift: number;
+  /** Card size the booking spin shrinks to. */
+  bookW: number;
+  bookH: number;
+  /** Panel inner layout: false = image left/text right, true = image top (mobile). */
+  vertical: boolean;
+}
+
+/** Desktop / wide screens. */
+export const SCENE: SceneGeom = {
   width: 1440,
   height: 880,
-  /** Scroll (px) the orbit holds before the flight starts. */
+  perspective: 1600,
   hold: 520,
-  /** Scroll (px) the orbit→panels flight spans. */
   flight: 1000,
-  /** Vertical spacing between stacked panels. */
   step: 420,
-  /** Y of the first panel in the stage. */
   baseY: 560,
-  /** Orbit ellipse radii and centre. Wider than the cards are broad so adjacent
-   * cards barely overlap and stop clipping into each other as they rotate. */
   radiusX: 460,
   radiusY: 76,
   centerX: 794,
   centerY: 428,
-  /** Per-card flight stagger (fraction of progress). */
   cardStagger: 0.016,
-} as const;
+  cardW: 236,
+  cardH: 340,
+  oscBase: 0.6,
+  oscRange: 0.5,
+  panelW: 1120,
+  panelH: 320,
+  panelX: 720,
+  morphX: 720,
+  morphY: 440,
+  yaw: 26,
+  arcBase: 110,
+  arcStep: 55,
+  driftLift: 150,
+  bookW: 236,
+  bookH: 340,
+  vertical: false,
+};
+
+/** Phones / narrow screens (portrait stage, smaller orbit, vertical panels). */
+export const SCENE_MOBILE: SceneGeom = {
+  width: 390,
+  height: 844,
+  perspective: 1000,
+  hold: 320,
+  flight: 900,
+  step: 348,
+  baseY: 560,
+  radiusX: 300,
+  radiusY: 22,
+  centerX: 195,
+  centerY: 500,
+  cardStagger: 0.035,
+  cardW: 176,
+  cardH: 250,
+  oscBase: 0.5,
+  oscRange: 0.55,
+  panelW: 350,
+  panelH: 300,
+  panelX: 195,
+  morphX: 195,
+  morphY: 400,
+  yaw: 22,
+  arcBase: 72,
+  arcStep: 26,
+  driftLift: 90,
+  bookW: 186,
+  bookH: 264,
+  vertical: true,
+};
+
+/** Width at/below which the mobile scene geometry is used. */
+export const MOBILE_MAX_WIDTH = 680;
+
+/** Pick the scene geometry for a viewport width. */
+export function pickScene(width: number): SceneGeom {
+  return width <= MOBILE_MAX_WIDTH ? SCENE_MOBILE : SCENE;
+}
 
 export const LENIS = {
   lerp: 0.1,

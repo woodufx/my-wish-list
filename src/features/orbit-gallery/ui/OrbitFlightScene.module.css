@@ -285,6 +285,46 @@
   }
 }
 
+/* ---- mobile chrome ---- */
+@media (max-width: 680px) {
+  .hero {
+    left: 24px;
+    top: 84px;
+    right: 24px;
+  }
+  .heroTitle {
+    font-size: 58px;
+  }
+  .heroNote {
+    max-width: none;
+    font-size: 13px;
+  }
+  .s2 {
+    width: 390px;
+  }
+  .s2Type {
+    height: 108px;
+  }
+  .s2Ghost,
+  .s2Fill,
+  .s2Sheen {
+    font-size: 84px;
+  }
+  .s2Ghost {
+    left: 22px;
+  }
+  .s2Fill,
+  .s2Sheen {
+    left: 24px;
+  }
+  .s2Row {
+    padding: 0 24px;
+  }
+  .railTrack {
+    right: 12px;
+  }
+}
+
 .scrollBtn {
   position: absolute;
   left: 50%;

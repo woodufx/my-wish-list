@@ -373,3 +373,46 @@
   padding: 7px 10px;
   border-radius: 999px;
 }
+
+/* ---- mobile: the wide panel is a vertical card (image on top) ---- */
+@media (max-width: 680px) {
+  .w {
+    width: 350px;
+    flex-direction: column;
+    padding: 16px;
+    gap: 12px;
+  }
+  .w .shot {
+    width: 100%;
+    height: 140px;
+    border-radius: 16px;
+    padding: 10px;
+  }
+  .wBody {
+    gap: 7px;
+    padding: 0;
+  }
+  .wEyebrow {
+    gap: 10px;
+  }
+  .w .name {
+    font-size: 20px;
+    line-height: 1.15;
+  }
+  .w .note {
+    max-width: none;
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+  .wFooter {
+    gap: 10px;
+  }
+  .w .price {
+    font-size: 22px;
+  }
+  .w .action {
+    font-size: 13px;
+    padding: 0 20px;
+    min-height: 44px;
+  }
+}

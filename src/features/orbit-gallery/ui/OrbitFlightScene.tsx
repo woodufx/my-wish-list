@@ -3,7 +3,7 @@ import type { WishPublic } from '@/entities/wish';
 import type { Wishlist } from '@/entities/wishlist';
 import { useLenis } from '@/shared/hooks/useLenis';
 import { cn } from '@/shared/lib/cn';
-import { ORBIT, SCENE } from '@/shared/config/motion';
+import { ORBIT, pickScene, type SceneGeom } from '@/shared/config/motion';
 import { resetStageSync, stageSync } from '@/shared/lib/stage-sync';
 import { FrontModels3D } from '@/three/FrontModels3D';
 import { curveAt, inOut, outCubic, sizeFromSpin, spinCurve } from '../model/flight-math';
@@ -43,6 +43,8 @@ interface OrbitFlightSceneProps {
 }
 
 const TWO_PI = Math.PI * 2;
+/** CSS width of the portrait face (`.c`) — the rAF scales it to the slot width. */
+const PORTRAIT_FACE_W = 236;
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
@@ -50,8 +52,6 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 
  * sooner and settle quicker (less lag behind the snap); lower = more delay. */
 const MORPH_LERP = 0.05;
 
-/** Stage px the orbit rises across the pre-snap drift zone. */
-const DRIFT_LIFT = 150;
 /** Scroll snap durations (seconds) for entering the list / returning to orbit. */
 const SNAP_FWD_DUR = 1.8;
 const SNAP_BACK_DUR = 2.4;
@@ -84,7 +84,10 @@ export function OrbitFlightScene({
   const flightRef = useRef<FlightAnim | null>(null);
   const [scale, setScale] = useState(1);
   const [viewportH, setViewportH] = useState(() =>
-    typeof window === 'undefined' ? SCENE.height : window.innerHeight,
+    typeof window === 'undefined' ? 880 : window.innerHeight,
+  );
+  const [scene, setScene] = useState<SceneGeom>(() =>
+    pickScene(typeof window === 'undefined' ? 1440 : window.innerWidth),
   );
 
   /** Kick off the reservation fly-out on the card at `index`. */
@@ -111,19 +114,21 @@ export function OrbitFlightScene({
 
   const count = wishes.length;
   // Stage-Y the last panel should reach at full scroll (comfortably in view).
-  const listEndY = SCENE.centerY - 40;
-  const listSpan = Math.max(0, SCENE.baseY + Math.max(0, count - 1) * SCENE.step - listEndY);
+  const listEndY = scene.centerY - 40;
+  const listSpan = Math.max(0, scene.baseY + Math.max(0, count - 1) * scene.step - listEndY);
   // Include the viewport height so the *reachable* scroll (maxS = height - viewport)
   // is independent of viewport/zoom — otherwise the last card can't be reached at
   // some zoom levels.
-  const totalHeight = SCENE.hold + SCENE.flight + listSpan + viewportH;
+  const totalHeight = scene.hold + scene.flight + listSpan + viewportH;
 
   useLayoutEffect(() => {
     const fit = () => {
+      const next = pickScene(window.innerWidth);
+      setScene(next);
       // cover the viewport, but cap the upscale so the cards stay crisp (scaling
       // composited card layers up past this gets soft). The 3D + backdrop fill the
       // remaining edges on very large screens.
-      const cover = Math.max(window.innerWidth / SCENE.width, window.innerHeight / SCENE.height);
+      const cover = Math.max(window.innerWidth / next.width, window.innerHeight / next.height);
       setScale(Math.min(cover, 1.15));
       setViewportH(window.innerHeight);
     };
@@ -143,7 +148,7 @@ export function OrbitFlightScene({
 
     const lon = Array.from({ length: count }, (_, i) => (i * TWO_PI) / count);
     const base = TWO_PI / (ORBIT.fullTurnSeconds * 60);
-    const stag = SCENE.cardStagger;
+    const stag = scene.cardStagger;
     const span = 1 - stag * (count - 1);
     const faces = slotRefs.current.map((slot) => ({
       c: slot?.querySelector<HTMLElement>('[data-c]') ?? null,
@@ -158,8 +163,8 @@ export function OrbitFlightScene({
     let gp = 0;
     let pxs = 0;
     let pys = 0;
-    let mx = SCENE.width / 2;
-    let my = SCENE.height / 2;
+    let mx = scene.width / 2;
+    let my = scene.height / 2;
     let dragging = false;
     let lastX = 0;
     let moved = 0;
@@ -186,7 +191,7 @@ export function OrbitFlightScene({
     const onPointerMove = (event: PointerEvent) => {
       // pointer parallax always tracks the cursor
       const rect = stage.getBoundingClientRect();
-      const s = rect.width / SCENE.width;
+      const s = rect.width / scene.width;
       mx = (event.clientX - rect.left) / s;
       my = (event.clientY - rect.top) / s;
 
@@ -248,17 +253,17 @@ export function OrbitFlightScene({
 
       const maxS = container.offsetHeight - window.innerHeight;
       const S = Math.max(0, Math.min(maxS, window.scrollY - container.offsetTop));
-      const gpRaw = clamp01((S - SCENE.hold) / SCENE.flight);
+      const gpRaw = clamp01((S - scene.hold) / scene.flight);
       gp += (gpRaw - gp) * MORPH_LERP * dt;
-      const listScroll = Math.max(0, S - (SCENE.hold + SCENE.flight));
+      const listScroll = Math.max(0, S - (scene.hold + scene.flight));
 
       // Two-screen snap: past the drift threshold the view jumps to the list;
       // above the list top it snaps back to the orbit — no resting between.
-      const listTop = SCENE.hold + SCENE.flight;
+      const listTop = scene.hold + scene.flight;
       const lenis = lenisRef.current;
       const snap = snapRef.current;
       if (lenis && !snap.snapping && now > snap.cooldown) {
-        if (!snap.atList && S >= SCENE.hold) {
+        if (!snap.atList && S >= scene.hold) {
           snap.snapping = true;
           lenis.scrollTo(container.offsetTop + listTop, {
             duration: SNAP_FWD_DUR,
@@ -289,11 +294,11 @@ export function OrbitFlightScene({
 
       // the orbit lifts slightly as you scroll the drift zone, so when the morph
       // begins the cards are already high and appear to fly down into the list
-      const orbitLift = clamp01(S / SCENE.hold) * DRIFT_LIFT;
+      const orbitLift = clamp01(S / scene.hold) * scene.driftLift;
 
       // pointer parallax
-      pxs += (mx / SCENE.width - 0.5 - pxs) * 0.05 * dt;
-      pys += (my / SCENE.height - 0.5 - pys) * 0.05 * dt;
+      pxs += (mx / scene.width - 0.5 - pxs) * 0.05 * dt;
+      pys += (my / scene.height - 0.5 - pys) * 0.05 * dt;
 
       // feed the 3D background layer
       stageSync.scroll = S;
@@ -386,30 +391,31 @@ export function OrbitFlightScene({
         const th = lon[i] + angle;
         const oz = Math.cos(th);
         const d = (oz + 1) / 2;
-        const osc = 0.6 + 0.5 * d;
-        const ox = SCENE.centerX + Math.sin(th) * SCENE.radiusX;
-        const oy = SCENE.centerY + Math.cos(th) * SCENE.radiusY - orbitLift;
-        const ow = 236 * osc;
-        const oh = 340 * osc;
+        const osc = scene.oscBase + scene.oscRange * d;
+        const ox = scene.centerX + Math.sin(th) * scene.radiusX;
+        const oy = scene.centerY + Math.cos(th) * scene.radiusY - orbitLift;
+        const ow = scene.cardW * osc;
+        const oh = scene.cardH * osc;
 
-        const py = SCENE.baseY + i * SCENE.step - listScroll;
-        const pw = 1120;
-        const ph = 320;
-        const px = 720;
+        const py = scene.baseY + i * scene.step - listScroll;
+        const pw = scene.panelW;
+        const ph = scene.panelH;
+        const px = scene.panelX;
 
         const raw = clamp01((gp - i * stag) / span);
         const t = easeInOut(raw);
-        const arc = Math.sin(Math.PI * t) * (i % 2 ? 1 : -1) * (110 + (i % 3) * 55);
+        const arc =
+          Math.sin(Math.PI * t) * (i % 2 ? 1 : -1) * (scene.arcBase + (i % 3) * scene.arcStep);
         const lift = Math.sin(Math.PI * t) * -70;
 
         const cx = ox + (px - ox) * t + arc;
         const cy = oy + (py - oy) * t + lift;
         const w = ow + (pw - ow) * t;
         const h = oh + (ph - oh) * t;
-        const yaw = -Math.sin(th) * 26 * (1 - t);
+        const yaw = -Math.sin(th) * scene.yaw * (1 - t);
         const roll = Math.sin(Math.PI * t) * (i % 2 ? 9 : -9);
         const tilt =
-          t > 0.85 ? Math.max(-9, Math.min(9, (cy - 440) / 46)) * ((t - 0.85) / 0.15) : 0;
+          t > 0.85 ? Math.max(-9, Math.min(9, (cy - scene.morphY) / 46)) * ((t - 0.85) / 0.15) : 0;
 
         // fly-out overrides for the card being reserved: to viewer, spin, return
         let fw = w;
@@ -421,12 +427,12 @@ export function OrbitFlightScene({
         let fsc = 1;
         if (flight && flight.i === i) {
           const m = flight.size;
-          fw = w + (236 - w) * m;
-          fh = h + (340 - h) * m;
+          fw = w + (scene.bookW - w) * m;
+          fh = h + (scene.bookH - h) * m;
           fsc = 1 + (flight.booking ? 0.5 : 0.12) * flight.pos;
           fz = flight.z * (flight.booking ? 380 : 130);
-          fx = cx + (720 - cx) * flight.pos;
-          fy = cy + (440 - cy) * flight.pos + flight.bob;
+          fx = cx + (scene.morphX - cx) * flight.pos;
+          fy = cy + (scene.morphY - cy) * flight.pos + flight.bob;
           fyaw = yaw * (1 - flight.pos) + flight.spin;
         }
 
@@ -434,17 +440,17 @@ export function OrbitFlightScene({
         el.style.height = `${fh.toFixed(1)}px`;
         el.style.transform = `translate3d(${(fx - fw / 2).toFixed(1)}px, ${(fy - fh / 2).toFixed(1)}px, ${fz.toFixed(1)}px) rotateY(${fyaw.toFixed(1)}deg) rotateX(${(-tilt).toFixed(1)}deg) rotate(${roll.toFixed(1)}deg) scale(${fsc.toFixed(3)})`;
 
-        const offscreen = cy < -420 || cy > 1320;
+        const offscreen = cy < -420 || cy > scene.height + 460;
         el.style.visibility = offscreen ? 'hidden' : 'visible';
         el.style.opacity = (
-          t > 0.9 ? Math.max(0.35, 1 - Math.abs(cy - 440) / 900) : 0.1 + 0.9 * d ** 1.15
+          t > 0.9 ? Math.max(0.35, 1 - Math.abs(cy - scene.morphY) / 900) : 0.1 + 0.9 * d ** 1.15
         ).toFixed(3);
         el.style.filter =
           t < 0.5 && d < 0.86
             ? `blur(${((0.86 - d) * 9 * (1 - t * 2)).toFixed(2)}px) brightness(${(0.42 + 0.58 * d).toFixed(2)})`
             : 'none';
         el.style.zIndex = String(
-          t > 0.5 ? Math.round(200 - Math.abs(cy - 440) / 8) : Math.round(d * 100),
+          t > 0.5 ? Math.round(200 - Math.abs(cy - scene.morphY) / 8) : Math.round(d * 100),
         );
         el.style.pointerEvents = offscreen ? 'none' : t > 0.6 || d > 0.72 ? 'auto' : 'none';
 
@@ -470,6 +476,9 @@ export function OrbitFlightScene({
         }
         if (face.c) {
           face.c.style.opacity = isBack ? '0' : clamp01(1 - tw * 1.9).toFixed(3);
+          // scale the fixed-size portrait face (236px in CSS) to the current slot
+          // width so it fits every orbit size (and the smaller mobile cards)
+          face.c.style.transform = `scale(${Math.min(1.5, fw / PORTRAIT_FACE_W).toFixed(3)})`;
         }
         if (face.w) {
           face.w.style.opacity = isBack ? '0' : clamp01(tw * 1.9 - 0.9).toFixed(3);
@@ -489,17 +498,17 @@ export function OrbitFlightScene({
       stage.removeEventListener('click', onClickCapture, true);
       resetStageSync();
     };
-    // Only re-init when the number of cards changes — NOT when their reservation
-    // status changes (that would reset the orbit/scroll and interrupt the fly-out).
-    // lenisRef is a stable ref, listed only to satisfy exhaustive-deps.
-  }, [count, lenisRef]);
+    // Re-init when the card count or the breakpoint geometry changes — NOT when
+    // reservation status changes (that would reset the orbit and interrupt the
+    // fly-out). lenisRef is a stable ref, listed to satisfy exhaustive-deps.
+  }, [count, scene, lenisRef]);
 
   const scrollToList = () => {
     const container = containerRef.current;
     if (!container) {
       return;
     }
-    const target = container.offsetTop + SCENE.hold + SCENE.flight;
+    const target = container.offsetTop + scene.hold + scene.flight;
     const lenis = lenisRef.current;
     const snap = snapRef.current;
     if (lenis) {
@@ -528,7 +537,13 @@ export function OrbitFlightScene({
           <div
             ref={stageRef}
             className={styles.stage}
-            style={{ transform: `translate(-50%, -50%) scale(${scale})` }}
+            data-vertical={scene.vertical ? '' : undefined}
+            style={{
+              width: scene.width,
+              height: scene.height,
+              perspective: `${scene.perspective}px`,
+              transform: `translate(-50%, -50%) scale(${scale})`,
+            }}
           >
             {/* 2D pseudo-3D backdrop */}
             <div className={styles.bands} data-par="0.06" data-sf="0.1">
