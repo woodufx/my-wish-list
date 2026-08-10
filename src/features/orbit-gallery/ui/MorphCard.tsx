@@ -87,6 +87,16 @@ export function MorphCard({ wish, onOpen, onToggleReservation }: MorphCardProps)
         </div>
       </div>
 
+      {/* back face — shown while the card spins during booking */}
+      <div className={styles.back} data-back="">
+        <div className={styles.backHatch} />
+        <div className={styles.backGlow} />
+        <div className={styles.backLogo}>
+          <div className={styles.backMark} />
+          <span className={styles.backWord}>хочу</span>
+        </div>
+      </div>
+
       {isOther && (
         <div className={styles.otherOverlay}>
           <span className={styles.otherTag}>Кто-то уже дарит</span>

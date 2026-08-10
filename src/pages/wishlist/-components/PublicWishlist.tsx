@@ -17,6 +17,7 @@ export function PublicWishlist({ slug }: { slug: string }) {
   const wishesQuery = usePublicWishes(slug);
   const [mode, setMode] = useViewMode();
   const [openId, setOpenId] = useState<string | null>(null);
+  const [openRect, setOpenRect] = useState<DOMRect | null>(null);
   const reducedMotion = usePrefersReducedMotion();
 
   const reserve = useReserveWish(slug);
@@ -52,7 +53,8 @@ export function PublicWishlist({ slug }: { slug: string }) {
   const bookedCount = wishes.filter((wish) => wish.reservationStatus !== 'free').length;
   const openWish = wishes.find((wish) => wish.id === openId) ?? null;
 
-  const openDetail = (wish: WishPublic) => {
+  const openDetail = (wish: WishPublic, rect?: DOMRect | null) => {
+    setOpenRect(rect ?? null);
     setOpenId(wish.id);
   };
 
@@ -111,8 +113,10 @@ export function PublicWishlist({ slug }: { slug: string }) {
         <WishDetailOverlay
           wish={openWish}
           pending={pendingId === openWish.id}
+          originRect={openRect}
           onClose={() => {
             setOpenId(null);
+            setOpenRect(null);
           }}
           onToggleReservation={toggleReservation}
         />

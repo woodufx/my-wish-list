@@ -35,7 +35,7 @@ interface OrbitFlightSceneProps {
   wishlist?: Wishlist;
   booked: number;
   pendingId?: string;
-  onOpen: (wish: WishPublic) => void;
+  onOpen: (wish: WishPublic, rect?: DOMRect | null) => void;
   onToggleReservation: (wish: WishPublic) => void;
 }
 
@@ -116,6 +116,7 @@ export function OrbitFlightScene({
     const faces = slotRefs.current.map((slot) => ({
       c: slot?.querySelector<HTMLElement>('[data-c]') ?? null,
       w: slot?.querySelector<HTMLElement>('[data-w]') ?? null,
+      back: slot?.querySelector<HTMLElement>('[data-back]') ?? null,
     }));
     const s1Nodes = [...stage.querySelectorAll<HTMLElement>('[data-s1]')];
     const parNodes = [...stage.querySelectorAll<HTMLElement>('[data-par]')];
@@ -346,11 +347,18 @@ export function OrbitFlightScene({
         const morph = flight && flight.i === i && flight.booking ? flight.size : 0;
         const tw = t * (1 - morph);
         const face = faces[i];
+        // while the card spins past edge-on its back is toward us: hide the content
+        // faces and reveal the "хочу" branded back, as in the design.
+        const spinMod = (((fyaw % 360) + 360) % 360) - 180;
+        const isBack = Math.abs(spinMod) < 90;
+        if (face.back) {
+          face.back.style.opacity = isBack ? '1' : '0';
+        }
         if (face.c) {
-          face.c.style.opacity = clamp01(1 - tw * 1.9).toFixed(3);
+          face.c.style.opacity = isBack ? '0' : clamp01(1 - tw * 1.9).toFixed(3);
         }
         if (face.w) {
-          face.w.style.opacity = clamp01(tw * 1.9 - 0.9).toFixed(3);
+          face.w.style.opacity = isBack ? '0' : clamp01(tw * 1.9 - 0.9).toFixed(3);
         }
       }
 
@@ -467,7 +475,7 @@ export function OrbitFlightScene({
                 <MorphCard
                   wish={wish}
                   onOpen={() => {
-                    onOpen(wish);
+                    onOpen(wish, slotRefs.current[index]?.getBoundingClientRect());
                   }}
                   onToggleReservation={() => {
                     triggerFlight(index, wish.reservationStatus === 'free');

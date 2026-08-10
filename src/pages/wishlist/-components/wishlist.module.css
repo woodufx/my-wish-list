@@ -159,8 +159,17 @@
   background: rgba(4, 7, 15, 0.66);
   backdrop-filter: blur(16px);
 }
+.overlayBackdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
 .detail {
   position: relative;
+  z-index: 1;
   width: min(1360px, 100%);
   height: min(800px, 90vh);
   border-radius: 32px;

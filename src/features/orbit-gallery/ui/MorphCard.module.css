@@ -252,6 +252,68 @@
   color: rgba(255, 186, 120, 0.9);
 }
 
+/* ---- back face (shown while the card spins during booking) ---- */
+.back {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* the card is spun ~180° while this shows, so counter-flip to read upright */
+  transform: rotateY(180deg);
+  background: linear-gradient(
+    150deg,
+    rgba(150, 190, 255, 0.16),
+    rgba(9, 15, 34, 0.92) 52%,
+    rgba(60, 100, 220, 0.14)
+  );
+  backdrop-filter: blur(26px) saturate(1.2);
+  border: 1px solid rgba(170, 205, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.backHatch {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(160, 200, 255, 0.07) 0 2px,
+    transparent 2px 13px
+  );
+}
+.backGlow {
+  position: absolute;
+  left: -20%;
+  top: -30%;
+  width: 150%;
+  height: 80%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent);
+  transform: rotate(-16deg);
+  filter: blur(18px);
+}
+.backLogo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.backMark {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #cfe2ff, #2f6cff 60%, #ff9c46);
+  box-shadow: 0 0 30px rgba(90, 140, 255, 0.7);
+}
+.backWord {
+  font: 700 13px/1 var(--font-sans);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(226, 238, 255, 0.85);
+}
+
 /* ---- status ---- */
 .otherOverlay {
   position: absolute;

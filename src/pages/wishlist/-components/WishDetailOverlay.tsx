@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { animate } from 'motion/react';
 import { formatPrice, priorityLabel, type WishPublic } from '@/entities/wish';
 import { Button } from '@/shared/ui';
 import styles from './wishlist.module.css';
@@ -6,6 +7,8 @@ import styles from './wishlist.module.css';
 interface WishDetailOverlayProps {
   wish: WishPublic;
   pending?: boolean;
+  /** Screen rect of the card that was opened — the panel grows out of it. */
+  originRect?: DOMRect | null;
   onClose: () => void;
   onToggleReservation: (wish: WishPublic) => void;
 }
@@ -16,30 +19,93 @@ const STATUS_TEXT: Record<WishPublic['reservationStatus'], string> = {
   taken_by_me: 'забронировано вами',
 };
 
+const OPEN_EASE = [0.22, 1, 0.36, 1] as const;
+
 export function WishDetailOverlay({
   wish,
   pending,
+  originRect,
   onClose,
   onToggleReservation,
 }: WishDetailOverlayProps) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const closingRef = useRef(false);
+
+  // grow the panel out of the clicked card (a manual FLIP), fading the backdrop in
+  useLayoutEffect(() => {
+    const overlay = overlayRef.current;
+    const detail = detailRef.current;
+    if (!overlay || !detail) {
+      return;
+    }
+    animate(overlay, { opacity: [0, 1] }, { duration: 0.34, ease: 'easeOut' });
+    const box = detail.getBoundingClientRect();
+    if (originRect && box.width > 0) {
+      const scale = Math.max(0.05, originRect.width / box.width);
+      const dx = originRect.left + originRect.width / 2 - (box.left + box.width / 2);
+      const dy = originRect.top + originRect.height / 2 - (box.top + box.height / 2);
+      animate(
+        detail,
+        { x: [dx, 0], y: [dy, 0], scale: [scale, 1], opacity: [0.35, 1] },
+        { duration: 0.52, ease: OPEN_EASE },
+      );
+    } else {
+      animate(detail, { scale: [0.92, 1], opacity: [0, 1] }, { duration: 0.42, ease: 'easeOut' });
+    }
+  }, [originRect]);
+
+  const close = () => {
+    if (closingRef.current) {
+      return;
+    }
+    closingRef.current = true;
+    const overlay = overlayRef.current;
+    const detail = detailRef.current;
+    if (!overlay || !detail) {
+      onClose();
+      return;
+    }
+    animate(overlay, { opacity: 0 }, { duration: 0.26, ease: 'easeIn' });
+    animate(
+      detail,
+      { scale: 0.94, opacity: 0 },
+      { duration: 0.26, ease: 'easeIn', onComplete: onClose },
+    );
+  };
+  const closeRef = useRef(close);
+  closeRef.current = close;
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose();
+        closeRef.current();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
     };
-  }, [onClose]);
+  }, []);
 
   const isMine = wish.reservationStatus === 'taken_by_me';
   const isOther = wish.reservationStatus === 'taken_by_other';
 
   return (
-    <div className={styles.overlay} role="dialog" aria-modal="true" aria-labelledby="detail-name">
-      <div className={styles.detail}>
+    <div
+      ref={overlayRef}
+      className={styles.overlay}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="detail-name"
+    >
+      <button
+        type="button"
+        className={styles.overlayBackdrop}
+        aria-label="Закрыть"
+        onClick={close}
+      />
+      <div ref={detailRef} className={styles.detail}>
         <div className={styles.detailShot}>
           {wish.imageUrl && <img src={wish.imageUrl} alt="" />}
         </div>
@@ -75,7 +141,7 @@ export function WishDetailOverlay({
                 {isMine ? 'Снять бронь' : 'Забронировать'}
               </Button>
             )}
-            <Button variant="secondary" onClick={onClose}>
+            <Button variant="secondary" onClick={close}>
               Закрыть
             </Button>
           </div>
