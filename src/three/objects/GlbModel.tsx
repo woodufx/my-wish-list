@@ -83,14 +83,14 @@ export function GlbModel({
     const driftY = (((raw % span) + span) % span) - span / 2;
 
     group.position.x =
-      position[0] + stageSync.px * parallax * 3.2 * pfx.current + driftDir[0] * flight * 2.4;
+      position[0] + stageSync.px * parallax * 2.0 * pfx.current + driftDir[0] * flight * 2.4;
     group.position.y =
       driftY +
       Math.sin(t * 0.4 + phase) * 0.2 +
-      stageSync.py * parallax * 2.4 * pfy.current +
+      stageSync.py * parallax * 1.5 * pfy.current +
       driftDir[1] * flight * 2;
-    group.rotation.x = spinRef.current * 0.16 + stageSync.py * 0.5 * pfy.current;
-    group.rotation.y = spinRef.current + stageSync.px * 0.6 * pfx.current;
+    group.rotation.x = spinRef.current * 0.16 + stageSync.py * 0.32 * pfy.current;
+    group.rotation.y = spinRef.current + stageSync.px * 0.4 * pfx.current;
   });
 
   return (
