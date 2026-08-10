@@ -406,13 +406,20 @@
   }
   .wFooter {
     gap: 10px;
+    justify-content: space-between;
   }
   .w .price {
     font-size: 22px;
   }
   .w .action {
     font-size: 13px;
-    padding: 0 20px;
+    padding: 0 18px;
     min-height: 44px;
+    white-space: nowrap;
+  }
+  /* the top-left tag already marks "booked by you" — drop the footer label
+   * so the price and button fit on one row (as in the mobile mockup) */
+  .mineLabel {
+    display: none;
   }
 }
