@@ -48,9 +48,10 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 
 
 /** Stage px the orbit rises across the pre-snap drift zone. */
 const DRIFT_LIFT = 150;
-/** Snap durations (seconds): the orbit→list morph is longer so cards fly in. */
-const SNAP_FWD_DUR = 1.45;
-const SNAP_BACK_DUR = 1.05;
+/** Snap durations (seconds): the orbit→list morph is long and eased so the
+ * cards drift up and unfold into wide panels slowly rather than snapping. */
+const SNAP_FWD_DUR = 2.4;
+const SNAP_BACK_DUR = 1.35;
 
 /** Shared snap state between the rAF loop and the "view list" button. */
 interface SnapState {
