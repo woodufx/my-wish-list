@@ -48,14 +48,13 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 
 
 /** How fast the card morph clock chases the scroll. Higher = the cards start
  * sooner and settle quicker (less lag behind the snap); lower = more delay. */
-const MORPH_LERP = 0.03;
+const MORPH_LERP = 0.05;
 
 /** Stage px the orbit rises across the pre-snap drift zone. */
 const DRIFT_LIFT = 150;
-/** Snap durations (seconds): the scroll jumps to the list quickly; the cards
- * catch up afterwards on the slow MORPH_LERP clock. */
-const SNAP_FWD_DUR = 0.6;
-const SNAP_BACK_DUR = 0.55;
+/** Scroll snap durations (seconds) for entering the list / returning to orbit. */
+const SNAP_FWD_DUR = 1.8;
+const SNAP_BACK_DUR = 2.4;
 
 /** Shared snap state between the rAF loop and the "view list" button. */
 interface SnapState {
