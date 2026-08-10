@@ -1,25 +1,19 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
-import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
-import { canRender3D } from './can-render-3d';
+import { Suspense, lazy } from 'react';
+import { useCapabilityTier } from '@/shared/hooks/useCapabilityTier';
 import styles from './BackgroundScene.module.css';
 
 // three / R3F / drei land in a separate chunk, loaded only when the scene mounts.
 const Scene = lazy(() => import('./Scene'));
 
 /**
- * The fixed, full-screen 3D backdrop sitting under all content. Not mounted at
- * all under reduced motion or on weak devices — the CSS `LiquidBackdrop`
- * gradients remain as the fallback.
+ * The fixed, full-screen 3D backdrop sitting under all content. Mounted only on
+ * the `full` tier — phones/low-power/reduced-motion fall back to the CSS
+ * `LiquidBackdrop` gradients.
  */
 export function BackgroundScene() {
-  const reducedMotion = usePrefersReducedMotion();
-  const [enabled, setEnabled] = useState(false);
+  const tier = useCapabilityTier();
 
-  useEffect(() => {
-    setEnabled(!reducedMotion && canRender3D());
-  }, [reducedMotion]);
-
-  if (!enabled) {
+  if (tier !== 'full') {
     return null;
   }
 

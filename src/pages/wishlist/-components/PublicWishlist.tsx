@@ -3,7 +3,7 @@ import { usePublicWishes, type WishPublic } from '@/entities/wish';
 import { useWishlist } from '@/entities/wishlist';
 import { useCancelReservation, useReserveWish } from '@/features/reserve-wish';
 import { useViewMode, ViewModeSwitch, type ViewMode } from '@/features/view-mode-switch';
-import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
+import { useCapabilityTier } from '@/shared/hooks/useCapabilityTier';
 import { useAssetPreloader } from '@/shared/hooks/useAssetPreloader';
 import {
   Button,
@@ -36,7 +36,8 @@ export function PublicWishlist({ slug }: { slug: string }) {
   const [mode, setMode] = useViewMode();
   const [openId, setOpenId] = useState<string | null>(null);
   const [openRect, setOpenRect] = useState<DOMRect | null>(null);
-  const reducedMotion = usePrefersReducedMotion();
+  const tier = useCapabilityTier();
+  const staticView = tier === 'static';
 
   // Tab switches remount the heavy 3D orbit, which janks — cover the swap with a
   // brief loading veil: fade in, switch behind it, then reveal.
@@ -150,7 +151,7 @@ export function PublicWishlist({ slug }: { slug: string }) {
             onToggleReservation={toggleReservation}
           />
         </div>
-      ) : reducedMotion ? (
+      ) : staticView ? (
         <div className={styles.content}>
           <Hero
             wishlist={wishlist}

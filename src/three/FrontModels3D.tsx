@@ -1,23 +1,17 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
-import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
-import { canRender3D } from './can-render-3d';
+import { Suspense, lazy } from 'react';
+import { useCapabilityTier } from '@/shared/hooks/useCapabilityTier';
 import styles from './FrontModels3D.module.css';
 
 const FrontScene = lazy(() => import('./FrontScene'));
 
 /**
  * The front 3D depth plane, layered OVER the cards (only mounted on the orbit
- * screen). Skipped under reduced motion or on weak devices.
+ * screen). Only on the `full` tier — phones/low-power/reduced-motion skip it.
  */
 export function FrontModels3D() {
-  const reducedMotion = usePrefersReducedMotion();
-  const [enabled, setEnabled] = useState(false);
+  const tier = useCapabilityTier();
 
-  useEffect(() => {
-    setEnabled(!reducedMotion && canRender3D());
-  }, [reducedMotion]);
-
-  if (!enabled) {
+  if (tier !== 'full') {
     return null;
   }
 
