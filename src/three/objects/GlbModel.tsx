@@ -82,15 +82,24 @@ export function GlbModel({
     const raw = position[1] - stageSync.scroll * 0.0011 * speed + span / 2;
     const driftY = (((raw % span) + span) % span) - span / 2;
 
+    // booking wave: a brief shove + turn + pulse when a reservation flies
+    const wave = stageSync.wave;
     group.position.x =
-      position[0] + stageSync.px * parallax * 2.0 * pfx.current + driftDir[0] * flight * 2.4;
+      position[0] +
+      stageSync.px * parallax * 2.0 * pfx.current +
+      driftDir[0] * flight * 2.4 +
+      driftDir[0] * wave * 1.3;
     group.position.y =
       driftY +
       Math.sin(t * 0.4 + phase) * 0.2 +
       stageSync.py * parallax * 1.5 * pfy.current +
-      driftDir[1] * flight * 2;
-    group.rotation.x = spinRef.current * 0.16 + stageSync.py * 0.32 * pfy.current;
-    group.rotation.y = spinRef.current + stageSync.px * 0.4 * pfx.current;
+      driftDir[1] * flight * 2 +
+      driftDir[1] * wave * 1.0;
+    group.rotation.x =
+      spinRef.current * 0.16 + stageSync.py * 0.32 * pfy.current + wave * 0.4 * pfy.current;
+    group.rotation.y =
+      spinRef.current + stageSync.px * 0.4 * pfx.current + wave * 0.6 * pfx.current;
+    group.scale.setScalar(unit * scale * (1 + wave * 0.06));
   });
 
   return (

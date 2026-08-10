@@ -161,6 +161,28 @@
   /* gentle — the cards/orbit fill the screen rather than sitting in a dark box */
   background: radial-gradient(ellipse 96% 96% at 55% 50%, transparent 62%, rgba(2, 4, 9, 0.3) 92%);
 }
+/* reservation light-flash burst */
+.flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1500px;
+  height: 1500px;
+  margin: -750px 0 0 -750px;
+  pointer-events: none;
+  z-index: 44;
+  opacity: 0;
+  mix-blend-mode: plus-lighter;
+  filter: blur(30px);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 196, 120, 0.85),
+    rgba(255, 150, 60, 0.35) 34%,
+    rgba(70, 130, 255, 0.18) 58%,
+    transparent 74%
+  );
+}
+
 .glowA {
   position: absolute;
   left: 1080px;

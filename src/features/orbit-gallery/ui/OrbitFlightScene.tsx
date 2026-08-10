@@ -5,8 +5,29 @@ import { useLenis } from '@/shared/hooks/useLenis';
 import { ORBIT, SCENE } from '@/shared/config/motion';
 import { resetStageSync, stageSync } from '@/shared/lib/stage-sync';
 import { FrontModels3D } from '@/three/FrontModels3D';
+import { curveAt, inOut, outCubic, sizeFromSpin, spinCurve } from '../model/flight-math';
 import { MorphCard } from './MorphCard';
 import styles from './OrbitFlightScene.module.css';
+
+const SPIN_LUT = spinCurve();
+const TURNS = 1080;
+
+/** State for the reservation fly-out currently playing on a single card. */
+interface FlightAnim {
+  i: number;
+  start: number;
+  booking: boolean;
+  out: number;
+  hold: number;
+  back: number;
+  dur: number;
+  spin: number;
+  size: number;
+  pos: number;
+  z: number;
+  bob: number;
+  env: number;
+}
 
 interface OrbitFlightSceneProps {
   wishes: WishPublic[];
@@ -36,7 +57,29 @@ export function OrbitFlightScene({
   const s2Ref = useRef<HTMLDivElement>(null);
   const s2TypeRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
+  const flashRef = useRef<HTMLDivElement>(null);
+  const flightRef = useRef<FlightAnim | null>(null);
   const [scale, setScale] = useState(1);
+
+  /** Kick off the reservation fly-out on the card at `index`. */
+  const triggerFlight = (index: number, booking: boolean) => {
+    const t = booking ? { out: 600, hold: 850, back: 800 } : { out: 320, hold: 240, back: 620 };
+    flightRef.current = {
+      i: index,
+      start: performance.now(),
+      booking,
+      out: t.out,
+      hold: t.hold,
+      back: t.back,
+      dur: t.out + t.hold + t.back,
+      spin: 0,
+      size: 0,
+      pos: 0,
+      z: 0,
+      bob: 0,
+      env: 0,
+    };
+  };
 
   const count = wishes.length;
   const totalHeight = SCENE.hold + SCENE.flight + Math.max(0, count - 1) * SCENE.step + 900;
@@ -177,6 +220,42 @@ export function OrbitFlightScene({
         rail.style.top = `${(p * (track - rail.offsetHeight)).toFixed(1)}px`;
       }
 
+      // reservation fly-out (a single card) + the booking wave that pushes the 3D
+      const flight = flightRef.current;
+      let waveVal = 0;
+      if (flight) {
+        const at = now - flight.start;
+        const p = Math.min(1, at / flight.dur);
+        flight.spin = flight.booking ? TURNS * curveAt(SPIN_LUT, p) : 0;
+        flight.size = flight.booking ? sizeFromSpin(flight.spin, TURNS) : 0;
+        if (at < flight.out) {
+          const e = outCubic(at / flight.out);
+          flight.pos = e;
+          flight.z = e;
+          flight.bob = 0;
+        } else if (at < flight.out + flight.hold) {
+          const hq = (at - flight.out) / flight.hold;
+          flight.pos = 1;
+          flight.z = 1;
+          flight.bob = Math.sin(hq * Math.PI) * 16;
+        } else {
+          const e = inOut(Math.min(1, (at - flight.out - flight.hold) / flight.back));
+          flight.pos = 1 - e;
+          flight.z = 1 - e;
+          flight.bob = (1 - e) * 4;
+        }
+        const burst = (at - flight.out * 0.45) / 260;
+        flight.env = Math.exp(-burst * burst);
+        waveVal = (0.5 - 0.5 * Math.cos(2 * Math.PI * p)) * (flight.booking ? 1 : 0.4);
+        if (at >= flight.dur) {
+          flightRef.current = null;
+        }
+      }
+      stageSync.wave = waveVal;
+      if (flashRef.current) {
+        flashRef.current.style.opacity = flight ? (flight.env * 0.7).toFixed(3) : '0';
+      }
+
       // cards: orbit -> panel morph
       for (let i = 0; i < count; i++) {
         const el = slotRefs.current[i];
@@ -211,9 +290,28 @@ export function OrbitFlightScene({
         const tilt =
           t > 0.85 ? Math.max(-9, Math.min(9, (cy - 440) / 46)) * ((t - 0.85) / 0.15) : 0;
 
-        el.style.width = `${w.toFixed(1)}px`;
-        el.style.height = `${h.toFixed(1)}px`;
-        el.style.transform = `translate3d(${(cx - w / 2).toFixed(1)}px, ${(cy - h / 2).toFixed(1)}px, 0) rotateY(${yaw.toFixed(1)}deg) rotateX(${(-tilt).toFixed(1)}deg) rotate(${roll.toFixed(1)}deg)`;
+        // fly-out overrides for the card being reserved: to viewer, spin, return
+        let fw = w;
+        let fh = h;
+        let fx = cx;
+        let fy = cy;
+        let fyaw = yaw;
+        let fz = 0;
+        let fsc = 1;
+        if (flight && flight.i === i) {
+          const m = flight.size;
+          fw = w + (236 - w) * m;
+          fh = h + (340 - h) * m;
+          fsc = 1 + (flight.booking ? 0.5 : 0.12) * flight.pos;
+          fz = flight.z * (flight.booking ? 380 : 130);
+          fx = cx + (720 - cx) * flight.pos;
+          fy = cy + (440 - cy) * flight.pos + flight.bob;
+          fyaw = yaw * (1 - flight.pos) + flight.spin;
+        }
+
+        el.style.width = `${fw.toFixed(1)}px`;
+        el.style.height = `${fh.toFixed(1)}px`;
+        el.style.transform = `translate3d(${(fx - fw / 2).toFixed(1)}px, ${(fy - fh / 2).toFixed(1)}px, ${fz.toFixed(1)}px) rotateY(${fyaw.toFixed(1)}deg) rotateX(${(-tilt).toFixed(1)}deg) rotate(${roll.toFixed(1)}deg) scale(${fsc.toFixed(3)})`;
 
         const offscreen = cy < -420 || cy > 1320;
         el.style.visibility = offscreen ? 'hidden' : 'visible';
@@ -228,6 +326,14 @@ export function OrbitFlightScene({
           t > 0.5 ? Math.round(200 - Math.abs(cy - 440) / 8) : Math.round(d * 100),
         );
         el.style.pointerEvents = offscreen ? 'none' : t > 0.6 || d > 0.72 ? 'auto' : 'none';
+
+        if (flight && flight.i === i) {
+          el.style.visibility = 'visible';
+          el.style.opacity = '1';
+          el.style.filter = 'none';
+          el.style.zIndex = '220';
+          el.style.pointerEvents = 'none';
+        }
 
         const face = faces[i];
         if (face.c) {
@@ -291,6 +397,7 @@ export function OrbitFlightScene({
             <div className={styles.glowA} data-par="0.62" data-sf="1.15" />
             <div className={styles.glowB} data-par="0.8" data-sf="1.4" />
             <div className={styles.vig} />
+            <div ref={flashRef} className={styles.flash} />
 
             {/* screen-1 chrome */}
             <div className={styles.hero} data-s1="">
@@ -351,6 +458,7 @@ export function OrbitFlightScene({
                     onOpen(wish);
                   }}
                   onToggleReservation={() => {
+                    triggerFlight(index, wish.reservationStatus === 'free');
                     onToggleReservation(wish);
                   }}
                 />

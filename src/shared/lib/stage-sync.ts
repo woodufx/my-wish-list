@@ -11,6 +11,8 @@ export const stageSync = {
   py: 0,
   /** Orbit→panels flight progress, 0..1. */
   flight: 0,
+  /** Reservation impulse, 0..1 — pushes the 3D objects during booking/cancel. */
+  wave: 0,
 };
 
 export function resetStageSync(): void {
@@ -18,4 +20,5 @@ export function resetStageSync(): void {
   stageSync.px = 0;
   stageSync.py = 0;
   stageSync.flight = 0;
+  stageSync.wave = 0;
 }
