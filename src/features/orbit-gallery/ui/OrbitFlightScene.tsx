@@ -61,6 +61,9 @@ export function OrbitFlightScene({
   const flashRef = useRef<HTMLDivElement>(null);
   const flightRef = useRef<FlightAnim | null>(null);
   const [scale, setScale] = useState(1);
+  const [viewportH, setViewportH] = useState(() =>
+    typeof window === 'undefined' ? SCENE.height : window.innerHeight,
+  );
 
   /** Kick off the reservation fly-out on the card at `index`. */
   const triggerFlight = (index: number, booking: boolean) => {
@@ -85,7 +88,13 @@ export function OrbitFlightScene({
   };
 
   const count = wishes.length;
-  const totalHeight = SCENE.hold + SCENE.flight + Math.max(0, count - 1) * SCENE.step + 900;
+  // Stage-Y the last panel should reach at full scroll (comfortably in view).
+  const listEndY = SCENE.centerY - 40;
+  const listSpan = Math.max(0, SCENE.baseY + Math.max(0, count - 1) * SCENE.step - listEndY);
+  // Include the viewport height so the *reachable* scroll (maxS = height - viewport)
+  // is independent of viewport/zoom — otherwise the last card can't be reached at
+  // some zoom levels.
+  const totalHeight = SCENE.hold + SCENE.flight + listSpan + viewportH;
 
   useLayoutEffect(() => {
     const fit = () => {
@@ -94,6 +103,7 @@ export function OrbitFlightScene({
       // remaining edges on very large screens.
       const cover = Math.max(window.innerWidth / SCENE.width, window.innerHeight / SCENE.height);
       setScale(Math.min(cover, 1.15));
+      setViewportH(window.innerHeight);
     };
     fit();
     window.addEventListener('resize', fit);

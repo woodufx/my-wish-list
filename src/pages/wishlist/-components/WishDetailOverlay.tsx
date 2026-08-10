@@ -29,6 +29,45 @@ interface Rect {
   height: number;
 }
 
+// Tween the detail's REAL box (left/top/width/height) between two viewport rects
+// by interpolating a 0..1 progress and writing the fixed-position styles each
+// frame, so the container genuinely resizes and its content reflows.
+function tweenBox(
+  detail: HTMLElement,
+  from: Rect,
+  to: Rect,
+  fromOpacity: number,
+  toOpacity: number,
+  ease: readonly [number, number, number, number],
+  duration: number,
+  onDone?: () => void,
+) {
+  detail.style.position = 'fixed';
+  detail.style.margin = '0';
+  return animate(0, 1, {
+    duration,
+    ease: [...ease],
+    onUpdate: (p) => {
+      detail.style.left = `${from.left + (to.left - from.left) * p}px`;
+      detail.style.top = `${from.top + (to.top - from.top) * p}px`;
+      detail.style.width = `${from.width + (to.width - from.width) * p}px`;
+      detail.style.height = `${from.height + (to.height - from.height) * p}px`;
+      detail.style.opacity = `${fromOpacity + (toOpacity - fromOpacity) * p}`;
+    },
+    onComplete: onDone,
+  });
+}
+
+function clearBox(detail: HTMLElement) {
+  detail.style.position = '';
+  detail.style.margin = '';
+  detail.style.left = '';
+  detail.style.top = '';
+  detail.style.width = '';
+  detail.style.height = '';
+  detail.style.opacity = '';
+}
+
 export function WishDetailOverlay({
   wish,
   pending,
@@ -39,44 +78,6 @@ export function WishDetailOverlay({
   const overlayRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
   const closingRef = useRef(false);
-
-  // Tween the detail's REAL box (left/top/width/height) between two viewport rects
-  // by interpolating a 0..1 progress and writing the fixed-position styles each
-  // frame, so the container genuinely resizes and its content reflows.
-  const tweenBox = (
-    detail: HTMLElement,
-    from: Rect,
-    to: Rect,
-    fromOpacity: number,
-    toOpacity: number,
-    ease: readonly [number, number, number, number],
-    duration: number,
-    onDone?: () => void,
-  ) => {
-    detail.style.position = 'fixed';
-    detail.style.margin = '0';
-    return animate(0, 1, {
-      duration,
-      ease: [...ease],
-      onUpdate: (p) => {
-        detail.style.left = `${from.left + (to.left - from.left) * p}px`;
-        detail.style.top = `${from.top + (to.top - from.top) * p}px`;
-        detail.style.width = `${from.width + (to.width - from.width) * p}px`;
-        detail.style.height = `${from.height + (to.height - from.height) * p}px`;
-        detail.style.opacity = `${fromOpacity + (toOpacity - fromOpacity) * p}`;
-      },
-      onComplete: onDone,
-    });
-  };
-  const clearBox = (detail: HTMLElement) => {
-    detail.style.position = '';
-    detail.style.margin = '';
-    detail.style.left = '';
-    detail.style.top = '';
-    detail.style.width = '';
-    detail.style.height = '';
-    detail.style.opacity = '';
-  };
 
   // Open by growing the detail's real width/height from the card to full size, so
   // the content genuinely reflows (image expands, text settles) — not a transform.
