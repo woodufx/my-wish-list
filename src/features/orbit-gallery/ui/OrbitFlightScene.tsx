@@ -44,7 +44,6 @@ interface OrbitFlightSceneProps {
 
 const TWO_PI = Math.PI * 2;
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
-const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
 /** A CSS-style cubic-bezier easing (x1,y1,x2,y2), solved for y at a given time. */
 function cubicBezier(x1: number, y1: number, x2: number, y2: number): (t: number) => number {
@@ -384,8 +383,11 @@ export function OrbitFlightScene({
         const ph = 320;
         const px = 720;
 
+        // Track the scroll directly (it is already eased): re-easing here would
+        // squeeze the size growth into a brief fast middle. Cards finish deep in
+        // the scroll's soft tail, so a linear map reads as a long, even expansion.
         const raw = clamp01((gp - i * stag) / span);
-        const t = easeInOut(raw);
+        const t = raw;
         const arc = Math.sin(Math.PI * t) * (i % 2 ? 1 : -1) * (110 + (i % 3) * 55);
         const lift = Math.sin(Math.PI * t) * -70;
 
