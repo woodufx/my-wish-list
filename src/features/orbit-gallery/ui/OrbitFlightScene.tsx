@@ -46,6 +46,19 @@ const TWO_PI = Math.PI * 2;
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
+/** Stage px the orbit rises across the pre-snap drift zone. */
+const DRIFT_LIFT = 150;
+/** Snap durations (seconds): the orbit→list morph is longer so cards fly in. */
+const SNAP_FWD_DUR = 1.45;
+const SNAP_BACK_DUR = 1.05;
+
+/** Shared snap state between the rAF loop and the "view list" button. */
+interface SnapState {
+  snapping: boolean;
+  atList: boolean;
+  cooldown: number;
+}
+
 export function OrbitFlightScene({
   wishes,
   wishlist,
@@ -54,7 +67,8 @@ export function OrbitFlightScene({
   onOpen,
   onToggleReservation,
 }: OrbitFlightSceneProps) {
-  useLenis(true);
+  const lenisRef = useLenis(true);
+  const snapRef = useRef<SnapState>({ snapping: false, atList: false, cooldown: 0 });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -191,6 +205,45 @@ export function OrbitFlightScene({
       gp += (gpRaw - gp) * 0.14 * dt;
       const listScroll = Math.max(0, S - (SCENE.hold + SCENE.flight));
 
+      // Two-screen snap: past the drift threshold the view jumps to the list;
+      // above the list top it snaps back to the orbit — no resting between.
+      const listTop = SCENE.hold + SCENE.flight;
+      const lenis = lenisRef.current;
+      const snap = snapRef.current;
+      if (lenis && !snap.snapping && now > snap.cooldown) {
+        if (!snap.atList && S >= SCENE.hold) {
+          snap.snapping = true;
+          lenis.scrollTo(container.offsetTop + listTop, {
+            duration: SNAP_FWD_DUR,
+            lock: true,
+            force: true,
+            easing: easeInOut,
+            onComplete: () => {
+              snap.snapping = false;
+              snap.atList = true;
+              snap.cooldown = performance.now() + 260;
+            },
+          });
+        } else if (snap.atList && S < listTop - 8) {
+          snap.snapping = true;
+          lenis.scrollTo(container.offsetTop, {
+            duration: SNAP_BACK_DUR,
+            lock: true,
+            force: true,
+            easing: easeInOut,
+            onComplete: () => {
+              snap.snapping = false;
+              snap.atList = false;
+              snap.cooldown = performance.now() + 260;
+            },
+          });
+        }
+      }
+
+      // the orbit lifts slightly as you scroll the drift zone, so when the morph
+      // begins the cards are already high and appear to fly down into the list
+      const orbitLift = clamp01(S / SCENE.hold) * DRIFT_LIFT;
+
       // pointer parallax
       pxs += (mx / SCENE.width - 0.5 - pxs) * 0.05 * dt;
       pys += (my / SCENE.height - 0.5 - pys) * 0.05 * dt;
@@ -288,7 +341,7 @@ export function OrbitFlightScene({
         const d = (oz + 1) / 2;
         const osc = 0.6 + 0.5 * d;
         const ox = SCENE.centerX + Math.sin(th) * SCENE.radiusX;
-        const oy = SCENE.centerY + Math.cos(th) * SCENE.radiusY;
+        const oy = SCENE.centerY + Math.cos(th) * SCENE.radiusY - orbitLift;
         const ow = 236 * osc;
         const oh = 340 * osc;
 
@@ -390,15 +443,32 @@ export function OrbitFlightScene({
     };
     // Only re-init when the number of cards changes — NOT when their reservation
     // status changes (that would reset the orbit/scroll and interrupt the fly-out).
-  }, [count]);
+    // lenisRef is a stable ref, listed only to satisfy exhaustive-deps.
+  }, [count, lenisRef]);
 
   const scrollToList = () => {
     const container = containerRef.current;
-    if (container) {
-      window.scrollTo({
-        top: container.offsetTop + SCENE.hold + SCENE.flight + 120,
-        behavior: 'smooth',
+    if (!container) {
+      return;
+    }
+    const target = container.offsetTop + SCENE.hold + SCENE.flight;
+    const lenis = lenisRef.current;
+    const snap = snapRef.current;
+    if (lenis) {
+      snap.snapping = true;
+      lenis.scrollTo(target, {
+        duration: SNAP_FWD_DUR,
+        lock: true,
+        force: true,
+        easing: easeInOut,
+        onComplete: () => {
+          snap.snapping = false;
+          snap.atList = true;
+          snap.cooldown = performance.now() + 260;
+        },
       });
+    } else {
+      window.scrollTo({ top: target, behavior: 'smooth' });
     }
   };
 

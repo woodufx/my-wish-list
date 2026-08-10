@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, type MutableRefObject } from 'react';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,14 +9,18 @@ gsap.registerPlugin(ScrollTrigger);
 /**
  * Enables Lenis inertial scrolling and keeps GSAP ScrollTrigger in sync with it.
  * Disabled (native scroll) when `enabled` is false — e.g. under reduced motion.
+ * Returns a ref to the live instance so callers can drive programmatic snaps.
  */
-export function useLenis(enabled: boolean): void {
+export function useLenis(enabled: boolean): MutableRefObject<Lenis | null> {
+  const ref = useRef<Lenis | null>(null);
+
   useEffect(() => {
     if (!enabled) {
       return undefined;
     }
 
     const lenis = new Lenis({ lerp: LENIS.lerp, wheelMultiplier: LENIS.wheelMultiplier });
+    ref.current = lenis;
     lenis.on('scroll', () => {
       ScrollTrigger.update();
     });
@@ -30,6 +34,9 @@ export function useLenis(enabled: boolean): void {
     return () => {
       gsap.ticker.remove(onTick);
       lenis.destroy();
+      ref.current = null;
     };
   }, [enabled]);
+
+  return ref;
 }
