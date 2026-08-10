@@ -1,0 +1,103 @@
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: #04060b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: opacity, filter;
+}
+.out {
+  opacity: 0;
+  filter: blur(26px);
+  pointer-events: none;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.28;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.glow {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 900px;
+  height: 900px;
+  margin: -450px 0 0 -450px;
+  background: radial-gradient(closest-side, rgba(60, 110, 235, 0.32), transparent 70%);
+  filter: blur(40px);
+}
+
+.col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: loaderPulse 1.9s ease-in-out infinite;
+}
+.mark {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #cfe2ff, #2f6cff 60%, #ff9c46);
+  box-shadow: 0 0 26px rgba(90, 140, 255, 0.7);
+}
+.word {
+  font: 700 15px/1 var(--font-sans);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.track {
+  width: 220px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.bar {
+  height: 100%;
+  background: linear-gradient(90deg, #9ec6ff, #ffb268);
+  transition: width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.label {
+  font: 500 9.5px/1 var(--font-mono);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(206, 222, 250, 0.45);
+}
+
+@keyframes loaderPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    filter: blur(6px);
+  }
+  50% {
+    opacity: 1;
+    filter: blur(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand {
+    animation: none;
+    filter: blur(2px);
+  }
+  .loader {
+    transition: opacity 0.4s ease;
+  }
+}

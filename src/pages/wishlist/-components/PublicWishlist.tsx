@@ -1,16 +1,33 @@
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { usePublicWishes, type WishPublic } from '@/entities/wish';
 import { useWishlist } from '@/entities/wishlist';
 import { useCancelReservation, useReserveWish } from '@/features/reserve-wish';
 import { useViewMode, ViewModeSwitch } from '@/features/view-mode-switch';
 import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
-import { Button, EmptyState, LiquidBackdrop, Skeleton, TopBar } from '@/shared/ui';
+import { useAssetPreloader } from '@/shared/hooks/useAssetPreloader';
+import {
+  Button,
+  EmptyState,
+  GrainOverlay,
+  LiquidBackdrop,
+  LoadingScreen,
+  Skeleton,
+  TopBar,
+} from '@/shared/ui';
 import { OrbitFlightScene } from '@/features/orbit-gallery';
 import { Hero } from './Hero';
 import { ListView } from './ListView';
 import { PanelsView } from './PanelsView';
 import { WishDetailOverlay } from './WishDetailOverlay';
 import styles from './wishlist.module.css';
+
+const MODEL_URLS = [
+  '/models/heart-silver.glb',
+  '/models/tag-silver.glb',
+  '/models/blob-silver.glb',
+  '/models/torus-silver.glb',
+  '/models/knot-silver.glb',
+];
 
 export function PublicWishlist({ slug }: { slug: string }) {
   const wishlistQuery = useWishlist(slug);
@@ -35,6 +52,22 @@ export function PublicWishlist({ slug }: { slug: string }) {
       cancel.mutate(wish.id);
     }
   };
+
+  // Preload every first-screen asset (photos, 3D models, fonts) and hold the
+  // loader — and thus interaction — until it's all ready.
+  const imageUrls = useMemo(
+    () =>
+      (wishesQuery.data ?? [])
+        .map((wish) => wish.imageUrl)
+        .filter((url): url is string => Boolean(url)),
+    [wishesQuery.data],
+  );
+  const assetsEnabled = !wishlistQuery.isPending && !wishesQuery.isPending;
+  const { progress: loadProgress, ready: revealed } = useAssetPreloader({
+    images: imageUrls,
+    models: MODEL_URLS,
+    enabled: assetsEnabled,
+  });
 
   if (wishlistQuery.isError) {
     return (
@@ -80,7 +113,12 @@ export function PublicWishlist({ slug }: { slug: string }) {
         </div>
       ) : mode === 'list' ? (
         <div className={styles.content}>
-          <Hero wishlist={wishlist} total={wishes.length} booked={bookedCount} />
+          <Hero
+            wishlist={wishlist}
+            total={wishes.length}
+            booked={bookedCount}
+            revealed={revealed}
+          />
           <ListView
             wishes={wishes}
             pendingId={pendingId}
@@ -90,7 +128,12 @@ export function PublicWishlist({ slug }: { slug: string }) {
         </div>
       ) : reducedMotion ? (
         <div className={styles.content}>
-          <Hero wishlist={wishlist} total={wishes.length} booked={bookedCount} />
+          <Hero
+            wishlist={wishlist}
+            total={wishes.length}
+            booked={bookedCount}
+            revealed={revealed}
+          />
           <PanelsView
             wishes={wishes}
             pendingId={pendingId}
@@ -104,6 +147,7 @@ export function PublicWishlist({ slug }: { slug: string }) {
           wishlist={wishlist}
           booked={bookedCount}
           pendingId={pendingId}
+          revealed={revealed}
           onOpen={openDetail}
           onToggleReservation={toggleReservation}
         />
@@ -121,6 +165,8 @@ export function PublicWishlist({ slug }: { slug: string }) {
           onToggleReservation={toggleReservation}
         />
       )}
+
+      <LoadingScreen progress={loadProgress} done={revealed} />
     </Shell>
   );
 }
@@ -142,6 +188,7 @@ function Shell({ children, mode, onModeChange }: ShellProps) {
         </Button>
       </TopBar>
       {children}
+      <GrainOverlay />
     </div>
   );
 }

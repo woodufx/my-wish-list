@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { WishPublic } from '@/entities/wish';
 import type { Wishlist } from '@/entities/wishlist';
 import { useLenis } from '@/shared/hooks/useLenis';
+import { cn } from '@/shared/lib/cn';
 import { ORBIT, SCENE } from '@/shared/config/motion';
 import { resetStageSync, stageSync } from '@/shared/lib/stage-sync';
 import { FrontModels3D } from '@/three/FrontModels3D';
@@ -35,6 +36,8 @@ interface OrbitFlightSceneProps {
   wishlist?: Wishlist;
   booked: number;
   pendingId?: string;
+  /** Plays the intro reveal once the loader has dissolved. */
+  revealed?: boolean;
   onOpen: (wish: WishPublic, rect?: DOMRect | null) => void;
   onToggleReservation: (wish: WishPublic) => void;
 }
@@ -47,6 +50,7 @@ export function OrbitFlightScene({
   wishes,
   wishlist,
   booked,
+  revealed,
   onOpen,
   onToggleReservation,
 }: OrbitFlightSceneProps) {
@@ -430,12 +434,14 @@ export function OrbitFlightScene({
             <div ref={flashRef} className={styles.flash} />
 
             {/* screen-1 chrome */}
-            <div className={styles.hero} data-s1="">
-              <h1 className={styles.heroTitle}>
-                СПИСОК
-                <br />
-                ЖЕЛАНИЙ
-              </h1>
+            <div className={cn(styles.hero, revealed && styles.heroIn)} data-s1="">
+              <div className={styles.heroTitleMask}>
+                <h1 className={styles.heroTitle}>
+                  СПИСОК
+                  <br />
+                  ЖЕЛАНИЙ
+                </h1>
+              </div>
               {wishlist && (
                 <>
                   <p className={styles.heroNote}>
@@ -458,7 +464,9 @@ export function OrbitFlightScene({
             {/* screen-2 heading */}
             <div ref={s2Ref} className={styles.s2}>
               <div ref={s2TypeRef} className={styles.s2Type}>
-                <span>{count} ЖЕЛАНИЙ</span>
+                <span className={styles.s2Ghost}>{count} ЖЕЛАНИЙ</span>
+                <span className={styles.s2Fill}>{count} ЖЕЛАНИЙ</span>
+                <span className={styles.s2Sheen}>{count} ЖЕЛАНИЙ</span>
               </div>
               <div className={styles.s2Row}>
                 <span className={styles.s2Label}>Список целиком</span>

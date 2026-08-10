@@ -4,5 +4,7 @@ export { LiquidBackdrop } from './LiquidBackdrop';
 export { Skeleton } from './Skeleton';
 export { Toaster } from './Toaster';
 export { EmptyState } from './EmptyState';
+export { GrainOverlay } from './GrainOverlay/GrainOverlay';
+export { LoadingScreen } from './LoadingScreen/LoadingScreen';
 export { TopBar } from './TopBar';
 export { CursorBlob } from './CursorBlob';
