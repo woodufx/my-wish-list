@@ -20,7 +20,7 @@
 .grain {
   position: absolute;
   inset: 0;
-  opacity: 0.28;
+  opacity: 0.13;
   mix-blend-mode: screen;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
 }
@@ -46,7 +46,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  animation: loaderPulse 1.9s ease-in-out infinite;
+  /* crisp logo (unlike the design's blurred mark) with a gentle breath */
+  animation: loaderPulse 2.1s ease-in-out infinite;
 }
 .mark {
   width: 16px;
@@ -83,19 +84,16 @@
 @keyframes loaderPulse {
   0%,
   100% {
-    opacity: 0.6;
-    filter: blur(6px);
+    opacity: 0.72;
   }
   50% {
     opacity: 1;
-    filter: blur(2px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .brand {
     animation: none;
-    filter: blur(2px);
   }
   .loader {
     transition: opacity 0.4s ease;
