@@ -44,46 +44,19 @@ interface OrbitFlightSceneProps {
 
 const TWO_PI = Math.PI * 2;
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
-/** A CSS-style cubic-bezier easing (x1,y1,x2,y2), solved for y at a given time. */
-function cubicBezier(x1: number, y1: number, x2: number, y2: number): (t: number) => number {
-  const cx = 3 * x1;
-  const bx = 3 * (x2 - x1) - cx;
-  const ax = 1 - cx - bx;
-  const cy = 3 * y1;
-  const by = 3 * (y2 - y1) - cy;
-  const ay = 1 - cy - by;
-  const sampleX = (t: number) => ((ax * t + bx) * t + cx) * t;
-  const sampleY = (t: number) => ((ay * t + by) * t + cy) * t;
-  const slopeX = (t: number) => (3 * ax * t + 2 * bx) * t + cx;
-  return (x: number) => {
-    const clamped = clamp01(x);
-    let t = clamped;
-    for (let i = 0; i < 6; i++) {
-      const dx = sampleX(t) - clamped;
-      if (Math.abs(dx) < 1e-4) {
-        break;
-      }
-      const d = slopeX(t);
-      if (Math.abs(d) < 1e-6) {
-        break;
-      }
-      t -= dx / d;
-    }
-    return sampleY(t);
-  };
-}
-
-/** Morph easing: eases in without freezing, keeps an even middle (cards don't
- * bolt across), and settles softly without dragging. */
-const EASE_MORPH = cubicBezier(0.3, 0.04, 0.28, 1);
+/** How fast the card morph clock chases the scroll. Kept low (as in the design)
+ * so the cards follow the snap on their own slow, delayed clock rather than
+ * being dragged rigidly across with the scroll. */
+const MORPH_LERP = 0.009;
 
 /** Stage px the orbit rises across the pre-snap drift zone. */
 const DRIFT_LIFT = 150;
-/** Snap durations (seconds): the orbit→list morph is long and eased so the
- * cards drift up and unfold into wide panels slowly rather than snapping. */
-const SNAP_FWD_DUR = 3.1;
-const SNAP_BACK_DUR = 2.3;
+/** Snap durations (seconds): the scroll jumps to the list quickly; the cards
+ * catch up afterwards on the slow MORPH_LERP clock. */
+const SNAP_FWD_DUR = 0.6;
+const SNAP_BACK_DUR = 0.55;
 
 /** Shared snap state between the rAF loop and the "view list" button. */
 interface SnapState {
@@ -235,7 +208,7 @@ export function OrbitFlightScene({
       const maxS = container.offsetHeight - window.innerHeight;
       const S = Math.max(0, Math.min(maxS, window.scrollY - container.offsetTop));
       const gpRaw = clamp01((S - SCENE.hold) / SCENE.flight);
-      gp += (gpRaw - gp) * 0.14 * dt;
+      gp += (gpRaw - gp) * MORPH_LERP * dt;
       const listScroll = Math.max(0, S - (SCENE.hold + SCENE.flight));
 
       // Two-screen snap: past the drift threshold the view jumps to the list;
@@ -250,7 +223,7 @@ export function OrbitFlightScene({
             duration: SNAP_FWD_DUR,
             lock: true,
             force: true,
-            easing: EASE_MORPH,
+            easing: easeInOut,
             onComplete: () => {
               snap.snapping = false;
               snap.atList = true;
@@ -263,7 +236,7 @@ export function OrbitFlightScene({
             duration: SNAP_BACK_DUR,
             lock: true,
             force: true,
-            easing: EASE_MORPH,
+            easing: easeInOut,
             onComplete: () => {
               snap.snapping = false;
               snap.atList = false;
@@ -383,11 +356,8 @@ export function OrbitFlightScene({
         const ph = 320;
         const px = 720;
 
-        // Track the scroll directly (it is already eased): re-easing here would
-        // squeeze the size growth into a brief fast middle. Cards finish deep in
-        // the scroll's soft tail, so a linear map reads as a long, even expansion.
         const raw = clamp01((gp - i * stag) / span);
-        const t = raw;
+        const t = easeInOut(raw);
         const arc = Math.sin(Math.PI * t) * (i % 2 ? 1 : -1) * (110 + (i % 3) * 55);
         const lift = Math.sin(Math.PI * t) * -70;
 
@@ -496,7 +466,7 @@ export function OrbitFlightScene({
         duration: SNAP_FWD_DUR,
         lock: true,
         force: true,
-        easing: EASE_MORPH,
+        easing: easeInOut,
         onComplete: () => {
           snap.snapping = false;
           snap.atList = true;

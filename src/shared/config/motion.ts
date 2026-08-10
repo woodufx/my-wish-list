@@ -51,7 +51,7 @@ export const SCENE = {
   centerX: 864,
   centerY: 458,
   /** Per-card flight stagger (fraction of progress). */
-  cardStagger: 0.008,
+  cardStagger: 0.024,
 } as const;
 
 export const LENIS = {

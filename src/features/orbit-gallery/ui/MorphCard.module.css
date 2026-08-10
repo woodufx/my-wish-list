@@ -179,9 +179,15 @@
 }
 
 /* ---- wide face (panel) ---- */
+/* Laid out at the final panel width (1120px) at all times and clipped by the
+ * shell, so the text is revealed as the card grows instead of re-wrapping
+ * (2 lines -> 1) at every intermediate width. */
 .w {
   position: absolute;
-  inset: 0;
+  left: 0;
+  top: 0;
+  width: 1120px;
+  height: 100%;
   padding: 26px;
   box-sizing: border-box;
   display: flex;
