@@ -36,8 +36,8 @@ export default function FrontScene() {
     >
       <FrameloopController />
       <Lighting />
-      {/* Left stays larger (looks good there). Right side gets small objects so
-          they don't cover the scroll rail at the right edge. */}
+      {/* Front plane: the left tag (kept larger) + small hearts. Only a pair is in
+          view on the orbit scene; the rest drift in as you scroll (parallax). */}
       <GlbModel
         url="/models/tag-silver.glb"
         position={[-5.0, -1.4, -0.8]}
@@ -50,26 +50,37 @@ export default function FrontScene() {
         phase={1.2}
       />
       <GlbModel
-        url="/models/blob-silver.glb"
-        position={[3.6, 2.1, -0.5]}
-        scale={1.5}
-        color="#33538f"
-        roughness={0.3}
-        speed={1.12}
+        url="/models/heart-silver.glb"
+        position={[3.7, 1.1, -0.5]}
+        scale={1.85}
+        color="#3a5aa0"
+        roughness={0.28}
+        speed={1.1}
         parallax={1.4}
         driftDir={[0.5, 0.5]}
         phase={0.4}
       />
       <GlbModel
-        url="/models/knot-silver.glb"
-        position={[3.3, -2.3, -0.7]}
-        scale={1.3}
+        url="/models/heart-silver.glb"
+        position={[3.4, 6.2, -0.6]}
+        scale={1.7}
+        color="#33538f"
+        roughness={0.3}
+        speed={1.15}
+        parallax={1.4}
+        driftDir={[0.5, -0.4]}
+        phase={2.0}
+      />
+      <GlbModel
+        url="/models/heart-silver.glb"
+        position={[-3.0, 7.6, -0.7]}
+        scale={1.6}
         color="#3a5aa0"
         roughness={0.3}
-        speed={1.16}
-        parallax={1.5}
-        driftDir={[0.5, -0.5]}
-        phase={2.6}
+        speed={1.12}
+        parallax={1.3}
+        driftDir={[-0.3, -0.4]}
+        phase={3.5}
       />
     </Canvas>
   );
