@@ -313,12 +313,12 @@
   .s2Type .s2Sheen {
     font-size: 62px;
   }
-  .s2Ghost {
+  .s2Type .s2Ghost {
     left: 14px;
     top: 6px;
   }
-  .s2Fill,
-  .s2Sheen {
+  .s2Type .s2Fill,
+  .s2Type .s2Sheen {
     left: 16px;
   }
   .s2Row {
