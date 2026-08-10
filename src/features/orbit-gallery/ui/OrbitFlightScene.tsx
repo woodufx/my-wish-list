@@ -75,15 +75,16 @@ function cubicBezier(x1: number, y1: number, x2: number, y2: number): (t: number
   };
 }
 
-/** Morph easing: slow start, quick middle, very long/gentle settle at the end. */
-const EASE_MORPH = cubicBezier(0.6, 0, 0.16, 1);
+/** Morph easing: eases in without freezing, keeps an even middle (cards don't
+ * bolt across), and settles softly without dragging. */
+const EASE_MORPH = cubicBezier(0.3, 0.04, 0.28, 1);
 
 /** Stage px the orbit rises across the pre-snap drift zone. */
 const DRIFT_LIFT = 150;
 /** Snap durations (seconds): the orbit→list morph is long and eased so the
  * cards drift up and unfold into wide panels slowly rather than snapping. */
-const SNAP_FWD_DUR = 2.4;
-const SNAP_BACK_DUR = 1.35;
+const SNAP_FWD_DUR = 3.1;
+const SNAP_BACK_DUR = 2.3;
 
 /** Shared snap state between the rAF loop and the "view list" button. */
 interface SnapState {
@@ -263,7 +264,7 @@ export function OrbitFlightScene({
             duration: SNAP_BACK_DUR,
             lock: true,
             force: true,
-            easing: easeInOut,
+            easing: EASE_MORPH,
             onComplete: () => {
               snap.snapping = false;
               snap.atList = false;
