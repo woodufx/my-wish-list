@@ -12,13 +12,18 @@ export type CapabilityTier = 'full' | 'lite' | 'static';
 /** Width below which we treat the device as a small/touch screen. */
 const SMALL_WIDTH = 900;
 
-function hasWebGL(): boolean {
-  try {
-    const canvas = document.createElement('canvas');
-    return Boolean(canvas.getContext('webgl2') ?? canvas.getContext('webgl'));
-  } catch {
-    return false;
+let webglCache: boolean | undefined;
+/** Whether WebGL is available (cached — the probe allocates a context). */
+export function hasWebGL(): boolean {
+  if (webglCache === undefined) {
+    try {
+      const canvas = document.createElement('canvas');
+      webglCache = Boolean(canvas.getContext('webgl2') ?? canvas.getContext('webgl'));
+    } catch {
+      webglCache = false;
+    }
   }
+  return webglCache;
 }
 
 function computeTier(reducedMotion: boolean): CapabilityTier {
