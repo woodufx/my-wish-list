@@ -142,11 +142,38 @@
   color: #fff;
 }
 
+/* mobile: a full-width button that opens the filters bottom sheet */
+.filterTrigger {
+  display: none;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 236px);
   gap: 28px;
   justify-content: space-between;
+}
+
+@media (max-width: 680px) {
+  .filterTrigger {
+    display: block;
+    width: 100%;
+    margin: 4px 0 22px;
+    min-height: 48px;
+    border-radius: 16px;
+    border: 1px solid rgba(180, 212, 255, 0.3);
+    background: rgba(120, 165, 255, 0.12);
+    color: #eaf1ff;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    justify-content: stretch;
+  }
 }
 
 .panels {

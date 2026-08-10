@@ -63,7 +63,11 @@ export function CursorBlob() {
       }
     };
     // reveal a contextual label when hovering an element that declares one
+    // (mouse only — touch has no hover to trail)
     const onOver = (event: PointerEvent) => {
+      if (coarse) {
+        return;
+      }
       const { target } = event;
       const labelled =
         target instanceof Element ? target.closest<HTMLElement>('[data-cursor-label]') : null;

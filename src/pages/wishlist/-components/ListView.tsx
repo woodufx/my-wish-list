@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { PRIORITY_ORDER, WishCard, type WishPriority, type WishPublic } from '@/entities/wish';
-import { EmptyState } from '@/shared/ui';
+import { BottomSheet, EmptyState } from '@/shared/ui';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { cn } from '@/shared/lib/cn';
 import styles from './wishlist.module.css';
 
@@ -38,6 +39,10 @@ export function ListView({ wishes, pendingId, onOpen, onToggleReservation }: Lis
   const [priority, setPriority] = useState<PriorityFilter>('all');
   const [status, setStatus] = useState<StatusFilter>('all');
   const [sort, setSort] = useState<Sort>('priority');
+  const isMobile = useMediaQuery('(max-width: 680px)');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const activeCount =
+    (priority === 'all' ? 0 : 1) + (status === 'all' ? 0 : 1) + (sort === 'priority' ? 0 : 1);
 
   const visible = useMemo(() => {
     const filtered = wishes.filter((wish) => {
@@ -65,27 +70,49 @@ export function ListView({ wishes, pendingId, onOpen, onToggleReservation }: Lis
     return sorted;
   }, [wishes, priority, status, sort]);
 
+  const filters = (
+    <>
+      <div className={styles.filters}>
+        <FilterGroup
+          label="Приоритет"
+          options={PRIORITY_FILTERS}
+          value={priority}
+          onChange={setPriority}
+        />
+        <FilterGroup label="Статус" options={STATUS_FILTERS} value={status} onChange={setStatus} />
+      </div>
+      <div className={styles.filters}>
+        <FilterGroup label="Сортировка" options={SORTS} value={sort} onChange={setSort} />
+      </div>
+    </>
+  );
+
   return (
     <div>
-      <div className={styles.toolbar}>
-        <div className={styles.filters}>
-          <FilterGroup
-            label="Приоритет"
-            options={PRIORITY_FILTERS}
-            value={priority}
-            onChange={setPriority}
-          />
-          <FilterGroup
-            label="Статус"
-            options={STATUS_FILTERS}
-            value={status}
-            onChange={setStatus}
-          />
-        </div>
-        <div className={styles.filters}>
-          <FilterGroup label="Сортировка" options={SORTS} value={sort} onChange={setSort} />
-        </div>
-      </div>
+      {isMobile ? (
+        <>
+          <button
+            type="button"
+            className={styles.filterTrigger}
+            onClick={() => {
+              setFiltersOpen(true);
+            }}
+          >
+            Фильтры и сортировка{activeCount > 0 ? ` · ${activeCount}` : ''}
+          </button>
+          <BottomSheet
+            open={filtersOpen}
+            onClose={() => {
+              setFiltersOpen(false);
+            }}
+            title="Фильтры и сортировка"
+          >
+            {filters}
+          </BottomSheet>
+        </>
+      ) : (
+        <div className={styles.toolbar}>{filters}</div>
+      )}
 
       {visible.length === 0 ? (
         <EmptyState
