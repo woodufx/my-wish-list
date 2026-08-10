@@ -1,0 +1,65 @@
+.veil {
+  position: fixed;
+  inset: 0;
+  /* above content, detail (240) and toaster (260); below the intro loader (300) */
+  z-index: 270;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #04060b;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.veil.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: veilPulse 1.2s ease-in-out infinite;
+}
+.mark {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #cfe2ff, #2f6cff 60%, #ff9c46);
+  box-shadow: 0 0 26px rgba(90, 140, 255, 0.7);
+}
+.word {
+  font: 700 15px/1 var(--font-sans);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+@keyframes veilPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand {
+    animation: none;
+  }
+  .veil {
+    transition: opacity 0.18s ease;
+  }
+}

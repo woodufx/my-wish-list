@@ -6,5 +6,6 @@ export { Toaster } from './Toaster';
 export { EmptyState } from './EmptyState';
 export { GrainOverlay } from './GrainOverlay/GrainOverlay';
 export { LoadingScreen } from './LoadingScreen/LoadingScreen';
+export { ScreenVeil } from './ScreenVeil/ScreenVeil';
 export { TopBar } from './TopBar';
 export { CursorBlob } from './CursorBlob';

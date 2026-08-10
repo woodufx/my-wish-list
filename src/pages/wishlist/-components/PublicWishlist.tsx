@@ -1,8 +1,8 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
 import { usePublicWishes, type WishPublic } from '@/entities/wish';
 import { useWishlist } from '@/entities/wishlist';
 import { useCancelReservation, useReserveWish } from '@/features/reserve-wish';
-import { useViewMode, ViewModeSwitch } from '@/features/view-mode-switch';
+import { useViewMode, ViewModeSwitch, type ViewMode } from '@/features/view-mode-switch';
 import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
 import { useAssetPreloader } from '@/shared/hooks/useAssetPreloader';
 import {
@@ -11,6 +11,7 @@ import {
   GrainOverlay,
   LiquidBackdrop,
   LoadingScreen,
+  ScreenVeil,
   Skeleton,
   TopBar,
 } from '@/shared/ui';
@@ -36,6 +37,29 @@ export function PublicWishlist({ slug }: { slug: string }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [openRect, setOpenRect] = useState<DOMRect | null>(null);
   const reducedMotion = usePrefersReducedMotion();
+
+  // Tab switches remount the heavy 3D orbit, which janks — cover the swap with a
+  // brief loading veil: fade in, switch behind it, then reveal.
+  const [switching, setSwitching] = useState(false);
+  const switchTimers = useRef<number[]>([]);
+  const changeMode = useCallback(
+    (next: ViewMode) => {
+      if (next === mode || switching) {
+        return;
+      }
+      setSwitching(true);
+      switchTimers.current.forEach(clearTimeout);
+      switchTimers.current = [
+        window.setTimeout(() => {
+          setMode(next);
+        }, 320),
+        window.setTimeout(() => {
+          setSwitching(false);
+        }, 820),
+      ];
+    },
+    [mode, switching, setMode],
+  );
 
   const reserve = useReserveWish(slug);
   const cancel = useCancelReservation(slug);
@@ -92,7 +116,7 @@ export function PublicWishlist({ slug }: { slug: string }) {
   };
 
   return (
-    <Shell mode={mode} onModeChange={setMode}>
+    <Shell mode={mode} onModeChange={changeMode} switching={switching}>
       {wishesQuery.isPending ? (
         <div className={styles.content}>
           <Hero wishlist={wishlist} total={0} booked={0} />
@@ -173,11 +197,12 @@ export function PublicWishlist({ slug }: { slug: string }) {
 
 interface ShellProps {
   children: ReactNode;
-  mode?: 'orbit' | 'list';
-  onModeChange?: (mode: 'orbit' | 'list') => void;
+  mode?: ViewMode;
+  onModeChange?: (mode: ViewMode) => void;
+  switching?: boolean;
 }
 
-function Shell({ children, mode, onModeChange }: ShellProps) {
+function Shell({ children, mode, onModeChange, switching = false }: ShellProps) {
   return (
     <div className={styles.screen}>
       <LiquidBackdrop />
@@ -188,6 +213,7 @@ function Shell({ children, mode, onModeChange }: ShellProps) {
         </Button>
       </TopBar>
       {children}
+      <ScreenVeil show={switching} />
       <GrainOverlay />
     </div>
   );
