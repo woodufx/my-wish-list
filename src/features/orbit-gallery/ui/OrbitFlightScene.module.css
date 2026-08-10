@@ -307,9 +307,10 @@
   .s2Type {
     height: 86px;
   }
-  .s2Ghost,
-  .s2Fill,
-  .s2Sheen {
+  /* out-specify the base `.s2Type span` font-size so mobile actually applies */
+  .s2Type .s2Ghost,
+  .s2Type .s2Fill,
+  .s2Type .s2Sheen {
     font-size: 62px;
   }
   .s2Ghost {
