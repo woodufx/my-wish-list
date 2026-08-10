@@ -46,6 +46,38 @@ const TWO_PI = Math.PI * 2;
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
+/** A CSS-style cubic-bezier easing (x1,y1,x2,y2), solved for y at a given time. */
+function cubicBezier(x1: number, y1: number, x2: number, y2: number): (t: number) => number {
+  const cx = 3 * x1;
+  const bx = 3 * (x2 - x1) - cx;
+  const ax = 1 - cx - bx;
+  const cy = 3 * y1;
+  const by = 3 * (y2 - y1) - cy;
+  const ay = 1 - cy - by;
+  const sampleX = (t: number) => ((ax * t + bx) * t + cx) * t;
+  const sampleY = (t: number) => ((ay * t + by) * t + cy) * t;
+  const slopeX = (t: number) => (3 * ax * t + 2 * bx) * t + cx;
+  return (x: number) => {
+    const clamped = clamp01(x);
+    let t = clamped;
+    for (let i = 0; i < 6; i++) {
+      const dx = sampleX(t) - clamped;
+      if (Math.abs(dx) < 1e-4) {
+        break;
+      }
+      const d = slopeX(t);
+      if (Math.abs(d) < 1e-6) {
+        break;
+      }
+      t -= dx / d;
+    }
+    return sampleY(t);
+  };
+}
+
+/** Morph easing: slow start, quick middle, very long/gentle settle at the end. */
+const EASE_MORPH = cubicBezier(0.6, 0, 0.16, 1);
+
 /** Stage px the orbit rises across the pre-snap drift zone. */
 const DRIFT_LIFT = 150;
 /** Snap durations (seconds): the orbit→list morph is long and eased so the
@@ -218,7 +250,7 @@ export function OrbitFlightScene({
             duration: SNAP_FWD_DUR,
             lock: true,
             force: true,
-            easing: easeInOut,
+            easing: EASE_MORPH,
             onComplete: () => {
               snap.snapping = false;
               snap.atList = true;
@@ -461,7 +493,7 @@ export function OrbitFlightScene({
         duration: SNAP_FWD_DUR,
         lock: true,
         force: true,
-        easing: easeInOut,
+        easing: EASE_MORPH,
         onComplete: () => {
           snap.snapping = false;
           snap.atList = true;
