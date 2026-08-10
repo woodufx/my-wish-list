@@ -211,7 +211,8 @@
   position: absolute;
   left: 52px;
   top: 150px;
-  z-index: 50;
+  /* above the orbit cards (which peak at ~100) so the orbit passes behind the title */
+  z-index: 110;
   pointer-events: none;
 }
 .heroTitleMask {
