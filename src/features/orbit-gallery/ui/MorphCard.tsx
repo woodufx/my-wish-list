@@ -39,7 +39,14 @@ export function MorphCard({ wish, onOpen, onToggleReservation }: MorphCardProps)
           <div className={styles.cFooter}>
             <span className={styles.price}>{price}</span>
             {!isOther && (
-              <button type="button" className={styles.action} onClick={onToggleReservation}>
+              <button
+                type="button"
+                className={styles.action}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onToggleReservation();
+                }}
+              >
                 {isMine ? 'Снять' : 'Забронировать'}
               </button>
             )}
@@ -64,7 +71,14 @@ export function MorphCard({ wish, onOpen, onToggleReservation }: MorphCardProps)
           <div className={styles.wFooter}>
             <span className={styles.price}>{price}</span>
             {!isOther && (
-              <button type="button" className={styles.action} onClick={onToggleReservation}>
+              <button
+                type="button"
+                className={styles.action}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onToggleReservation();
+                }}
+              >
                 {isMine ? 'Снять бронь' : 'Забронировать'}
               </button>
             )}

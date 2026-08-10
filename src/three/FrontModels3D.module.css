@@ -5,3 +5,7 @@
   z-index: 5;
   pointer-events: none;
 }
+/* R3F sets pointer-events on the canvas — force it off so clicks reach the cards */
+.host canvas {
+  pointer-events: none !important;
+}

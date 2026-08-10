@@ -23,7 +23,8 @@ export function spinCurve(): number[] {
   const cum: number[] = [0];
   for (let i = 0; i < N; i++) {
     const p = (i + 0.5) / N;
-    const v = (1 + 0.86 * Math.cos(2 * Math.PI * p)) * (1 - p ** 3.2) + 0.05;
+    // gentler than the original: smaller burst, softer decay, so it isn't abrupt
+    const v = (1 + 0.4 * Math.cos(2 * Math.PI * p)) * (1 - p ** 2.2) + 0.1;
     cum.push((cum[i] ?? 0) + v);
   }
   const tot = cum[N] ?? 1;

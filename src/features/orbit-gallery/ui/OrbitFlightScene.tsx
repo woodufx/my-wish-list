@@ -10,7 +10,8 @@ import { MorphCard } from './MorphCard';
 import styles from './OrbitFlightScene.module.css';
 
 const SPIN_LUT = spinCurve();
-const TURNS = 1080;
+/** Two full turns before it settles booked. */
+const TURNS = 720;
 
 /** State for the reservation fly-out currently playing on a single card. */
 interface FlightAnim {
@@ -63,7 +64,9 @@ export function OrbitFlightScene({
 
   /** Kick off the reservation fly-out on the card at `index`. */
   const triggerFlight = (index: number, booking: boolean) => {
-    const t = booking ? { out: 600, hold: 850, back: 800 } : { out: 320, hold: 240, back: 620 };
+    // matches the design: a long hold on the card to show it's booked; cancel is
+    // softer/slower than before so it doesn't snap.
+    const t = booking ? { out: 900, hold: 1700, back: 1300 } : { out: 620, hold: 500, back: 950 };
     flightRef.current = {
       i: index,
       start: performance.now(),
@@ -86,8 +89,11 @@ export function OrbitFlightScene({
 
   useLayoutEffect(() => {
     const fit = () => {
-      // cover the viewport so the cards/orbit fill the screen (no dark frame)
-      setScale(Math.max(window.innerWidth / SCENE.width, window.innerHeight / SCENE.height));
+      // cover the viewport, but cap the upscale so the cards stay crisp (scaling
+      // composited card layers up past this gets soft). The 3D + backdrop fill the
+      // remaining edges on very large screens.
+      const cover = Math.max(window.innerWidth / SCENE.width, window.innerHeight / SCENE.height);
+      setScale(Math.min(cover, 1.15));
     };
     fit();
     window.addEventListener('resize', fit);
@@ -103,7 +109,7 @@ export function OrbitFlightScene({
       return undefined;
     }
 
-    const lon = wishes.map((_, i) => (i * TWO_PI) / count);
+    const lon = Array.from({ length: count }, (_, i) => (i * TWO_PI) / count);
     const base = TWO_PI / (ORBIT.fullTurnSeconds * 60);
     const stag = SCENE.cardStagger;
     const span = 1 - stag * (count - 1);
@@ -335,12 +341,16 @@ export function OrbitFlightScene({
           el.style.pointerEvents = 'none';
         }
 
+        // the booking morph collapses the panel layout back to the portrait card,
+        // so the faces must follow it — not just the scroll morph `t`.
+        const morph = flight && flight.i === i && flight.booking ? flight.size : 0;
+        const tw = t * (1 - morph);
         const face = faces[i];
         if (face.c) {
-          face.c.style.opacity = clamp01(1 - t * 1.9).toFixed(3);
+          face.c.style.opacity = clamp01(1 - tw * 1.9).toFixed(3);
         }
         if (face.w) {
-          face.w.style.opacity = clamp01(t * 1.9 - 0.9).toFixed(3);
+          face.w.style.opacity = clamp01(tw * 1.9 - 0.9).toFixed(3);
         }
       }
 
@@ -356,7 +366,9 @@ export function OrbitFlightScene({
       stage.removeEventListener('click', onClickCapture, true);
       resetStageSync();
     };
-  }, [wishes, count]);
+    // Only re-init when the number of cards changes — NOT when their reservation
+    // status changes (that would reset the orbit/scroll and interrupt the fly-out).
+  }, [count]);
 
   const scrollToList = () => {
     const container = containerRef.current;

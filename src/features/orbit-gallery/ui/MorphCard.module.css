@@ -135,7 +135,6 @@
   display: flex;
   flex-direction: column;
   gap: 11px;
-  will-change: opacity;
   pointer-events: none;
 }
 .c .shot {
@@ -189,7 +188,6 @@
   gap: 34px;
   align-items: stretch;
   opacity: 0;
-  will-change: opacity;
   pointer-events: none;
 }
 .w .shot {

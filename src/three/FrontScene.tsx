@@ -32,7 +32,7 @@ export default function FrontScene() {
       onCreated={({ gl }) => {
         gl.toneMappingExposure = 1.45;
       }}
-      style={{ position: 'absolute', inset: 0 }}
+      style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
     >
       <FrameloopController />
       <Lighting />
