@@ -442,13 +442,28 @@ export function OrbitFlightScene({
 
         const offscreen = cy < -420 || cy > scene.height + 460;
         el.style.visibility = offscreen ? 'hidden' : 'visible';
-        el.style.opacity = (
-          t > 0.9 ? Math.max(0.35, 1 - Math.abs(cy - scene.morphY) / 900) : 0.1 + 0.9 * d ** 1.15
-        ).toFixed(3);
-        el.style.filter =
-          t < 0.5 && d < 0.86
-            ? `blur(${((0.86 - d) * 9 * (1 - t * 2)).toFixed(2)}px) brightness(${(0.42 + 0.58 * d).toFixed(2)})`
-            : 'none';
+        if (scene.vertical) {
+          // mobile: a focused carousel — only the front few cards read, the rest
+          // fall away sharply (as in the mobile mockup)
+          const near = clamp01((d - 0.72) / 0.28);
+          el.style.opacity = (
+            t > 0.9
+              ? Math.max(0.45, 1 - Math.abs(cy - scene.morphY) / 780)
+              : 0.02 + 0.98 * near ** 2.2
+          ).toFixed(3);
+          el.style.filter =
+            t < 0.5 && d < 0.86
+              ? `blur(${((0.86 - d) * 7 * (1 - t * 2)).toFixed(2)}px) brightness(${(0.5 + 0.5 * d).toFixed(2)})`
+              : 'none';
+        } else {
+          el.style.opacity = (
+            t > 0.9 ? Math.max(0.35, 1 - Math.abs(cy - scene.morphY) / 900) : 0.1 + 0.9 * d ** 1.15
+          ).toFixed(3);
+          el.style.filter =
+            t < 0.5 && d < 0.86
+              ? `blur(${((0.86 - d) * 9 * (1 - t * 2)).toFixed(2)}px) brightness(${(0.42 + 0.58 * d).toFixed(2)})`
+              : 'none';
+        }
         el.style.zIndex = String(
           t > 0.5 ? Math.round(200 - Math.abs(cy - scene.morphY) / 8) : Math.round(d * 100),
         );
