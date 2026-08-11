@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
-import { usePublicWishes, type WishPublic } from '@/entities/wish';
+import { PRIORITY_ORDER, usePublicWishes, type WishPublic } from '@/entities/wish';
 import { useWishlist } from '@/entities/wishlist';
 import { useCancelReservation, useReserveWish } from '@/features/reserve-wish';
 import { useViewMode, ViewModeSwitch, type ViewMode } from '@/features/view-mode-switch';
@@ -108,7 +108,12 @@ export function PublicWishlist({ slug }: { slug: string }) {
   }
 
   const wishlist = wishlistQuery.data;
-  const wishes = wishesQuery.data ?? [];
+  // Order strongest-wish-first (dream → want_badly → would_be_nice) so the orbit
+  // lands the list top-down by priority. sort() is stable, so same-priority items
+  // keep their server order. The plain ListView re-sorts under its own controls.
+  const wishes = (wishesQuery.data ?? []).toSorted(
+    (a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority],
+  );
   const bookedCount = wishes.filter((wish) => wish.reservationStatus !== 'free').length;
   const openWish = wishes.find((wish) => wish.id === openId) ?? null;
 
