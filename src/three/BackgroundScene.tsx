@@ -19,9 +19,9 @@ export function BackgroundScene() {
   if (tier === 'static' || !hasWebGL()) {
     return null;
   }
-  // EXPERIMENT: 3D disabled on phones to measure the orbit's cost without it.
-  // Only full-tier desktop mounts the scene; mobile falls back to a flat backdrop.
-  if (tier !== 'full') {
+  // lite desktops keep the CSS fallback; full desktop and phones get the 3D
+  // (the phone scene is a single cheap model — see Scene's mobile branch).
+  if (tier !== 'full' && !mobile) {
     return null;
   }
 
