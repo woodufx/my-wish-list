@@ -37,6 +37,7 @@
     ]
   },
   "dependencies": {
+    "@hono/node-server": "^2.1.0",
     "@hookform/resolvers": "^5.7.1",
     "@neondatabase/serverless": "^1.1.0",
     "@react-three/drei": "^10.7.8",
@@ -61,7 +62,6 @@
     "@babel/preset-typescript": "^8.0.1",
     "@commitlint/cli": "^21.2.1",
     "@commitlint/types": "^21.2.0",
-    "@hono/node-server": "^2.1.0",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/router-cli": "^1.167.26",

@@ -1,9 +1,9 @@
-import { handle } from 'hono/vercel';
+import { getRequestListener } from '@hono/node-server';
 import app from './index';
 
-// The Vercel serverless entry. `pnpm build:server` bundles this file (and all of
-// src/server) into dist-server/entry.mjs with esbuild; the committed shim at
-// api/[[...route]].mjs re-exports that bundle. This keeps @vercel/node from ever
-// compiling TypeScript — our native TS 7 toolchain isn't compatible with its
-// classic `typescript` API (it crashes on `typescript.sys.readFile`).
-export default handle(app);
+// The Vercel serverless entry, bundled to plain JS by `pnpm build:server` so
+// @vercel/node never compiles TypeScript (our native TS 7 has no classic
+// compiler API and crashes its builder). `getRequestListener` turns the Hono
+// app into a Node `(req, res)` handler — the canonical Vercel function
+// signature, and the same adapter the dev Vite middleware uses.
+export default getRequestListener(app.fetch);

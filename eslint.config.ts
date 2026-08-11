@@ -42,6 +42,7 @@ export default [
   {
     ignores: [
       'dist/**',
+      'dist-server/**',
       'coverage/**',
       'playwright-report/**',
       'test-results/**',
