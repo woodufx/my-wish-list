@@ -86,25 +86,26 @@
   border-color: rgba(255, 140, 120, 0.7);
 }
 
+/* the ₽ sits INSIDE the input as a suffix, so the field fills its 200px column
+   exactly and can never overflow (a flex input won't shrink past its intrinsic
+   width, which is what pushed the currency box out before). */
 .priceRow {
-  display: flex;
-  gap: 8px;
+  position: relative;
 }
 .priceRow .input {
-  flex: 1;
+  width: 100%;
+  padding-right: 42px;
 }
 .currency {
-  width: 62px;
-  border-radius: 16px;
-  border: 1px solid rgba(160, 200, 255, 0.22);
-  background: rgba(120, 165, 255, 0.14);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 15px;
-  color: #e8f1ff;
+  color: var(--color-ink-muted);
+  pointer-events: none;
 }
 
 .error {
