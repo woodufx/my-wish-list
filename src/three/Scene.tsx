@@ -27,9 +27,9 @@ function FrameloopController() {
  */
 export default function Scene({ mobile = false }: { mobile?: boolean }) {
   if (mobile) {
-    // Phone back plane: a single sculptural shape drifting through the CENTRE,
-    // behind the cards (blurred + dimmed by the host) so the middle of the
-    // screen isn't empty. It bursts up on the orbit→list flight, then gathers.
+    // Phone back plane: a single heart drifting behind the cards, offset to one
+    // side of centre (blurred + dimmed by the host) so the middle isn't empty.
+    // It bursts up on the orbit→list flight, then gathers.
     return (
       <Canvas
         camera={{ position: [0, 0, 7], fov: 42 }}
@@ -43,9 +43,9 @@ export default function Scene({ mobile = false }: { mobile?: boolean }) {
         <FrameloopController />
         <Lighting />
         <GlbModel
-          url="/models/knot-silver.glb"
-          position={[0.1, 0.5, -1.8]}
-          scale={2.2}
+          url="/models/heart-silver.glb"
+          position={[0.55, 0.5, -1.8]}
+          scale={2.1}
           color="#2b4a86"
           roughness={0.36}
           speed={0.54}
