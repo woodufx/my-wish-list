@@ -41,11 +41,12 @@
   display: none;
 }
 
-/* PERF (mobile): the card glow's cost was the blur(22px), not the gradient — a
-   radial gradient is soft on its own. Keep the halo but drop the blur so it's a
-   cheap composited texture instead of a surface re-blurred every frame. */
+/* PERF (mobile): each card carried its own glow layer that moved with it every
+   frame. Even without its blur, 12 extra composited gradient layers cost too
+   much fill — drop them on phones (the aurora backdrop carries the ambient
+   light instead). */
 .stage[data-vertical] .cardGlow {
-  filter: none;
+  display: none;
 }
 
 /* ---- 2D pseudo-3D backdrop (drifting light + liquid blobs + glows) ---- */
