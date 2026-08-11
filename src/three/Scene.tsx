@@ -31,10 +31,13 @@ export default function Scene({ mobile = false }: { mobile?: boolean }) {
     // side of centre (blurred + dimmed by the host) so the middle isn't empty.
     // The orbit→list flight gives it a one-way upward bounce (it stays, no return).
     return (
+      // Phone: a single cheap canvas carries all the 3D. No MSAA and DPR pinned
+      // to 1 — on a high-DPI phone antialiasing + 2–3× pixels was a big GPU cost
+      // for a soft, blurred backdrop that never shows hard edges anyway.
       <Canvas
         camera={{ position: [0, 0, 7], fov: 42 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        dpr={1}
+        gl={{ antialias: false, alpha: true, powerPreference: 'default' }}
         onCreated={({ gl }) => {
           gl.toneMappingExposure = 1.4;
         }}

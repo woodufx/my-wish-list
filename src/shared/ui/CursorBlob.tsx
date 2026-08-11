@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion';
 import styles from './CursorBlob.module.css';
 
@@ -7,22 +7,23 @@ const BLOB_HALF = 240;
 
 /**
  * A blurred color pool that chases the pointer via lerp and stretches along the
- * direction of movement, blended over the scene. Not rendered under reduced motion.
+ * direction of movement, blended over the scene. Not rendered under reduced
+ * motion, nor on touch devices — there it only cost paint (a big blurred layer
+ * repainting on every tap) with no cursor to trail.
  */
 export function CursorBlob() {
   const reducedMotion = usePrefersReducedMotion();
+  const [coarse] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches,
+  );
   const blobRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (reducedMotion) {
+    if (reducedMotion || coarse) {
       return undefined;
     }
-
-    // On touch there's no cursor to trail — the blob becomes a glow that appears
-    // under the finger on contact and fades on release; the dot is hidden.
-    const coarse = window.matchMedia('(pointer: coarse)').matches;
 
     let targetX = window.innerWidth / 2;
     let targetY = window.innerHeight / 2;
@@ -31,43 +32,12 @@ export function CursorBlob() {
     let raf = 0;
     let last = performance.now();
 
-    if (coarse) {
-      if (blobRef.current) {
-        blobRef.current.style.opacity = '0';
-        blobRef.current.style.transition = 'opacity 0.35s ease';
-      }
-      if (dotRef.current) {
-        dotRef.current.style.display = 'none';
-      }
-    }
-
     const onMove = (event: PointerEvent) => {
       targetX = event.clientX;
       targetY = event.clientY;
     };
-    const onTouchStart = (event: PointerEvent) => {
-      if (!coarse || event.pointerType !== 'touch') {
-        return;
-      }
-      targetX = event.clientX;
-      targetY = event.clientY;
-      x = targetX;
-      y = targetY;
-      if (blobRef.current) {
-        blobRef.current.style.opacity = '1';
-      }
-    };
-    const onTouchEnd = () => {
-      if (coarse && blobRef.current) {
-        blobRef.current.style.opacity = '0';
-      }
-    };
     // reveal a contextual label when hovering an element that declares one
-    // (mouse only — touch has no hover to trail)
     const onOver = (event: PointerEvent) => {
-      if (coarse) {
-        return;
-      }
       const { target } = event;
       const labelled =
         target instanceof Element ? target.closest<HTMLElement>('[data-cursor-label]') : null;
@@ -85,9 +55,6 @@ export function CursorBlob() {
     };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerover', onOver);
-    window.addEventListener('pointerdown', onTouchStart);
-    window.addEventListener('pointerup', onTouchEnd);
-    window.addEventListener('pointercancel', onTouchEnd);
 
     const loop = (now: number) => {
       const dt = Math.min(3, (now - last) / 16.667);
@@ -117,14 +84,11 @@ export function CursorBlob() {
     return () => {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerover', onOver);
-      window.removeEventListener('pointerdown', onTouchStart);
-      window.removeEventListener('pointerup', onTouchEnd);
-      window.removeEventListener('pointercancel', onTouchEnd);
       cancelAnimationFrame(raf);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, coarse]);
 
-  if (reducedMotion) {
+  if (reducedMotion || coarse) {
     return null;
   }
 

@@ -456,10 +456,11 @@ export function OrbitFlightScene({
             t > 0.9
               ? Math.max(0.45, 1 - Math.abs(cy - scene.morphY) / 780)
               : 0.02 + 0.98 * near ** 2.2;
+          // PERF (mobile): brightness only — an animated `blur()` on 12 morphing
+          // cards spiked hard right at the orbit→list transition. Depth still
+          // reads from the opacity falloff above plus this dimming.
           el.style.filter =
-            t < 0.5 && d < 0.86
-              ? `blur(${((0.86 - d) * 7 * (1 - t * 2)).toFixed(2)}px) brightness(${(0.5 + 0.5 * d).toFixed(2)})`
-              : 'none';
+            t < 0.5 && d < 0.86 ? `brightness(${(0.5 + 0.5 * d).toFixed(2)})` : 'none';
         } else {
           naturalOpacity =
             t > 0.9 ? Math.max(0.35, 1 - Math.abs(cy - scene.morphY) / 900) : 0.1 + 0.9 * d ** 1.15;

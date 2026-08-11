@@ -21,9 +21,9 @@ function FrameloopController() {
 /**
  * The FRONT depth plane: brighter, sharper models that drift FASTER than the back
  * plane (stronger scroll parallax) and pass OVER the cards. Loaded only on the
- * orbit-flight screen.
+ * orbit-flight screen, desktop only.
  */
-export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
+export default function FrontScene() {
   return (
     <Canvas
       camera={{ position: [0, 0, 7], fov: 42 }}
@@ -36,98 +36,53 @@ export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
     >
       <FrameloopController />
       <Lighting />
-      {mobile ? (
-        // Phone: small metal shapes parked in the left/right columns beside the
-        // centred cards (mirrors the design's mobile orb-stage x-positions:
-        // ~40px and ~350px in a 390 frame → world x ≈ ∓1.0). The orbit→list
-        // flight gives them a one-way vertical bounce (driftDir, no horizontal
-        // so they never leave the narrow screen); they also parallax with scroll.
-        <>
-          <GlbModel
-            url="/models/heart-silver.glb"
-            position={[-0.98, 0.6, 0.4]}
-            scale={0.62}
-            color="#3a5aa0"
-            roughness={0.28}
-            speed={1.1}
-            parallax={0.7}
-            driftDir={[0, -0.85]}
-            phase={0.4}
-          />
-          <GlbModel
-            url="/models/tag-silver.glb"
-            position={[1.0, 3.4, 0.3]}
-            scale={0.55}
-            color="#3a5aa0"
-            roughness={0.26}
-            speed={1.25}
-            parallax={0.7}
-            driftDir={[0, 0.9]}
-            phase={1.6}
-          />
-          <GlbModel
-            url="/models/heart-silver.glb"
-            position={[0.94, -2.8, 0.5]}
-            scale={0.5}
-            color="#3a5aa0"
-            roughness={0.3}
-            speed={1.15}
-            parallax={0.7}
-            driftDir={[0, -0.8]}
-            phase={3.1}
-          />
-        </>
-      ) : (
-        <>
-          {/* Front plane: kept sparse so the right side isn't crowded — a pair on
-              the orbit (left tag + right heart), then one object per side drifting
-              in far apart. The rest of the objects live on the back plane. */}
-          <GlbModel
-            url="/models/tag-silver.glb"
-            position={[-5.2, -1.4, -0.9]}
-            scale={2.2}
-            color="#3a5aa0"
-            roughness={0.26}
-            speed={1.0}
-            parallax={1.4}
-            driftDir={[-0.7, 0.5]}
-            phase={1.2}
-          />
-          <GlbModel
-            url="/models/heart-silver.glb"
-            position={[4.5, 1.2, -0.8]}
-            scale={1.45}
-            color="#3a5aa0"
-            roughness={0.28}
-            speed={1.08}
-            parallax={1.4}
-            driftDir={[0.5, 0.5]}
-            phase={0.4}
-          />
-          <GlbModel
-            url="/models/blob-silver.glb"
-            position={[-5.0, 6.5, -1.2]}
-            scale={1.5}
-            color="#33538f"
-            roughness={0.3}
-            speed={1.12}
-            parallax={1.4}
-            driftDir={[-0.6, -0.4]}
-            phase={0.9}
-          />
-          <GlbModel
-            url="/models/heart-silver.glb"
-            position={[4.4, 11.5, -0.9]}
-            scale={1.3}
-            color="#3a5aa0"
-            roughness={0.3}
-            speed={1.18}
-            parallax={1.4}
-            driftDir={[0.4, -0.4]}
-            phase={3.1}
-          />
-        </>
-      )}
+      {/* Front plane: kept sparse so the right side isn't crowded — a pair on
+          the orbit (left tag + right heart), then one object per side drifting
+          in far apart. The rest of the objects live on the back plane. */}
+      <GlbModel
+        url="/models/tag-silver.glb"
+        position={[-5.2, -1.4, -0.9]}
+        scale={2.2}
+        color="#3a5aa0"
+        roughness={0.26}
+        speed={1.0}
+        parallax={1.4}
+        driftDir={[-0.7, 0.5]}
+        phase={1.2}
+      />
+      <GlbModel
+        url="/models/heart-silver.glb"
+        position={[4.5, 1.2, -0.8]}
+        scale={1.45}
+        color="#3a5aa0"
+        roughness={0.28}
+        speed={1.08}
+        parallax={1.4}
+        driftDir={[0.5, 0.5]}
+        phase={0.4}
+      />
+      <GlbModel
+        url="/models/blob-silver.glb"
+        position={[-5.0, 6.5, -1.2]}
+        scale={1.5}
+        color="#33538f"
+        roughness={0.3}
+        speed={1.12}
+        parallax={1.4}
+        driftDir={[-0.6, -0.4]}
+        phase={0.9}
+      />
+      <GlbModel
+        url="/models/heart-silver.glb"
+        position={[4.4, 11.5, -0.9]}
+        scale={1.3}
+        color="#3a5aa0"
+        roughness={0.3}
+        speed={1.18}
+        parallax={1.4}
+        driftDir={[0.4, -0.4]}
+        phase={3.1}
+      />
     </Canvas>
   );
 }
