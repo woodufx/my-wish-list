@@ -52,6 +52,7 @@ export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
             speed={1.1}
             parallax={0.7}
             driftDir={[0, 0]}
+            burstDir={[-0.35, -1.6]}
             phase={0.4}
           />
           <GlbModel
@@ -63,6 +64,7 @@ export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
             speed={1.25}
             parallax={0.7}
             driftDir={[0, 0]}
+            burstDir={[0.3, 1.7]}
             phase={1.6}
           />
           <GlbModel
@@ -74,6 +76,7 @@ export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
             speed={1.15}
             parallax={0.7}
             driftDir={[0, 0]}
+            burstDir={[0.35, -1.5]}
             phase={3.1}
           />
         </>

@@ -25,7 +25,49 @@ function FrameloopController() {
  * The BACK depth plane: slower-drifting, dimmer, further-back models. Sits behind
  * all content (blurred by the host). Lazily imported so three lands in its own chunk.
  */
-export default function Scene() {
+export default function Scene({ mobile = false }: { mobile?: boolean }) {
+  if (mobile) {
+    // Phone back plane: a couple of larger shapes drifting through the CENTRE,
+    // behind the cards (blurred + dimmed by the host) so the middle of the
+    // screen isn't empty. They burst apart vertically on the orbit→list flight.
+    return (
+      <Canvas
+        camera={{ position: [0, 0, 7], fov: 42 }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        onCreated={({ gl }) => {
+          gl.toneMappingExposure = 1.4;
+        }}
+        style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+      >
+        <FrameloopController />
+        <Lighting />
+        <GlbModel
+          url="/models/blob-silver.glb"
+          position={[0.15, 0.8, -1.9]}
+          scale={2.5}
+          color="#28407a"
+          roughness={0.4}
+          speed={0.5}
+          driftDir={[0, 0]}
+          burstDir={[0, -1.9]}
+          phase={1.2}
+        />
+        <GlbModel
+          url="/models/torus-silver.glb"
+          position={[-0.2, -3.2, -1.7]}
+          scale={1.85}
+          color="#2b4a86"
+          roughness={0.38}
+          speed={0.58}
+          driftDir={[0, 0]}
+          burstDir={[0, 2.0]}
+          phase={3.1}
+        />
+      </Canvas>
+    );
+  }
+
   return (
     <Canvas
       camera={{ position: [0, 0, 7], fov: 42 }}
