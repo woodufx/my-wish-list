@@ -179,6 +179,7 @@ export function PublicWishlist({ slug }: { slug: string }) {
           booked={bookedCount}
           pendingId={pendingId}
           revealed={revealed}
+          paused={openId !== null}
           onOpen={openDetail}
           onToggleReservation={toggleReservation}
         />

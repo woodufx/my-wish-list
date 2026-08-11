@@ -38,6 +38,8 @@ interface OrbitFlightSceneProps {
   pendingId?: string;
   /** Plays the intro reveal once the loader has dissolved. */
   revealed?: boolean;
+  /** Freezes the rAF while a full-screen overlay hides the orbit (perf). */
+  paused?: boolean;
   onOpen: (wish: WishPublic, rect?: DOMRect | null) => void;
   onToggleReservation: (wish: WishPublic) => void;
 }
@@ -68,11 +70,15 @@ export function OrbitFlightScene({
   wishlist,
   booked,
   revealed,
+  paused = false,
   onOpen,
   onToggleReservation,
 }: OrbitFlightSceneProps) {
   const lenisRef = useLenis(true);
   const snapRef = useRef<SnapState>({ snapping: false, atList: false, cooldown: 0 });
+  // Latest `paused` for the rAF closure (the loop effect isn't re-created on it).
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -253,6 +259,13 @@ export function OrbitFlightScene({
     stage.addEventListener('click', onClickCapture, true);
 
     const frame = (now: number) => {
+      // Fully occluded by an open overlay: keep the loop alive but skip all the
+      // per-card layout/paint work (that was dropping the card animation to ~40fps).
+      if (pausedRef.current) {
+        last = now;
+        raf = requestAnimationFrame(frame);
+        return;
+      }
       const dt = Math.min(3, (now - last) / 16.667);
       last = now;
 

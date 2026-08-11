@@ -28,17 +28,19 @@
   touch-action: pan-y;
 }
 
-/* PERF (mobile): the 3D scene + vignette already carry the ambient light, so
-   drop this stacked set of full-screen blur() layers on phones. They were the
-   heaviest remaining cost — large blurred surfaces re-composited under the cards
-   every frame (each also translated by the parallax rAF). Keep the cheap
-   vignette and the momentary booking flash. */
-.stage[data-vertical] .bands,
+/* PERF (mobile): keep the coloured gradients for a lively backdrop, but strip
+   the expensive `filter: blur()` off them — a moving blurred layer is re-rendered
+   every frame, and the big blur72 bands / blur22 pool were the heaviest cost.
+   Radial gradients (pool + glows) are already soft with no blur; the blob shapes
+   read fine without their small blur too. Only the full-screen bands stay off. */
+.stage[data-vertical] .bands {
+  display: none;
+}
 .stage[data-vertical] .blob,
 .stage[data-vertical] .pool,
 .stage[data-vertical] .glowA,
 .stage[data-vertical] .glowB {
-  display: none;
+  filter: none;
 }
 
 /* ---- 2D pseudo-3D backdrop (drifting light + liquid blobs + glows) ---- */
