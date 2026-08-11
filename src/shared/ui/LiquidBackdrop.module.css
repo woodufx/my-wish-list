@@ -107,3 +107,12 @@
     animation: none;
   }
 }
+
+/* PERF (mobile): a phone shows the 3D BackgroundScene behind content, so this
+   full-screen blur(72px) band layer is redundant ambiance — drop it and keep
+   just the base colour + vignette. */
+@media (max-width: 680px) {
+  .bands {
+    display: none;
+  }
+}
