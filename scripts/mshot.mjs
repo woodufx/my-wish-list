@@ -43,15 +43,33 @@ await page.screenshot({ path: 'scripts/mobile-orbit.png' });
 await page.evaluate(() => window.scrollTo(0, 1400));
 await page.waitForTimeout(3000);
 const list = await page.evaluate(() => {
-  const fill = document.querySelector('[class*="s2Fill"]');
-  const r = fill ? fill.getBoundingClientRect() : null;
+  const q = (s) => document.querySelector(s);
+  const b = (el) => {
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return { l: Math.round(r.left), r: Math.round(r.right), t: Math.round(r.top), b: Math.round(r.bottom) };
+  };
+  const fill = q('[class*="s2Fill"]');
+  const label = q('[class*="s2Label"]');
+  const rule = q('[class*="s2Rule"]');
   return {
-    s2FillRight: r ? Math.round(r.right) : null,
-    s2FillLeft: r ? Math.round(r.left) : null,
-    s2FillFont: fill ? getComputedStyle(fill).fontSize : null,
+    fill: b(fill),
+    fillFont: fill ? getComputedStyle(fill).fontSize : null,
+    label: b(label),
+    labelText: label ? label.textContent : null,
+    labelFont: label ? getComputedStyle(label).fontSize : null,
+    rule: b(rule),
+    ruleHeight: rule ? getComputedStyle(rule).height : null,
   };
 });
 console.log('LIST', JSON.stringify(list));
 await page.screenshot({ path: 'scripts/mobile-list.png' });
+if (list.fill) {
+  const top = Math.max(0, list.fill.t - 20);
+  await page.screenshot({
+    path: 'scripts/mobile-heading.png',
+    clip: { x: 0, y: top, width: 390, height: Math.min(300, 844 - top) },
+  });
+}
 
 await browser.close();

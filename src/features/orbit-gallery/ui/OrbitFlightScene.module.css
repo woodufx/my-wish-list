@@ -298,16 +298,18 @@
     white-space: nowrap;
   }
   .heroNote {
-    max-width: none;
+    max-width: 290px;
     font-size: 13px;
   }
-  .s2 {
+  /* NOTE: the base .s2* rules are declared AFTER this @media block, so every
+     single-class mobile override loses on source order at equal specificity.
+     Each rule below is compounded (.s2 .x / .s2.s2) to out-specify its base. */
+  .s2.s2 {
     width: 390px;
   }
-  .s2Type {
+  .s2 .s2Type {
     height: 86px;
   }
-  /* out-specify the base `.s2Type span` font-size so mobile actually applies */
   .s2Type .s2Ghost,
   .s2Type .s2Fill,
   .s2Type .s2Sheen {
@@ -316,16 +318,23 @@
   .s2Type .s2Ghost {
     left: 14px;
     top: 6px;
+    color: rgba(120, 170, 255, 0.2);
+    filter: blur(12px);
   }
   .s2Type .s2Fill,
   .s2Type .s2Sheen {
     left: 16px;
   }
-  .s2Row {
-    padding: 0 16px;
-    margin-top: 2px;
+  .s2 .s2Row {
+    padding: 0 20px;
+    margin-top: 4px;
+    gap: 12px;
   }
-  .s2Right {
+  .s2 .s2Label {
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+  }
+  .s2 .s2Right {
     display: none;
   }
   .railTrack {
