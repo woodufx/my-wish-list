@@ -1,13 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "useDefineForClassFields": true,
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "target": "ES2023",
+    "lib": ["ES2023"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "types": ["vite/client"],
+    "types": ["node"],
 
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
@@ -18,18 +16,15 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
 
-    "skipLibCheck": true,
-
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "skipLibCheck": true
   },
-  "include": ["src"],
-  // Server code is node-only (no DOM/vite-client types) — checked by tsconfig.server.json.
-  "exclude": ["src/server"]
+  // The Hono app + Vercel entry. No DOM lib on purpose — server code must not
+  // reach for browser globals. `seed.ts` is excluded: it imports the MSW
+  // fixtures, whose type-only imports pull in the React entity barrel.
+  "include": ["src/server", "api"],
+  "exclude": ["src/server/db/seed.ts"]
 }

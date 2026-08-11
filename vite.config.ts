@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import { envSchema } from './src/shared/config/env.schema.ts';
+import { apiPlugin } from './src/server/vite.ts';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -26,6 +27,7 @@ export default defineConfig(({ mode }) => {
       }),
       react(),
       tailwindcss(),
+      apiPlugin(),
     ],
     resolve: {
       alias: {
