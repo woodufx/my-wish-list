@@ -10,6 +10,7 @@ import {
 } from '@/entities/wish';
 import { WishForm } from '@/features/wish-form';
 import { BottomSheet, Button, EmptyState, LiquidBackdrop, Skeleton, TopBar } from '@/shared/ui';
+import { useOwnerLogout } from '@/features/owner-auth';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import styles from './admin.module.css';
 
@@ -147,6 +148,7 @@ export function AdminScreen({ slug }: { slug: string }) {
 }
 
 function Shell({ children }: { children: ReactNode }) {
+  const logout = useOwnerLogout();
   return (
     <div className={styles.screen}>
       <LiquidBackdrop />
@@ -154,6 +156,16 @@ function Shell({ children }: { children: ReactNode }) {
         <span className="eyebrow" style={{ color: 'var(--color-ink-muted)' }}>
           мой список · 14 сентября
         </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          loading={logout.isPending}
+          onClick={() => {
+            logout.mutate();
+          }}
+        >
+          Выйти
+        </Button>
       </TopBar>
       <div className={styles.content}>{children}</div>
     </div>

@@ -3,6 +3,18 @@
   min-height: 100vh;
   color: #fff;
 }
+.back {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 13px;
+  color: rgba(214, 226, 250, 0.78);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease-out;
+}
+.back:hover {
+  color: #fff;
+}
 .content {
   max-width: 1240px;
   margin: 0 auto;

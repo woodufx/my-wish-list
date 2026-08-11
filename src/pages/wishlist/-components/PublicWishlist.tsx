@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Link } from '@tanstack/react-router';
 import { usePublicWishes, type WishPublic } from '@/entities/wish';
 import { useWishlist } from '@/entities/wishlist';
 import { useCancelReservation, useReserveWish } from '@/features/reserve-wish';
@@ -6,7 +7,6 @@ import { useViewMode, ViewModeSwitch, type ViewMode } from '@/features/view-mode
 import { useCapabilityTier } from '@/shared/hooks/useCapabilityTier';
 import { useAssetPreloader } from '@/shared/hooks/useAssetPreloader';
 import {
-  Button,
   EmptyState,
   GrainOverlay,
   LiquidBackdrop,
@@ -16,6 +16,7 @@ import {
   TopBar,
 } from '@/shared/ui';
 import { OrbitFlightScene } from '@/features/orbit-gallery';
+import { toast } from '@/shared/lib/toast';
 import { Hero } from './Hero';
 import { ListView } from './ListView';
 import { PanelsView } from './PanelsView';
@@ -96,7 +97,7 @@ export function PublicWishlist({ slug }: { slug: string }) {
 
   if (wishlistQuery.isError) {
     return (
-      <Shell>
+      <Shell slug={slug}>
         <EmptyState
           tag="404"
           title="СПИСКА НЕТ"
@@ -117,7 +118,7 @@ export function PublicWishlist({ slug }: { slug: string }) {
   };
 
   return (
-    <Shell mode={mode} onModeChange={changeMode} switching={switching}>
+    <Shell slug={slug} mode={mode} onModeChange={changeMode} switching={switching}>
       {wishesQuery.isPending ? (
         <div className={styles.content}>
           <Hero wishlist={wishlist} total={0} booked={0} />
@@ -196,22 +197,82 @@ export function PublicWishlist({ slug }: { slug: string }) {
   );
 }
 
+function BookmarkIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function ShareIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 16V4" />
+      <path d="m8 8 4-4 4 4" />
+      <path d="M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" />
+    </svg>
+  );
+}
+
 interface ShellProps {
   children: ReactNode;
+  slug: string;
   mode?: ViewMode;
   onModeChange?: (mode: ViewMode) => void;
   switching?: boolean;
 }
 
-function Shell({ children, mode, onModeChange, switching = false }: ShellProps) {
+function Shell({ children, slug, mode, onModeChange, switching = false }: ShellProps) {
+  const onShare = () => {
+    const url = `${window.location.origin}/wishlist/${slug}`;
+    // Native share sheet on mobile; copy to clipboard with a toast elsewhere.
+    if (typeof navigator.share === 'function') {
+      navigator.share({ title: 'Список желаний', url }).catch(() => {
+        // user dismissed the share sheet — nothing to do
+      });
+      return;
+    }
+    navigator.clipboard
+      .writeText(url)
+      .then(() => toast.success('Ссылка на список скопирована'))
+      .catch(() => toast.error('Не удалось скопировать ссылку'));
+  };
+
   return (
     <div className={styles.screen}>
       <LiquidBackdrop />
       <TopBar>
         {mode && onModeChange && <ViewModeSwitch mode={mode} onChange={onModeChange} />}
-        <Button variant="ghost" size="sm">
-          Поделиться
-        </Button>
+        <Link to="/my-reservations" className={styles.headerAction} aria-label="Мои брони">
+          <BookmarkIcon />
+          <span className={styles.headerActionLabel}>Мои брони</span>
+        </Link>
+        <button
+          type="button"
+          className={styles.headerAction}
+          onClick={onShare}
+          aria-label="Поделиться списком"
+        >
+          <ShareIcon />
+          <span className={styles.headerActionLabel}>Поделиться</span>
+        </button>
       </TopBar>
       {children}
       <ScreenVeil show={switching} />

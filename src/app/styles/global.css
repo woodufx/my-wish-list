@@ -40,6 +40,15 @@ body,
   height: 100%;
 }
 
+/* Clip stray horizontal overflow (e.g. a full-screen 3D canvas that measures a
+   few px wider than the viewport) without creating a scroll container —
+   `overflow-x: clip` leaves `overflow-y: visible`, so window scroll and the
+   orbit's sticky flight keep working. */
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   margin: 0;
   background-color: var(--color-abyss);

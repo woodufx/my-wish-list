@@ -4,6 +4,7 @@ import { useMyReservations } from '@/entities/reservation';
 import { useReleaseReservation } from '@/features/reserve-wish';
 import { Button, EmptyState, LiquidBackdrop, Skeleton, TopBar } from '@/shared/ui';
 import { formatDate } from '@/shared/lib/format';
+import { DEFAULT_WISHLIST_SLUG } from '@/shared/config/app';
 import styles from './MyReservations.module.css';
 
 export function MyReservations() {
@@ -14,7 +15,11 @@ export function MyReservations() {
   return (
     <div className={styles.screen}>
       <LiquidBackdrop />
-      <TopBar />
+      <TopBar>
+        <Link to="/wishlist/$slug" params={{ slug: DEFAULT_WISHLIST_SLUG }} className={styles.back}>
+          ← К списку желаний
+        </Link>
+      </TopBar>
       <div className={styles.content}>
         <h1 className={styles.title}>МОИ БРОНИ</h1>
         <p className={styles.subtitle}>

@@ -20,6 +20,46 @@
   padding: 0 52px 120px;
 }
 
+/* header actions ("Мои брони", "Поделиться") — labelled on desktop, icon-only
+   on mobile so the top bar doesn't overflow the phone width. */
+.headerAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(160, 200, 255, 0.22);
+  background: rgba(120, 165, 255, 0.08);
+  color: #eaf1ff;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
+  padding: 9px 15px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease-out,
+    border-color 0.15s ease-out;
+}
+.headerAction:hover {
+  background: rgba(120, 165, 255, 0.16);
+  border-color: rgba(180, 212, 255, 0.4);
+}
+.headerAction svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+@media (max-width: 680px) {
+  .headerActionLabel {
+    display: none;
+  }
+  .headerAction {
+    padding: 10px;
+  }
+}
+
 .hero {
   padding: 40px 0 30px;
 }

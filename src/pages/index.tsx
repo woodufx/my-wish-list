@@ -1,26 +1,26 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Navigate } from '@tanstack/react-router';
+import { useOwnerSession } from '@/features/owner-auth';
+import { DEFAULT_WISHLIST_SLUG } from '@/shared/config/app';
+import { LoadingScreen } from '@/shared/ui';
 
 export const Route = createFileRoute('/')({
   component: IndexPage,
 });
 
-// Temporary landing that just links to the screens while routing is scaffolded.
-// Real composition (features/entities) arrives in stage 3.
+/**
+ * The root entry point. An owner (holds a valid session cookie) lands in their
+ * admin console; everyone else goes straight to the public wishlist.
+ */
 function IndexPage() {
-  return (
-    <main className="mx-auto flex min-h-full max-w-2xl flex-col justify-center gap-6 p-8">
-      <h1 className="text-3xl font-semibold">Вишлист</h1>
-      <nav className="text-ink-200 flex flex-col gap-2">
-        <Link to="/wishlist/$slug" params={{ slug: 'demo' }} className="underline">
-          Публичный вишлист (demo)
-        </Link>
-        <Link to="/admin/$slug" params={{ slug: 'demo' }} className="underline">
-          Админка (demo)
-        </Link>
-        <Link to="/my-reservations" className="underline">
-          Мои брони
-        </Link>
-      </nav>
-    </main>
+  const session = useOwnerSession();
+
+  if (session.isPending) {
+    return <LoadingScreen progress={0.85} done={false} />;
+  }
+
+  return session.data?.authenticated ? (
+    <Navigate to="/admin/$slug" params={{ slug: DEFAULT_WISHLIST_SLUG }} replace />
+  ) : (
+    <Navigate to="/wishlist/$slug" params={{ slug: DEFAULT_WISHLIST_SLUG }} replace />
   );
 }

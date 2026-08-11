@@ -2,6 +2,9 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .mark {
