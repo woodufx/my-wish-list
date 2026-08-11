@@ -6,10 +6,11 @@
 .sticky {
   position: sticky;
   top: 0;
+  /* 100vh = the LARGE viewport on iOS: the stage fills the whole screen and
+     extends behind the translucent Safari toolbar (content shows under it and is
+     revealed as the bar collapses), rather than dvh which shrinks to the visible
+     area and leaves a dead fill / clips the heading when the toolbar is open. */
   height: 100vh;
-  /* dvh tracks the visible viewport (matches window.innerHeight the rAF reads),
-     so the stage isn't clipped behind the Safari toolbar. */
-  height: 100dvh;
   overflow: hidden;
   isolation: isolate;
 }
@@ -373,9 +374,13 @@
 }
 
 .scrollBtn {
-  position: absolute;
+  /* fixed to the VISIBLE viewport bottom (it lives outside the transformed stage
+     for this to work). On iOS it sits above the Safari toolbar with padding and
+     rides up/down as the toolbar collapses — so it's always visible on screen 1,
+     unlike when it was pinned to the stage bottom that hides behind the toolbar. */
+  position: fixed;
   left: 50%;
-  bottom: 38px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 26px);
   transform: translateX(-50%);
   z-index: 60;
   display: flex;

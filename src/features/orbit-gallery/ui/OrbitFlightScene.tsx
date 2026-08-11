@@ -166,7 +166,9 @@ export function OrbitFlightScene({
       back: slot?.querySelector<HTMLElement>('[data-back]') ?? null,
       shell: slot?.lastElementChild instanceof HTMLElement ? slot.lastElementChild : null,
     }));
-    const s1Nodes = [...stage.querySelectorAll<HTMLElement>('[data-s1]')];
+    // query from the scroll container: the scroll-hint button now lives outside
+    // the stage (so it can be fixed to the viewport) but still fades on scroll.
+    const s1Nodes = [...container.querySelectorAll<HTMLElement>('[data-s1]')];
     const parNodes = [...stage.querySelectorAll<HTMLElement>('[data-par]')];
 
     let angle = Math.PI * 0.15;
@@ -628,13 +630,6 @@ export function OrbitFlightScene({
               )}
             </div>
 
-            <button type="button" className={styles.scrollBtn} data-s1="" onClick={scrollToList}>
-              <span className={styles.scrollBtnLabel}>смотреть список</span>
-              <span className={styles.scrollBtnLine}>
-                <span className={styles.scrollBtnDot} />
-              </span>
-            </button>
-
             {/* screen-2 heading */}
             <div ref={s2Ref} className={styles.s2}>
               <div ref={s2TypeRef} className={styles.s2Type}>
@@ -678,6 +673,14 @@ export function OrbitFlightScene({
             ))}
           </div>
         </div>
+        {/* the scroll hint lives OUTSIDE the transformed stage so it can be fixed
+            to the visible viewport bottom (and clear the Safari toolbar) */}
+        <button type="button" className={styles.scrollBtn} data-s1="" onClick={scrollToList}>
+          <span className={styles.scrollBtnLabel}>смотреть список</span>
+          <span className={styles.scrollBtnLine}>
+            <span className={styles.scrollBtnDot} />
+          </span>
+        </button>
       </div>
     </>
   );

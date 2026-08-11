@@ -87,7 +87,7 @@ export function WishDetailOverlay({
   // style.transform write for the drag with motion's `y` for the animations made
   // close jump back to the top before sliding down — everything writes translateY
   // in px now, so they compose seamlessly.
-  const dragRef = useRef({ startY: 0, dy: 0, dragging: false, tracking: false, fromScroll: false });
+  const dragRef = useRef({ startY: 0, dy: 0, dragging: false, tracking: false });
   const setSheetY = (y: number) => {
     const detail = detailRef.current;
     if (detail) {
@@ -95,8 +95,20 @@ export function WishDetailOverlay({
     }
   };
   const sheetHeight = () => detailRef.current?.offsetHeight ?? window.innerHeight;
-  const scrollBody = () =>
-    detailRef.current?.querySelector<HTMLElement>(`.${styles.detailBody}`) ?? null;
+  // Walk from the touch target up to the sheet: if any element is scrolled down
+  // from its top (the body, or the description's own scroll box), the gesture
+  // belongs to that scroller — not to swipe-close.
+  const anyScrolledUp = (from: EventTarget | null): boolean => {
+    let node = from instanceof Element ? from : null;
+    const sheet = detailRef.current;
+    while (node && node !== sheet) {
+      if (node instanceof HTMLElement && node.scrollTop > 0) {
+        return true;
+      }
+      node = node.parentElement;
+    }
+    return false;
+  };
 
   // Desktop: grow the detail's real box out of the card. Mobile: slide a
   // full-screen sheet up from the bottom.
@@ -154,9 +166,9 @@ export function WishDetailOverlay({
     }
   };
 
-  // Swipe the sheet down to dismiss (mobile). A pull that starts inside the
-  // scrollable body only becomes a drag once the body is at its top — so a long
-  // description scrolls normally; a pull from the handle/image always drags.
+  // Swipe the sheet down to dismiss (mobile). A pull only becomes a drag when no
+  // inner scroller (body or the description box) is scrolled down — so long text
+  // scrolls normally; a pull from the handle/image always drags.
   const onSheetDown = (event: ReactPointerEvent) => {
     if (!isMobile || closingRef.current) {
       return;
@@ -164,9 +176,7 @@ export function WishDetailOverlay({
     if (event.target instanceof Element && event.target.closest('button, a')) {
       return;
     }
-    const fromScroll =
-      event.target instanceof Element && Boolean(event.target.closest(`.${styles.detailBody}`));
-    dragRef.current = { startY: event.clientY, dy: 0, dragging: false, tracking: true, fromScroll };
+    dragRef.current = { startY: event.clientY, dy: 0, dragging: false, tracking: true };
   };
   const onSheetMove = (event: ReactPointerEvent) => {
     const drag = dragRef.current;
@@ -176,9 +186,7 @@ export function WishDetailOverlay({
     }
     const dy = event.clientY - drag.startY;
     if (!drag.dragging) {
-      const body = scrollBody();
-      const atTop = !drag.fromScroll || !body || body.scrollTop <= 0;
-      if (dy > 6 && atTop) {
+      if (dy > 6 && !anyScrolledUp(event.target)) {
         drag.dragging = true;
         try {
           detail.setPointerCapture?.(event.pointerId);
@@ -186,7 +194,7 @@ export function WishDetailOverlay({
           // synthetic pointer id — safe to ignore
         }
       } else if (dy < -6 || dy > 6) {
-        // upward, or downward mid-scroll → hand the gesture back to the body
+        // upward, or downward mid-scroll → hand the gesture back to the scroller
         drag.tracking = false;
         return;
       } else {

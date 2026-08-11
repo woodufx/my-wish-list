@@ -1,7 +1,6 @@
 .screen {
   position: relative;
   min-height: 100vh;
-  min-height: 100dvh;
   color: #fff;
 }
 
@@ -238,7 +237,6 @@
 .orbitScene {
   position: relative;
   height: 100vh;
-  height: 100dvh;
   min-height: 760px;
 }
 
@@ -472,6 +470,13 @@
     line-height: 0.94;
     letter-spacing: -0.025em;
     text-transform: uppercase;
+  }
+  /* long descriptions get their own scroll (~4 lines) so they never blow up the
+     sheet layout — title, price and buttons stay put. */
+  .detailMobile .detailNote {
+    max-height: calc(1.55em * 4);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .detailMobile .detailPriceRow {
     flex-wrap: wrap;
