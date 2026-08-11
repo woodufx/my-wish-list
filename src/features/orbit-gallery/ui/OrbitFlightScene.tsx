@@ -129,7 +129,11 @@ export function OrbitFlightScene({
       // composited card layers up past this gets soft). The 3D + backdrop fill the
       // remaining edges on very large screens.
       const cover = Math.max(window.innerWidth / next.width, window.innerHeight / next.height);
-      setScale(Math.min(cover, 1.15));
+      // never let the stage grow WIDER than the viewport, or the left-anchored hero
+      // and list heading get cropped at square / tall aspect ratios (the empty
+      // stage margins letterbox top/bottom instead, filled by the backdrop).
+      const widthFit = window.innerWidth / next.width;
+      setScale(Math.min(cover, widthFit, 1.15));
       setViewportH(window.innerHeight);
     };
     fit();
@@ -329,7 +333,7 @@ export function OrbitFlightScene({
       // screen-2 "12 ЖЕЛАНИЙ" arrives
       const s2 = s2Ref.current;
       if (s2) {
-        const y = 1020 - S * 0.58 - pys * 26;
+        const y = scene.s2Base - S * 0.58 - pys * 26;
         s2.style.transform = `translate3d(${(-pxs * 34).toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
         const rv = clamp01((S - 260) / 420);
         s2.style.opacity = rv.toFixed(3);
@@ -443,28 +447,28 @@ export function OrbitFlightScene({
 
         const offscreen = cy < -420 || cy > scene.height + 460;
         el.style.visibility = offscreen ? 'hidden' : 'visible';
+        let naturalOpacity: number;
         if (scene.vertical) {
           // mobile: a focused carousel — only the front few cards read, the rest
           // fall away sharply (as in the mobile mockup)
           const near = clamp01((d - 0.72) / 0.28);
-          el.style.opacity = (
+          naturalOpacity =
             t > 0.9
               ? Math.max(0.45, 1 - Math.abs(cy - scene.morphY) / 780)
-              : 0.02 + 0.98 * near ** 2.2
-          ).toFixed(3);
+              : 0.02 + 0.98 * near ** 2.2;
           el.style.filter =
             t < 0.5 && d < 0.86
               ? `blur(${((0.86 - d) * 7 * (1 - t * 2)).toFixed(2)}px) brightness(${(0.5 + 0.5 * d).toFixed(2)})`
               : 'none';
         } else {
-          el.style.opacity = (
-            t > 0.9 ? Math.max(0.35, 1 - Math.abs(cy - scene.morphY) / 900) : 0.1 + 0.9 * d ** 1.15
-          ).toFixed(3);
+          naturalOpacity =
+            t > 0.9 ? Math.max(0.35, 1 - Math.abs(cy - scene.morphY) / 900) : 0.1 + 0.9 * d ** 1.15;
           el.style.filter =
             t < 0.5 && d < 0.86
               ? `blur(${((0.86 - d) * 9 * (1 - t * 2)).toFixed(2)}px) brightness(${(0.42 + 0.58 * d).toFixed(2)})`
               : 'none';
         }
+        el.style.opacity = naturalOpacity.toFixed(3);
         el.style.zIndex = String(
           t > 0.5 ? Math.round(200 - Math.abs(cy - scene.morphY) / 8) : Math.round(d * 100),
         );
@@ -472,7 +476,10 @@ export function OrbitFlightScene({
 
         if (flight && flight.i === i) {
           el.style.visibility = 'visible';
-          el.style.opacity = '1';
+          // Blend the natural carousel opacity → full while flown out (pos≈1) and
+          // ease it back as the card returns (pos→0), so the brightness doesn't
+          // snap the instant the flight ends.
+          el.style.opacity = (naturalOpacity + (1 - naturalOpacity) * flight.pos).toFixed(3);
           el.style.filter = 'none';
           el.style.zIndex = '220';
           el.style.pointerEvents = 'none';

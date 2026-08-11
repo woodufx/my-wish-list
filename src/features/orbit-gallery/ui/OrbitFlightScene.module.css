@@ -293,7 +293,9 @@
     right: 20px;
   }
   .heroTitle {
-    font-size: 92px;
+    /* 92px overflows the 390 frame ("ЖЕЛАНИЙ" is ~371px wide from left:20);
+       86px keeps the widest line inside with a comfortable margin. */
+    font-size: 86px;
     line-height: 0.88;
     white-space: nowrap;
   }

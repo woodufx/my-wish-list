@@ -33,12 +33,19 @@ const info = await page.evaluate(() => {
     heroFontFamily: h1 ? getComputedStyle(h1).fontFamily : null,
     heroFontSize: h1 ? getComputedStyle(h1).fontSize : null,
     s2FillFont: fill ? getComputedStyle(fill).fontSize : null,
+    heroScrollW: h1 ? h1.scrollWidth : null,
+    heroClipped: h1 ? h1.scrollWidth + h1.getBoundingClientRect().left > 390 : null,
     oswaldLoaded: document.fonts.check('700 62px Oswald'),
     canvases: document.querySelectorAll('canvas').length,
   };
 });
 console.log('ORBIT', JSON.stringify(info));
 await page.screenshot({ path: 'scripts/mobile-orbit.png' });
+
+// mid-scroll: the 3D should be parked near the cards, not shoved off-right
+await page.evaluate(() => window.scrollTo(0, 700));
+await page.waitForTimeout(1600);
+await page.screenshot({ path: 'scripts/mobile-mid.png' });
 
 await page.evaluate(() => window.scrollTo(0, 1400));
 await page.waitForTimeout(3000);

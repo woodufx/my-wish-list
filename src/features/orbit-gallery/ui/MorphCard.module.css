@@ -24,6 +24,13 @@
     inset 0 -20px 40px -22px rgba(90, 150, 255, 0.5);
   color: #fff;
   overflow: hidden;
+  /* ease the booked (.mine) amber glow in/out so it doesn't snap when the
+     reservation flight ends. Only colour/shadow — never transform/backdrop,
+     which the rAF drives every frame. */
+  transition:
+    border-color 0.5s ease,
+    box-shadow 0.5s ease,
+    background 0.5s ease;
 }
 
 .rim {

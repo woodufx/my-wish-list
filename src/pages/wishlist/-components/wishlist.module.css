@@ -362,6 +362,9 @@
 @media (max-width: 680px) {
   .overlay {
     padding: 0;
+    /* swallow touch gestures so a drag on the sheet never scrolls the feed
+       behind it (the swipe-down close owns the vertical gesture instead) */
+    touch-action: none;
   }
   .detailMobile {
     position: absolute;
@@ -373,6 +376,7 @@
     flex-direction: column;
     padding: 0 0 calc(22px + env(safe-area-inset-bottom, 0px));
     will-change: transform;
+    touch-action: none;
   }
   .detailMobile .detailShot {
     width: auto;

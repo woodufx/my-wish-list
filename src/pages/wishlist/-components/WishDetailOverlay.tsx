@@ -140,6 +140,13 @@ export function WishDetailOverlay({
       return;
     }
     dragRef.current = { y0: event.clientY, dy: 0, active: true };
+    // keep every subsequent pointer event on the sheet so the browser can't
+    // hand the gesture to the scroll container behind it
+    try {
+      detailRef.current?.setPointerCapture?.(event.pointerId);
+    } catch {
+      // no active pointer with that id (e.g. synthetic events) — safe to ignore
+    }
   };
   const onSheetMove = (event: ReactPointerEvent) => {
     const drag = dragRef.current;

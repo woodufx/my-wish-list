@@ -72,6 +72,8 @@ export interface SceneGeom {
   arcStep: number;
   /** Stage px the orbit rises across the drift zone. */
   driftLift: number;
+  /** Stage-Y the "N ЖЕЛАНИЙ" list heading starts from (it rises as you scroll). */
+  s2Base: number;
   /** Card size the booking spin shrinks to. */
   bookW: number;
   bookH: number;
@@ -111,6 +113,7 @@ export const SCENE: SceneGeom = {
   arcBase: 110,
   arcStep: 55,
   driftLift: 150,
+  s2Base: 1020,
   bookW: 236,
   bookH: 340,
   bookZ: 380,
@@ -147,6 +150,7 @@ export const SCENE_MOBILE: SceneGeom = {
   arcBase: 72,
   arcStep: 26,
   driftLift: 90,
+  s2Base: 936,
   bookW: 186,
   bookH: 264,
   bookZ: 150,

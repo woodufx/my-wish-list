@@ -37,39 +37,43 @@ export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
       <FrameloopController />
       <Lighting />
       {mobile ? (
-        // Phone: a couple of small metal shapes sitting partly over the carousel.
+        // Phone: small metal shapes parked in the left/right columns beside the
+        // centred cards (mirrors the design's mobile orb-stage x-positions:
+        // ~40px and ~350px in a 390 frame → world x ≈ ∓1.0). driftDir is [0,0]
+        // so the orbit→list flight does NOT shove them off-screen — they simply
+        // parallax vertically with scroll (speed) and pass by the cards.
         <>
           <GlbModel
             url="/models/heart-silver.glb"
-            position={[-0.95, -0.5, 1]}
-            scale={0.52}
+            position={[-0.98, 0.6, 0.4]}
+            scale={0.62}
             color="#3a5aa0"
             roughness={0.28}
             speed={1.1}
-            parallax={1.5}
-            driftDir={[-0.5, 0.5]}
+            parallax={0.7}
+            driftDir={[0, 0]}
             phase={0.4}
           />
           <GlbModel
             url="/models/tag-silver.glb"
-            position={[1.0, -1.7, 0.8]}
-            scale={0.5}
+            position={[1.0, 3.4, 0.3]}
+            scale={0.55}
             color="#3a5aa0"
             roughness={0.26}
-            speed={1.2}
-            parallax={1.5}
-            driftDir={[0.5, -0.4]}
+            speed={1.25}
+            parallax={0.7}
+            driftDir={[0, 0]}
             phase={1.6}
           />
           <GlbModel
             url="/models/heart-silver.glb"
-            position={[0.9, 2.4, 0.6]}
-            scale={0.42}
+            position={[0.94, -2.8, 0.5]}
+            scale={0.5}
             color="#3a5aa0"
             roughness={0.3}
-            speed={1.25}
-            parallax={1.5}
-            driftDir={[0.4, -0.4]}
+            speed={1.15}
+            parallax={0.7}
+            driftDir={[0, 0]}
             phase={3.1}
           />
         </>
