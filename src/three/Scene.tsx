@@ -27,9 +27,9 @@ function FrameloopController() {
  */
 export default function Scene({ mobile = false }: { mobile?: boolean }) {
   if (mobile) {
-    // Phone back plane: a couple of larger shapes drifting through the CENTRE,
+    // Phone back plane: a single sculptural shape drifting through the CENTRE,
     // behind the cards (blurred + dimmed by the host) so the middle of the
-    // screen isn't empty. They burst apart vertically on the orbit→list flight.
+    // screen isn't empty. It bursts up on the orbit→list flight, then gathers.
     return (
       <Canvas
         camera={{ position: [0, 0, 7], fov: 42 }}
@@ -43,26 +43,15 @@ export default function Scene({ mobile = false }: { mobile?: boolean }) {
         <FrameloopController />
         <Lighting />
         <GlbModel
-          url="/models/blob-silver.glb"
-          position={[0.15, 0.8, -1.9]}
-          scale={2.5}
-          color="#28407a"
-          roughness={0.4}
-          speed={0.5}
-          driftDir={[0, 0]}
-          burstDir={[0, -1.9]}
-          phase={1.2}
-        />
-        <GlbModel
-          url="/models/torus-silver.glb"
-          position={[-0.2, -3.2, -1.7]}
-          scale={1.85}
+          url="/models/knot-silver.glb"
+          position={[0.1, 0.5, -1.8]}
+          scale={2.2}
           color="#2b4a86"
-          roughness={0.38}
-          speed={0.58}
+          roughness={0.36}
+          speed={0.54}
           driftDir={[0, 0]}
-          burstDir={[0, 2.0]}
-          phase={3.1}
+          burstDir={[0, -1.7]}
+          phase={1.2}
         />
       </Canvas>
     );
@@ -119,38 +108,6 @@ export default function Scene({ mobile = false }: { mobile?: boolean }) {
         speed={0.44}
         driftDir={[-0.6, 0.4]}
         phase={4.2}
-      />
-      {/* the big heart, moved to the back plane so it no longer covers the rail */}
-      <GlbModel
-        url="/models/heart-silver.glb"
-        position={[4.9, 1.3, -3.6]}
-        scale={2.5}
-        color="#20345f"
-        roughness={0.4}
-        speed={0.48}
-        driftDir={[0.6, 0.5]}
-        phase={0.9}
-      />
-      {/* moved off the front plane to declutter the right side; drift in later */}
-      <GlbModel
-        url="/models/tag-silver.glb"
-        position={[4.6, 5.2, -3.2]}
-        scale={2.0}
-        color="#1d3060"
-        roughness={0.4}
-        speed={0.5}
-        driftDir={[0.5, -0.4]}
-        phase={2.4}
-      />
-      <GlbModel
-        url="/models/blob-silver.glb"
-        position={[5.2, 8.4, -3.4]}
-        scale={2.3}
-        color="#1a2c52"
-        roughness={0.42}
-        speed={0.46}
-        driftDir={[0.5, -0.5]}
-        phase={3.6}
       />
     </Canvas>
   );
