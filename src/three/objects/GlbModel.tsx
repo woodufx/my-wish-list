@@ -17,18 +17,10 @@ interface GlbModelProps {
   speed?: number;
   /** Direction the object drifts as the orbit→panels flight progresses. */
   driftDir?: [number, number];
-  /**
-   * Throw-and-gather impulse: the object is shoved this way at mid-flight and
-   * eased back by the time the list settles (a `sin(flight·π)` pulse). Used on
-   * mobile to disperse objects vertically during the orbit→list transition,
-   * since the narrow screen has no room to spread them sideways.
-   */
-  burstDir?: [number, number];
   phase?: number;
 }
 
 const DEFAULT_DRIFT: [number, number] = [1, 0];
-const DEFAULT_BURST: [number, number] = [0, 0];
 
 /**
  * Loads a GLB and gives it the orb-stage look: high metalness + strong
@@ -45,7 +37,6 @@ export function GlbModel({
   parallax = 1,
   speed = 0.5,
   driftDir = DEFAULT_DRIFT,
-  burstDir = DEFAULT_BURST,
   phase = 0,
 }: GlbModelProps) {
   const { scene } = useGLTF(url);
@@ -93,21 +84,17 @@ export function GlbModel({
 
     // booking wave: a brief shove + turn + pulse when a reservation flies
     const wave = stageSync.wave;
-    // throw-and-gather burst: peaks mid orbit→list flight, zero at both ends
-    const burst = Math.sin(Math.max(0, Math.min(1, flight)) * Math.PI);
     group.position.x =
       position[0] +
       stageSync.px * parallax * 2.0 * pfx.current +
       driftDir[0] * flight * 2.4 +
-      driftDir[0] * wave * 1.3 +
-      burstDir[0] * burst * 2.4;
+      driftDir[0] * wave * 1.3;
     group.position.y =
       driftY +
       Math.sin(t * 0.4 + phase) * 0.2 +
       stageSync.py * parallax * 1.5 * pfy.current +
       driftDir[1] * flight * 2 +
-      driftDir[1] * wave * 1.0 +
-      burstDir[1] * burst * 2.4;
+      driftDir[1] * wave * 1.0;
     group.rotation.x =
       spinRef.current * 0.16 + stageSync.py * 0.32 * pfy.current + wave * 0.4 * pfy.current;
     group.rotation.y =

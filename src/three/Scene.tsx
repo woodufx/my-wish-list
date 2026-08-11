@@ -29,7 +29,7 @@ export default function Scene({ mobile = false }: { mobile?: boolean }) {
   if (mobile) {
     // Phone back plane: a single heart drifting behind the cards, offset to one
     // side of centre (blurred + dimmed by the host) so the middle isn't empty.
-    // It bursts up on the orbit→list flight, then gathers.
+    // The orbit→list flight gives it a one-way upward bounce (it stays, no return).
     return (
       <Canvas
         camera={{ position: [0, 0, 7], fov: 42 }}
@@ -49,8 +49,7 @@ export default function Scene({ mobile = false }: { mobile?: boolean }) {
           color="#2b4a86"
           roughness={0.36}
           speed={0.54}
-          driftDir={[0, 0]}
-          burstDir={[0, -1.7]}
+          driftDir={[0, -0.9]}
           phase={1.2}
         />
       </Canvas>

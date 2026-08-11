@@ -39,9 +39,9 @@ export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
       {mobile ? (
         // Phone: small metal shapes parked in the left/right columns beside the
         // centred cards (mirrors the design's mobile orb-stage x-positions:
-        // ~40px and ~350px in a 390 frame → world x ≈ ∓1.0). driftDir is [0,0]
-        // so the orbit→list flight does NOT shove them off-screen — they simply
-        // parallax vertically with scroll (speed) and pass by the cards.
+        // ~40px and ~350px in a 390 frame → world x ≈ ∓1.0). The orbit→list
+        // flight gives them a one-way vertical bounce (driftDir, no horizontal
+        // so they never leave the narrow screen); they also parallax with scroll.
         <>
           <GlbModel
             url="/models/heart-silver.glb"
@@ -51,8 +51,7 @@ export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
             roughness={0.28}
             speed={1.1}
             parallax={0.7}
-            driftDir={[0, 0]}
-            burstDir={[-0.35, -1.6]}
+            driftDir={[0, -0.85]}
             phase={0.4}
           />
           <GlbModel
@@ -63,8 +62,7 @@ export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
             roughness={0.26}
             speed={1.25}
             parallax={0.7}
-            driftDir={[0, 0]}
-            burstDir={[0.3, 1.7]}
+            driftDir={[0, 0.9]}
             phase={1.6}
           />
           <GlbModel
@@ -75,8 +73,7 @@ export default function FrontScene({ mobile = false }: { mobile?: boolean }) {
             roughness={0.3}
             speed={1.15}
             parallax={0.7}
-            driftDir={[0, 0]}
-            burstDir={[0.35, -1.5]}
+            driftDir={[0, -0.8]}
             phase={3.1}
           />
         </>
