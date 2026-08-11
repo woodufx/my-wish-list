@@ -108,11 +108,21 @@
   }
 }
 
-/* PERF (mobile): a phone shows the 3D BackgroundScene behind content, so this
-   full-screen blur(72px) band layer is redundant ambiance — drop it and keep
-   just the base colour + vignette. */
+/* PERF (mobile): the blur(72px) band layer is far too heavy on phones. Replace
+   it with a soft multi-radial "aurora" painted straight on the backdrop — a
+   single cheap paint, no filter and no per-frame work, so the background reads
+   rich and atmospheric instead of flat black. The vignette above darkens the
+   edges into it. */
 @media (max-width: 680px) {
   .bands {
     display: none;
+  }
+  .backdrop {
+    background:
+      radial-gradient(58% 40% at 20% 16%, rgba(64, 116, 246, 0.42), transparent 68%),
+      radial-gradient(54% 44% at 84% 30%, rgba(22, 54, 165, 0.52), transparent 70%),
+      radial-gradient(82% 56% at 52% 94%, rgba(255, 150, 66, 0.13), transparent 68%),
+      radial-gradient(96% 82% at 50% 44%, rgba(16, 38, 116, 0.5), transparent 78%),
+      var(--color-abyss);
   }
 }

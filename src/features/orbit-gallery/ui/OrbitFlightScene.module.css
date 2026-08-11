@@ -28,19 +28,17 @@
   touch-action: pan-y;
 }
 
-/* PERF (mobile): keep the coloured gradients for a lively backdrop, but strip
-   the expensive `filter: blur()` off them — a moving blurred layer is re-rendered
-   every frame, and the big blur72 bands / blur22 pool were the heaviest cost.
-   Radial gradients (pool + glows) are already soft with no blur; the blob shapes
-   read fine without their small blur too. Only the full-screen bands stay off. */
-.stage[data-vertical] .bands {
-  display: none;
-}
+/* PERF (mobile): drop the whole stacked 2D backdrop here. Without their blur the
+   blobs/pool read as hard "circles", and with it they were the heaviest cost
+   (large blurred surfaces re-composited under the cards every frame). The soft
+   colour field now lives on the full-screen LiquidBackdrop instead — one cheap
+   painted gradient. Keep only the vignette and the momentary booking flash. */
+.stage[data-vertical] .bands,
 .stage[data-vertical] .blob,
 .stage[data-vertical] .pool,
 .stage[data-vertical] .glowA,
 .stage[data-vertical] .glowB {
-  filter: none;
+  display: none;
 }
 
 /* ---- 2D pseudo-3D backdrop (drifting light + liquid blobs + glows) ---- */
