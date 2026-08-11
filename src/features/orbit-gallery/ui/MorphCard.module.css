@@ -411,6 +411,19 @@
       rgba(8, 12, 26, 0.74);
     backdrop-filter: none;
   }
+  /* PERF (mobile): the 70px/40px shadow blurs repaint on every card every frame
+     while the orbit moves. Shrink the blur radii hard (a card is small on a
+     phone, so a tight shadow still reads) to cut GPU fill and heat. */
+  .shell {
+    box-shadow:
+      0 10px 22px -14px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  }
+  .mine {
+    box-shadow:
+      0 10px 22px -14px rgba(0, 0, 0, 0.8),
+      0 0 14px rgba(255, 150, 60, 0.24);
+  }
 
   .w {
     width: 350px;

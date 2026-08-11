@@ -41,6 +41,13 @@
   display: none;
 }
 
+/* PERF (mobile): each card carried its own blur(22px) glow layer that moved with
+   it every frame — 12 blurred surfaces repainting continuously was a big share
+   of the GPU fill (the hot phone). Drop them on phones. */
+.stage[data-vertical] .cardGlow {
+  display: none;
+}
+
 /* ---- 2D pseudo-3D backdrop (drifting light + liquid blobs + glows) ---- */
 .bands {
   position: absolute;
