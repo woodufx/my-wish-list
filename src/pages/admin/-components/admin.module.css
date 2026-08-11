@@ -130,3 +130,59 @@
   letter-spacing: -0.03em;
   margin: 0 0 20px;
 }
+
+/* ---- mobile: stack the two columns, shrink the title, reflow the rows ---- */
+@media (max-width: 680px) {
+  .content {
+    padding: 16px 20px 96px;
+  }
+  .layout {
+    flex-direction: column;
+    gap: 28px;
+  }
+  .left {
+    width: 100%;
+  }
+  .title {
+    font-size: 64px;
+    line-height: 0.9;
+  }
+  .privacy {
+    margin-top: 24px;
+    padding: 20px;
+  }
+  .privacyTitle {
+    font-size: 22px;
+  }
+  .right {
+    padding-top: 0;
+  }
+  /* the desktop [thumb · name · price · button] row is too wide on a phone and
+     pushed the "Изменить" button off-screen — drop price + button to a second row. */
+  .row {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    grid-template-areas:
+      'thumb body  body'
+      'price price action';
+    column-gap: 14px;
+    row-gap: 10px;
+    align-items: center;
+  }
+  .thumb {
+    grid-area: thumb;
+  }
+  .rowBody {
+    grid-area: body;
+  }
+  .rowPrice {
+    grid-area: price;
+  }
+  .row > button {
+    grid-area: action;
+    justify-self: end;
+  }
+  .formTitle {
+    font-size: 44px;
+  }
+}
