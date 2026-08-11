@@ -3,6 +3,7 @@ import { animate } from 'motion/react';
 import { formatPrice, priorityLabel, type WishPublic } from '@/entities/wish';
 import { Button } from '@/shared/ui';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { lockScroll, unlockScroll } from '@/shared/lib/scroll-lock';
 import { cn } from '@/shared/lib/cn';
 import styles from './wishlist.module.css';
 
@@ -173,6 +174,15 @@ export function WishDetailOverlay({
   };
   const closeRef = useRef(close);
   closeRef.current = close;
+
+  // Freeze the page behind the overlay: a swipe on the sheet must not scroll the
+  // list underneath, and iOS must not fire pull-to-refresh.
+  useEffect(() => {
+    lockScroll();
+    return () => {
+      unlockScroll();
+    };
+  }, []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

@@ -47,6 +47,9 @@ body,
 html,
 body {
   overflow-x: clip;
+  /* App-like: no browser rubber-band / pull-to-refresh — overlays own the
+     vertical gesture, and a swipe-to-close must never reload the page. */
+  overscroll-behavior: none;
 }
 
 body {

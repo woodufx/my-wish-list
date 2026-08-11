@@ -3,6 +3,7 @@ import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LENIS } from '@/shared/config/motion';
+import { registerLenis } from '@/shared/lib/scroll-lock';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,6 +22,7 @@ export function useLenis(enabled: boolean): MutableRefObject<Lenis | null> {
 
     const lenis = new Lenis({ lerp: LENIS.lerp, wheelMultiplier: LENIS.wheelMultiplier });
     ref.current = lenis;
+    registerLenis(lenis);
     lenis.on('scroll', () => {
       ScrollTrigger.update();
     });
@@ -35,6 +37,7 @@ export function useLenis(enabled: boolean): MutableRefObject<Lenis | null> {
       gsap.ticker.remove(onTick);
       lenis.destroy();
       ref.current = null;
+      registerLenis(null);
     };
   }, [enabled]);
 

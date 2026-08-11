@@ -383,6 +383,35 @@
 
 /* ---- mobile: the wide panel is a vertical card (image on top) ---- */
 @media (max-width: 680px) {
+  /* PERF: `backdrop-filter` re-rasterizes everything behind each card every
+     frame — with ~12 cards moving on a high-DPI phone it collapsed the orbit to
+     ~10fps. Drop the live blur and fake the glass with a denser, near-opaque
+     gradient (over the dark scene it reads almost identically). */
+  .shell {
+    background: linear-gradient(
+      155deg,
+      rgba(58, 88, 150, 0.82),
+      rgba(11, 19, 42, 0.95) 46%,
+      rgba(40, 66, 132, 0.8)
+    );
+    backdrop-filter: none;
+  }
+  .back {
+    background: linear-gradient(
+      150deg,
+      rgba(46, 74, 140, 0.92),
+      rgba(9, 15, 34, 0.97) 52%,
+      rgba(44, 74, 156, 0.88)
+    );
+    backdrop-filter: none;
+  }
+  .otherOverlay {
+    background:
+      repeating-linear-gradient(135deg, rgba(160, 200, 255, 0.08) 0 2px, transparent 2px 13px),
+      rgba(8, 12, 26, 0.74);
+    backdrop-filter: none;
+  }
+
   .w {
     width: 350px;
     flex-direction: column;
