@@ -105,6 +105,12 @@
   font-family: var(--font-sans);
   color: rgba(198, 214, 245, 0.52);
   text-wrap: pretty;
+  /* clamp long descriptions on the card faces — the full text is in the detail */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .price {
   font-family: var(--font-sans);

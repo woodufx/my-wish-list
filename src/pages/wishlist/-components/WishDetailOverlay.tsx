@@ -83,6 +83,21 @@ export function WishDetailOverlay({
   const closingRef = useRef(false);
   const isMobile = useMediaQuery('(max-width: 680px)');
 
+  // One transform channel for the mobile sheet (open, drag, close). Mixing a raw
+  // style.transform write for the drag with motion's `y` for the animations made
+  // close jump back to the top before sliding down — everything writes translateY
+  // in px now, so they compose seamlessly.
+  const dragRef = useRef({ startY: 0, dy: 0, dragging: false, tracking: false, fromScroll: false });
+  const setSheetY = (y: number) => {
+    const detail = detailRef.current;
+    if (detail) {
+      detail.style.transform = `translate3d(0, ${y}px, 0)`;
+    }
+  };
+  const sheetHeight = () => detailRef.current?.offsetHeight ?? window.innerHeight;
+  const scrollBody = () =>
+    detailRef.current?.querySelector<HTMLElement>(`.${styles.detailBody}`) ?? null;
+
   // Desktop: grow the detail's real box out of the card. Mobile: slide a
   // full-screen sheet up from the bottom.
   useLayoutEffect(() => {
@@ -93,7 +108,9 @@ export function WishDetailOverlay({
     }
     animate(overlay, { opacity: [0, 1] }, { duration: 0.4, ease: 'easeOut' });
     if (isMobile) {
-      animate(detail, { y: ['100%', '0%'] }, { duration: 0.42, ease: OPEN_EASE });
+      const h = sheetHeight();
+      setSheetY(h);
+      animate(h, 0, { duration: 0.42, ease: OPEN_EASE, onUpdate: setSheetY });
       return;
     }
     const box = detail.getBoundingClientRect();
@@ -119,7 +136,13 @@ export function WishDetailOverlay({
     }
     animate(overlay, { opacity: 0 }, { duration: 0.34, ease: 'easeIn' });
     if (isMobile) {
-      animate(detail, { y: '100%' }, { duration: 0.34, ease: CLOSE_EASE, onComplete: onClose });
+      // slide out from wherever the drag left it (0 for a button/backdrop close)
+      animate(dragRef.current.dy || 0, sheetHeight(), {
+        duration: 0.34,
+        ease: CLOSE_EASE,
+        onUpdate: setSheetY,
+        onComplete: onClose,
+      });
       return;
     }
     const box = detail.getBoundingClientRect();
@@ -131,8 +154,9 @@ export function WishDetailOverlay({
     }
   };
 
-  // Swipe the sheet down to dismiss (mobile).
-  const dragRef = useRef({ y0: 0, dy: 0, active: false });
+  // Swipe the sheet down to dismiss (mobile). A pull that starts inside the
+  // scrollable body only becomes a drag once the body is at its top — so a long
+  // description scrolls normally; a pull from the handle/image always drags.
   const onSheetDown = (event: ReactPointerEvent) => {
     if (!isMobile || closingRef.current) {
       return;
@@ -140,36 +164,54 @@ export function WishDetailOverlay({
     if (event.target instanceof Element && event.target.closest('button, a')) {
       return;
     }
-    dragRef.current = { y0: event.clientY, dy: 0, active: true };
-    // keep every subsequent pointer event on the sheet so the browser can't
-    // hand the gesture to the scroll container behind it
-    try {
-      detailRef.current?.setPointerCapture?.(event.pointerId);
-    } catch {
-      // no active pointer with that id (e.g. synthetic events) — safe to ignore
-    }
+    const fromScroll =
+      event.target instanceof Element && Boolean(event.target.closest(`.${styles.detailBody}`));
+    dragRef.current = { startY: event.clientY, dy: 0, dragging: false, tracking: true, fromScroll };
   };
   const onSheetMove = (event: ReactPointerEvent) => {
     const drag = dragRef.current;
     const detail = detailRef.current;
-    if (!drag.active || !detail) {
+    if (!drag.tracking || !detail) {
       return;
     }
-    const dy = event.clientY - drag.y0;
+    const dy = event.clientY - drag.startY;
+    if (!drag.dragging) {
+      const body = scrollBody();
+      const atTop = !drag.fromScroll || !body || body.scrollTop <= 0;
+      if (dy > 6 && atTop) {
+        drag.dragging = true;
+        try {
+          detail.setPointerCapture?.(event.pointerId);
+        } catch {
+          // synthetic pointer id — safe to ignore
+        }
+      } else if (dy < -6 || dy > 6) {
+        // upward, or downward mid-scroll → hand the gesture back to the body
+        drag.tracking = false;
+        return;
+      } else {
+        return;
+      }
+    }
     drag.dy = dy > 0 ? dy : dy * 0.2;
-    detail.style.transform = `translateY(${drag.dy}px)`;
+    setSheetY(drag.dy);
   };
   const onSheetUp = () => {
     const drag = dragRef.current;
-    const detail = detailRef.current;
-    if (!drag.active || !detail) {
+    if (!drag.tracking) {
       return;
     }
-    drag.active = false;
+    const wasDragging = drag.dragging;
+    drag.tracking = false;
+    drag.dragging = false;
+    if (!wasDragging) {
+      return;
+    }
     if (drag.dy > 120) {
       close();
     } else {
-      animate(detail, { transform: 'translateY(0px)' }, { duration: 0.3, ease: OPEN_EASE });
+      animate(drag.dy, 0, { duration: 0.3, ease: OPEN_EASE, onUpdate: setSheetY });
+      drag.dy = 0;
     }
   };
   const closeRef = useRef(close);

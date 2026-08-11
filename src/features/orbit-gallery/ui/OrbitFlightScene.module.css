@@ -7,6 +7,9 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  /* dvh tracks the visible viewport (matches window.innerHeight the rAF reads),
+     so the stage isn't clipped behind the Safari toolbar. */
+  height: 100dvh;
   overflow: hidden;
   isolation: isolate;
 }

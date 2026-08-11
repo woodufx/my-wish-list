@@ -52,6 +52,18 @@ body {
   overscroll-behavior: none;
 }
 
+/* Hide the native scrollbar everywhere — the page uses its own scroll indicator
+   (the orbit rail), and the app-like chrome shouldn't show a system bar. Scroll
+   itself keeps working; only the visual bar is removed. */
+html {
+  scrollbar-width: none; /* Firefox */
+}
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* WebKit / Blink */
+}
+
 body {
   margin: 0;
   background-color: var(--color-abyss);

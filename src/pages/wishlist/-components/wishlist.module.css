@@ -1,6 +1,7 @@
 .screen {
   position: relative;
   min-height: 100vh;
+  min-height: 100dvh;
   color: #fff;
 }
 
@@ -237,6 +238,7 @@
 .orbitScene {
   position: relative;
   height: 100vh;
+  height: 100dvh;
   min-height: 760px;
 }
 
@@ -414,6 +416,10 @@
 @media (max-width: 680px) {
   .overlay {
     padding: 0;
+    /* pin the sheet to the VISIBLE viewport (dvh), not the layout viewport that
+       hides behind the Safari toolbar — otherwise the sheet's footer is clipped */
+    bottom: auto;
+    height: 100dvh;
     /* swallow touch gestures so a drag on the sheet never scrolls the feed
        behind it (the swipe-down close owns the vertical gesture instead) */
     touch-action: none;
@@ -426,14 +432,14 @@
     height: 100%;
     border-radius: 34px;
     flex-direction: column;
-    padding: 0 0 calc(22px + env(safe-area-inset-bottom, 0px));
+    padding: 0;
     will-change: transform;
     touch-action: none;
   }
   .detailMobile .detailShot {
     width: auto;
     flex: none;
-    height: 42vh;
+    height: 38dvh;
     max-height: 320px;
     margin: 8px 16px 0;
     border-radius: 22px;
@@ -450,9 +456,15 @@
   }
   .detailMobile .detailBody {
     flex: 1;
+    /* min-height:0 lets this flex child actually shrink and scroll instead of
+       pushing the footer off the bottom of the sheet */
+    min-height: 0;
     padding: 18px 20px 0;
     gap: 12px;
     overflow-y: auto;
+    /* the sheet owns the vertical gesture for swipe-close, but the body must be
+       allowed to scroll its own overflow */
+    touch-action: pan-y;
   }
   .detailMobile .detailName {
     font-family: var(--font-display);
@@ -469,8 +481,16 @@
     white-space: nowrap;
     font-size: 34px;
   }
+  /* actions pinned to the bottom of the sheet: sticky keeps them visible while a
+     long description scrolls under, and the gradient separates them from the text.
+     They still sit inside the scrollable body, so no JSX change is needed. */
   .detailMobile .detailActions {
+    position: sticky;
+    bottom: 0;
     gap: 12px;
+    margin-top: auto;
+    padding: 14px 0 calc(16px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(to top, rgba(9, 15, 33, 0.98) 62%, transparent);
   }
   .detailMobile .detailActions > button:first-child {
     flex: 1;
@@ -478,5 +498,10 @@
   }
   .detailMobile .detailActions > button {
     min-height: 52px;
+  }
+  /* the drag handle already signals swipe-to-close; drop the text hint so it
+     doesn't sit awkwardly below the pinned actions */
+  .detailMobile .detailSwipeHint {
+    display: none;
   }
 }
