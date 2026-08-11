@@ -96,3 +96,54 @@
   font-size: 26px;
   letter-spacing: -0.02em;
 }
+
+/* ---- mobile: tighter gutter, smaller title, reflowed rows ---- */
+@media (max-width: 680px) {
+  .content {
+    padding: 24px 20px 96px;
+  }
+  .title {
+    font-size: 84px;
+    line-height: 0.9;
+  }
+  .subtitle {
+    max-width: none;
+  }
+  .list {
+    margin-top: 28px;
+  }
+  /* the desktop single-row [thumb · body · price · button] is too wide on a
+     phone and pushed the danger button off-screen — reflow to a grid with the
+     price + button on their own row under the name. */
+  .row {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    grid-template-areas:
+      'thumb body  body'
+      'thumb price button';
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 12px;
+    padding: 16px;
+  }
+  .thumb {
+    grid-area: thumb;
+    align-self: stretch;
+    width: 64px;
+    height: auto;
+    min-height: 64px;
+  }
+  .rowBody {
+    grid-area: body;
+  }
+  .rowName {
+    font-size: 18px;
+  }
+  .rowPrice {
+    grid-area: price;
+    font-size: 21px;
+  }
+  .row > button {
+    grid-area: button;
+  }
+}

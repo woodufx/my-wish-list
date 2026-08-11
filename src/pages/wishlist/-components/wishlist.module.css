@@ -155,6 +155,18 @@
 }
 
 @media (max-width: 680px) {
+  /* the desktop 52px gutter is far too wide on a phone — it left the hero mask
+     only 286px, clipping "ЖЕЛАНИЙ". Use a standard mobile gutter and size the
+     heading to fit within it. */
+  .content {
+    padding: 0 20px 96px;
+  }
+  .heroTitle {
+    font-size: 84px;
+  }
+  .heroNote {
+    max-width: none;
+  }
   .filterTrigger {
     display: block;
     width: 100%;

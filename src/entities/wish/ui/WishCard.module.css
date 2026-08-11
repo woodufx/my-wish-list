@@ -300,4 +300,35 @@
   .portrait .action {
     min-height: 44px;
   }
+  /* the panel variant (static / reduced-motion list) is a wide horizontal row on
+     desktop; stack it vertically so the footer button doesn't overflow the phone. */
+  .card.panel {
+    min-height: 0;
+  }
+  .panel .inner {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+  .panel .shot {
+    width: 100%;
+    height: 150px;
+  }
+  .panel .name {
+    font-size: 22px;
+  }
+  .panel .note {
+    max-width: none;
+  }
+  .panel .footer {
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .panel .price {
+    font-size: 26px;
+  }
+  .panel .action {
+    min-height: 44px;
+  }
 }
