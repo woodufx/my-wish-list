@@ -339,8 +339,10 @@
   .s2 .s2Right {
     display: none;
   }
-  .railTrack {
-    right: 10px;
+  /* base .railTrack (right:30px) is declared AFTER this block, so out-specify it;
+     pin the rail hard against the right edge so it never sits under a card. */
+  .railTrack.railTrack {
+    right: 4px;
     top: 110px;
     bottom: 110px;
   }
