@@ -351,10 +351,16 @@ export function OrbitFlightScene({
         const y = scene.s2Base - S * 0.58 - pys * 26;
         s2.style.transform = `translate3d(${(-pxs * 34).toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
         const rv = clamp01((S - 260) / 420);
-        s2.style.opacity = rv.toFixed(3);
+        const reveal = easeInOut(rv);
+        s2.style.opacity = reveal.toFixed(3);
         const s2t = s2TypeRef.current;
         if (s2t) {
-          s2t.style.clipPath = `inset(0 0 ${((1 - rv) * 100).toFixed(1)}% 0)`;
+          // rise + de-blur reveal, like the hero titles — reversible with scroll
+          // (fades/blurs back out on scroll-away). Replaces the clip-path wipe that
+          // looked like the text slid out from under a dark box.
+          const rise = (1 - reveal) * 54;
+          s2t.style.transform = `translate3d(0, ${rise.toFixed(1)}px, 0)`;
+          s2t.style.filter = reveal < 0.999 ? `blur(${((1 - reveal) * 16).toFixed(2)}px)` : 'none';
         }
       }
 

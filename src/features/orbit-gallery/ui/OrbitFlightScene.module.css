@@ -433,7 +433,7 @@
 .s2Type {
   position: relative;
   height: 230px;
-  will-change: transform, clip-path;
+  will-change: transform, filter;
 }
 .s2Type span {
   position: absolute;
