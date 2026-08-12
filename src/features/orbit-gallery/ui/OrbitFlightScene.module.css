@@ -425,7 +425,11 @@
   left: 0;
   top: 0;
   width: 1440px;
-  z-index: 30;
+  /* a background label: sit BELOW the cards' z-index range (which runs ~100..200
+     for visible list cards) so cards are always in front. At the old z-index 30
+     the per-frame card z-index crossed it mid-morph, flipping the heading in front
+     of a card and back. Still above the 2D backdrop (z-index 0). */
+  z-index: 3;
   pointer-events: none;
   will-change: transform, opacity;
   opacity: 0;
