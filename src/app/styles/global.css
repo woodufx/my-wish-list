@@ -73,22 +73,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* iOS: the body/root background propagates to the page canvas, which — unlike
-   position:fixed layers that Safari refuses to paint behind its toolbar/status
-   bar — DOES fill the whole screen, including behind the chrome. So paint the
-   mobile aurora here (mirrors the LiquidBackdrop) to get colour edge-to-edge and
-   under the bars, not just a flat dark strip. */
-@media (max-width: 680px) {
-  body {
-    background:
-      radial-gradient(58% 40% at 20% 16%, rgba(64, 116, 246, 0.42), transparent 68%),
-      radial-gradient(54% 44% at 84% 30%, rgba(22, 54, 165, 0.52), transparent 70%),
-      radial-gradient(82% 56% at 52% 94%, rgba(255, 150, 66, 0.13), transparent 68%),
-      radial-gradient(96% 82% at 50% 44%, rgba(16, 38, 116, 0.5), transparent 78%),
-      var(--color-abyss);
-  }
-}
-
 /* Keyboard focus must always be visible (accessibility requirement). */
 :focus-visible {
   outline: 2px solid var(--color-azure-soft);

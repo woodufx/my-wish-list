@@ -4,9 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* the background now runs edge-to-edge under the status bar (viewport-fit=cover),
-     so keep the nav itself clear of the notch/status bar with the safe-area inset */
-  padding: calc(30px + env(safe-area-inset-top, 0px)) 52px 30px;
+  padding: 30px 52px;
 }
 
 .right {
@@ -17,7 +15,7 @@
 
 @media (max-width: 680px) {
   .bar {
-    padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 16px;
+    padding: 16px;
   }
   .right {
     gap: 10px;
