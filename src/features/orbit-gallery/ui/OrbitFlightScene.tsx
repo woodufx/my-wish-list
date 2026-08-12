@@ -73,7 +73,15 @@ export function OrbitFlightScene({
   onOpen,
   onToggleReservation,
 }: OrbitFlightSceneProps) {
-  const lenisRef = useLenis(true);
+  // Touch devices keep NATIVE scroll: a JS smooth-scroll library (Lenis)
+  // preventDefaults the scroll, which stops iOS Safari from collapsing its
+  // toolbar/address bar — so the page stays boxed between them. Native scroll
+  // lets the chrome minimize and the content fill the screen. The morph reads
+  // window.scrollY either way; desktop keeps Lenis for the inertial feel.
+  const [isTouch] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches,
+  );
+  const lenisRef = useLenis(!isTouch);
   const snapRef = useRef<SnapState>({ snapping: false, atList: false, cooldown: 0 });
   // Latest `paused` for the rAF closure (the loop effect isn't re-created on it).
   const pausedRef = useRef(paused);
