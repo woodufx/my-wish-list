@@ -453,7 +453,10 @@ export function OrbitFlightScene({
           const near = clamp01((d - 0.72) / 0.28);
           naturalOpacity =
             t > 0.9
-              ? Math.max(0.45, 1 - Math.abs(cy - scene.morphY) / 780)
+              ? // fade distant list cards all the way to 0 (no 0.45 floor) so they
+                // reach zero opacity BEFORE the visibility cutoff — otherwise a card
+                // popped in at 0.45 the instant it crossed the offscreen threshold.
+                clamp01(1 - Math.abs(cy - scene.morphY) / 780)
               : 0.02 + 0.98 * near ** 2.2;
           // PERF (mobile): no per-card filter at all. A filter forces its own
           // compositing layer that repaints as the card moves; the steep opacity
