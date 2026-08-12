@@ -1,4 +1,5 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { RouteTransitionLoader } from '@/shared/ui';
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -9,6 +10,7 @@ function RootLayout() {
   return (
     <div className="min-h-full">
       <Outlet />
+      <RouteTransitionLoader />
     </div>
   );
 }

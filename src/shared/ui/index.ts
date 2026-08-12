@@ -7,6 +7,7 @@ export { EmptyState } from './EmptyState';
 export { BottomSheet } from './BottomSheet/BottomSheet';
 export { GrainOverlay } from './GrainOverlay/GrainOverlay';
 export { LoadingScreen } from './LoadingScreen/LoadingScreen';
+export { RouteTransitionLoader } from './RouteTransitionLoader';
 export { ScreenVeil } from './ScreenVeil/ScreenVeil';
 export { TopBar } from './TopBar';
 export { CursorBlob } from './CursorBlob';

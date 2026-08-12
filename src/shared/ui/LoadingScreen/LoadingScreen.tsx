@@ -7,6 +7,8 @@ interface LoadingScreenProps {
   progress: number;
   /** When true, the loader dissolves and then unmounts. */
   done: boolean;
+  /** Status line under the brand mark. */
+  label?: string;
 }
 
 /**
@@ -14,7 +16,7 @@ interface LoadingScreenProps {
  * design: grain + glow over a centred brand mark, a progress bar and a status
  * line, dissolving into blur once loading completes.
  */
-export function LoadingScreen({ progress, done }: LoadingScreenProps) {
+export function LoadingScreen({ progress, done, label = 'собираем список' }: LoadingScreenProps) {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export function LoadingScreen({ progress, done }: LoadingScreenProps) {
         <div className={styles.track}>
           <div className={styles.bar} style={{ width: `${width.toFixed(1)}%` }} />
         </div>
-        <div className={styles.label}>собираем список</div>
+        <div className={styles.label}>{label}</div>
       </div>
     </div>
   );
