@@ -54,9 +54,32 @@ export function MorphCard({ wish, onOpen, onToggleReservation }: MorphCardProps)
           <span className={styles.eyebrowAmber}>{priority}</span>
           <h3 className={styles.name}>{wish.title}</h3>
           {wish.note && <p className={styles.note}>{wish.note}</p>}
+          {/* orbit card is browse-only: price for context; reserving / the shop
+             link live on the settled list card and in the detail view */}
           <div className={styles.cFooter}>
             <span className={styles.price}>{price}</span>
-            <div className={styles.cActions}>
+            {isMine && <span className={styles.cMine}>забронировано</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* wide face */}
+      <div className={styles.w} data-w="">
+        <div className={styles.shot}>
+          {wish.imageUrl && <img src={wish.imageUrl} alt="" />}
+          <div className={styles.shotScrim} />
+          <span className={styles.shotLabel}>фото товара</span>
+        </div>
+        <div className={styles.wBody}>
+          <div className={styles.wEyebrow}>
+            <span className={styles.eyebrowAmber}>{priority}</span>
+            <span className={styles.rule} />
+          </div>
+          <h3 className={styles.name}>{wish.title}</h3>
+          {wish.note && <p className={styles.note}>{wish.note}</p>}
+          <div className={styles.wFooter}>
+            <span className={styles.price}>{price}</span>
+            <div className={styles.wActions}>
               {wish.url && (
                 <a
                   className={styles.linkIcon}
@@ -81,42 +104,10 @@ export function MorphCard({ wish, onOpen, onToggleReservation }: MorphCardProps)
                     onToggleReservation();
                   }}
                 >
-                  {isMine ? 'Снять' : 'Забронировать'}
+                  {isMine ? 'Снять бронь' : 'Забронировать'}
                 </button>
               )}
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* wide face */}
-      <div className={styles.w} data-w="">
-        <div className={styles.shot}>
-          {wish.imageUrl && <img src={wish.imageUrl} alt="" />}
-          <div className={styles.shotScrim} />
-          <span className={styles.shotLabel}>фото товара</span>
-        </div>
-        <div className={styles.wBody}>
-          <div className={styles.wEyebrow}>
-            <span className={styles.eyebrowAmber}>{priority}</span>
-            <span className={styles.rule} />
-          </div>
-          <h3 className={styles.name}>{wish.title}</h3>
-          {wish.note && <p className={styles.note}>{wish.note}</p>}
-          <div className={styles.wFooter}>
-            <span className={styles.price}>{price}</span>
-            {!isOther && (
-              <button
-                type="button"
-                className={styles.action}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onToggleReservation();
-                }}
-              >
-                {isMine ? 'Снять бронь' : 'Забронировать'}
-              </button>
-            )}
             {isMine && <span className={styles.mineLabel}>Забронировано вами</span>}
           </div>
         </div>
