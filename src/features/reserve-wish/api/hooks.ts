@@ -13,6 +13,7 @@ import { toast } from '@/shared/lib/toast';
 interface OptimisticContext {
   previousList: WishPublic[] | undefined;
   previousDetail: WishPublic | undefined;
+  previousMine: MyReservation[] | undefined;
 }
 
 /** Flips a wish's status in both the list and detail caches at once. */
@@ -30,10 +31,45 @@ function setWishStatus(
   );
 }
 
+function findWish(queryClient: QueryClient, slug: string, wishId: string): WishPublic | undefined {
+  return (
+    queryClient.getQueryData<WishPublic>(wishKeys.detail(wishId)) ??
+    queryClient
+      .getQueryData<WishPublic[]>(wishKeys.publicList(slug))
+      ?.find((wish) => wish.id === wishId)
+  );
+}
+
+/** Add the just-reserved wish to the "my bookings" cache so it's there the instant
+ *  the guest opens that screen, instead of after a refetch. */
+function addToMine(queryClient: QueryClient, slug: string, wishId: string): void {
+  const wish = findWish(queryClient, slug, wishId);
+  if (!wish) {
+    return;
+  }
+  queryClient.setQueryData<MyReservation[]>(reservationKeys.mine(), (list) => {
+    const base = list ?? [];
+    if (base.some((entry) => entry.wish.id === wishId)) {
+      return base;
+    }
+    return [
+      { wish: { ...wish, reservationStatus: 'taken_by_me' }, createdAt: new Date().toISOString() },
+      ...base,
+    ];
+  });
+}
+
+function removeFromMine(queryClient: QueryClient, wishId: string): void {
+  queryClient.setQueryData<MyReservation[]>(reservationKeys.mine(), (list) =>
+    list ? list.filter((entry) => entry.wish.id !== wishId) : list,
+  );
+}
+
 function snapshot(queryClient: QueryClient, slug: string, wishId: string): OptimisticContext {
   return {
     previousList: queryClient.getQueryData<WishPublic[]>(wishKeys.publicList(slug)),
     previousDetail: queryClient.getQueryData<WishPublic>(wishKeys.detail(wishId)),
+    previousMine: queryClient.getQueryData<MyReservation[]>(reservationKeys.mine()),
   };
 }
 
@@ -48,6 +84,7 @@ function rollback(
   }
   queryClient.setQueryData(wishKeys.publicList(slug), context.previousList);
   queryClient.setQueryData(wishKeys.detail(wishId), context.previousDetail);
+  queryClient.setQueryData(reservationKeys.mine(), context.previousMine);
 }
 
 function invalidate(queryClient: QueryClient, slug: string, wishId: string): void {
@@ -68,8 +105,10 @@ export function useReserveWish(slug: string) {
     },
     onMutate: async (wishId): Promise<OptimisticContext> => {
       await queryClient.cancelQueries({ queryKey: wishKeys.publicList(slug) });
+      await queryClient.cancelQueries({ queryKey: reservationKeys.mine() });
       const context = snapshot(queryClient, slug, wishId);
       setWishStatus(queryClient, slug, wishId, 'taken_by_me');
+      addToMine(queryClient, slug, wishId);
       return context;
     },
     onError: (error, wishId, context) => {
@@ -96,8 +135,10 @@ export function useCancelReservation(slug: string) {
     mutationFn: (wishId: string) => cancelReservation(wishId),
     onMutate: async (wishId): Promise<OptimisticContext> => {
       await queryClient.cancelQueries({ queryKey: wishKeys.publicList(slug) });
+      await queryClient.cancelQueries({ queryKey: reservationKeys.mine() });
       const context = snapshot(queryClient, slug, wishId);
       setWishStatus(queryClient, slug, wishId, 'free');
+      removeFromMine(queryClient, wishId);
       return context;
     },
     onError: (_error, wishId, context) => {

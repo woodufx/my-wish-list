@@ -36,7 +36,7 @@ export function MyReservations() {
         ) : reservations.length === 0 ? (
           <EmptyState
             tag="список гостя"
-            title="ВЫ ЕЩЁ НИЧЕГО НЕ ЗАБРОНИРОВАЛИ"
+            title="БРОНЕЙ ПОКА НЕТ"
             text="Откройте список желаний и выберите подарок. Бронь можно снять в любой момент."
             action={
               <Link to="/wishlist/$slug" params={{ slug: 'demo' }} className="eyebrow">
