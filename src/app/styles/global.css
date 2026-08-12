@@ -40,6 +40,13 @@ body,
   height: 100%;
 }
 
+/* Paint the root itself in the app colour so the iOS safe-area regions (behind
+   the status bar / home indicator, exposed by viewport-fit=cover) are never a
+   bare white/black bar. */
+html {
+  background-color: var(--color-abyss);
+}
+
 /* Clip stray horizontal overflow (e.g. a full-screen 3D canvas that measures a
    few px wider than the viewport) without creating a scroll container —
    `overflow-x: clip` leaves `overflow-y: visible`, so window scroll and the
