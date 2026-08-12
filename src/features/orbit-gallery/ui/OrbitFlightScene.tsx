@@ -83,6 +83,8 @@ export function OrbitFlightScene({
   );
   const lenisRef = useLenis(!isTouch);
   const snapRef = useRef<SnapState>({ snapping: false, atList: false, cooldown: 0 });
+  // rAF id for the button's own smooth scroll (used when Lenis is off, on touch).
+  const scrollAnimRef = useRef(0);
   // Latest `paused` for the rAF closure (the loop effect isn't re-created on it).
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
@@ -528,6 +530,45 @@ export function OrbitFlightScene({
     // fly-out). lenisRef is a stable ref, listed to satisfy exhaustive-deps.
   }, [count, scene, lenisRef]);
 
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(scrollAnimRef.current);
+    };
+  }, []);
+
+  // A self-contained eased scroll for touch (no Lenis): a one-shot rAF tween of
+  // window.scrollY, not a scroll hijack — so Safari still collapses its toolbar
+  // during normal scrolling. Native scrollTo({behavior:'smooth'}) on iOS is
+  // abrupt, which is what made the button feel like an instant jump.
+  const animateScrollTo = (target: number, duration = 1150) => {
+    cancelAnimationFrame(scrollAnimRef.current);
+    const start = window.scrollY;
+    const delta = target - start;
+    if (Math.abs(delta) < 1) {
+      return;
+    }
+    const t0 = performance.now();
+    const cancel = () => {
+      cancelAnimationFrame(scrollAnimRef.current);
+      scrollAnimRef.current = 0;
+      window.removeEventListener('touchstart', cancel);
+      window.removeEventListener('wheel', cancel);
+    };
+    // a real touch/wheel from the user takes the scroll back immediately
+    window.addEventListener('touchstart', cancel, { passive: true });
+    window.addEventListener('wheel', cancel, { passive: true });
+    const step = (now: number) => {
+      const p = Math.min(1, (now - t0) / duration);
+      window.scrollTo(0, start + delta * easeInOut(p));
+      if (p < 1) {
+        scrollAnimRef.current = requestAnimationFrame(step);
+      } else {
+        cancel();
+      }
+    };
+    scrollAnimRef.current = requestAnimationFrame(step);
+  };
+
   const scrollToList = () => {
     const container = containerRef.current;
     if (!container) {
@@ -550,7 +591,7 @@ export function OrbitFlightScene({
         },
       });
     } else {
-      window.scrollTo({ top: target, behavior: 'smooth' });
+      animateScrollTo(target);
     }
   };
 
