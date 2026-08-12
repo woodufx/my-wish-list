@@ -445,7 +445,13 @@ export function OrbitFlightScene({
         el.style.transform = `translate3d(${(fx - fw / 2).toFixed(1)}px, ${(fy - fh / 2).toFixed(1)}px, ${fz.toFixed(1)}px) rotateY(${fyaw.toFixed(1)}deg) rotateX(${(-tilt).toFixed(1)}deg) rotate(${roll.toFixed(1)}deg) scale(${fsc.toFixed(3)})`;
 
         const offscreen = cy < -420 || cy > scene.height + 460;
-        el.style.visibility = offscreen ? 'hidden' : 'visible';
+        // Hide (drop the paint) only when the card is FAR off — well past where its
+        // opacity has already reached 0. Toggling visibility right at the fade edge
+        // made iOS Safari re-create the layer as the card scrolled back in, which
+        // showed as a pop; this keeps the layer painted (at opacity 0) with a wide
+        // buffer so the repaint happens long before it's visible again.
+        const farOff = cy < -1000 || cy > scene.height + 1100;
+        el.style.visibility = farOff ? 'hidden' : 'visible';
         let naturalOpacity: number;
         if (scene.vertical) {
           // mobile: a focused carousel — only the front few cards read, the rest
