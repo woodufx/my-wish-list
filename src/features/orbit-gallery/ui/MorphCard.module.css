@@ -384,6 +384,9 @@
 .otherOverlay {
   position: absolute;
   inset: 0;
+  /* above the card content (link/price/action sit at z-index 2) so the "taken by
+     someone" scrim actually covers everything, not just the background */
+  z-index: 4;
   border-radius: 26px;
   display: flex;
   align-items: center;

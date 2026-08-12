@@ -80,7 +80,7 @@ export function MorphCard({ wish, onOpen, onToggleReservation }: MorphCardProps)
           <div className={styles.wFooter}>
             <span className={styles.price}>{price}</span>
             <div className={styles.wActions}>
-              {wish.url && (
+              {!isOther && wish.url && (
                 <a
                   className={styles.linkIcon}
                   href={wish.url}
