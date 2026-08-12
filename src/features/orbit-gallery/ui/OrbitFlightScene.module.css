@@ -547,11 +547,6 @@
   width: 236px;
   height: 340px;
   will-change: transform, width, height, opacity, filter;
-  /* keep a stable compositing layer: iOS Safari otherwise mis-z-sorts / skips
-     painting 3d-transformed siblings until a property (z-index/transform) change
-     forces a repaint, which showed as cards popping in mid-scroll. */
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   z-index: 40;
 }
 

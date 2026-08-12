@@ -8,6 +8,24 @@ interface MorphCardProps {
   onToggleReservation: () => void;
 }
 
+function LinkIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    </svg>
+  );
+}
+
 /**
  * A single glass card with two faces — portrait (`data-c`) and wide (`data-w`).
  * The orbit-flight scene resizes the shell and cross-fades the faces to morph an
@@ -38,18 +56,35 @@ export function MorphCard({ wish, onOpen, onToggleReservation }: MorphCardProps)
           {wish.note && <p className={styles.note}>{wish.note}</p>}
           <div className={styles.cFooter}>
             <span className={styles.price}>{price}</span>
-            {!isOther && (
-              <button
-                type="button"
-                className={styles.action}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onToggleReservation();
-                }}
-              >
-                {isMine ? 'Снять' : 'Забронировать'}
-              </button>
-            )}
+            <div className={styles.cActions}>
+              {wish.url && (
+                <a
+                  className={styles.linkIcon}
+                  href={wish.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Открыть товар в магазине"
+                  data-cursor-label="В магазин"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                  }}
+                >
+                  <LinkIcon />
+                </a>
+              )}
+              {!isOther && (
+                <button
+                  type="button"
+                  className={styles.action}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onToggleReservation();
+                  }}
+                >
+                  {isMine ? 'Снять' : 'Забронировать'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
