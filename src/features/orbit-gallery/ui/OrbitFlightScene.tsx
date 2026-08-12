@@ -54,9 +54,8 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 
  * sooner and settle quicker (less lag behind the snap); lower = more delay. */
 const MORPH_LERP = 0.05;
 
-/** Scroll snap durations (seconds) for entering the list / returning to orbit. */
+/** Duration (seconds) of the "смотреть список" button's animated jump to the list. */
 const SNAP_FWD_DUR = 1.8;
-const SNAP_BACK_DUR = 2.4;
 
 /** Shared snap state between the rAF loop and the "view list" button. */
 interface SnapState {
@@ -277,40 +276,9 @@ export function OrbitFlightScene({
       gp += (gpRaw - gp) * MORPH_LERP * dt;
       const listScroll = Math.max(0, S - (scene.hold + scene.flight));
 
-      // Two-screen snap: past the drift threshold the view jumps to the list;
-      // above the list top it snaps back to the orbit — no resting between.
-      const listTop = scene.hold + scene.flight;
-      const lenis = lenisRef.current;
-      const snap = snapRef.current;
-      if (lenis && !snap.snapping && now > snap.cooldown) {
-        if (!snap.atList && S >= scene.hold) {
-          snap.snapping = true;
-          lenis.scrollTo(container.offsetTop + listTop, {
-            duration: SNAP_FWD_DUR,
-            lock: true,
-            force: true,
-            easing: easeInOut,
-            onComplete: () => {
-              snap.snapping = false;
-              snap.atList = true;
-              snap.cooldown = performance.now() + 260;
-            },
-          });
-        } else if (snap.atList && S < listTop - 8) {
-          snap.snapping = true;
-          lenis.scrollTo(container.offsetTop, {
-            duration: SNAP_BACK_DUR,
-            lock: true,
-            force: true,
-            easing: easeInOut,
-            onComplete: () => {
-              snap.snapping = false;
-              snap.atList = false;
-              snap.cooldown = performance.now() + 260;
-            },
-          });
-        }
-      }
+      // NOTE: the forced two-screen snap (which locked the scroll while jumping
+      // between orbit and list) is disabled — scrolling through the orbit→list
+      // morph is free now. The "смотреть список" button still animates the jump.
 
       // the orbit lifts slightly as you scroll the drift zone, so when the morph
       // begins the cards are already high and appear to fly down into the list
